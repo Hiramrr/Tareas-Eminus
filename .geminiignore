@@ -1,0 +1,10 @@
+state.json
+*.html
+diagnose_*.py
+capture_traffic.py
+get_token.py
+find_js.py
+api_refactor_plan.md
+notifier.log
+.venv/
+__pycache__/

@@ -1,0 +1,990 @@
+{
+  "last_check": "2026-04-18T00:15:46.433166",
+  "courses": {
+    "55982": {
+      "name": "INTRODUCCION AL PENSAMIENTO CO (24019)",
+      "seen_activities": [
+        328239,
+        328240,
+        328241,
+        328245,
+        329517,
+        331856,
+        334480,
+        337024,
+        340136,
+        341668,
+        341678,
+        343554,
+        346916,
+        346918,
+        348637,
+        349312,
+        350465,
+        352173,
+        353516,
+        353568
+      ]
+    },
+    "63283": {
+      "name": "Sistemas Electrónicos en TI",
+      "seen_activities": [
+        377604,
+        381717,
+        389054,
+        389994,
+        391198,
+        394676,
+        397694,
+        402247,
+        402255,
+        403785,
+        405702,
+        404075,
+        412294,
+        410092,
+        410285,
+        412385,
+        416429,
+        418193,
+        418225,
+        419862
+      ]
+    },
+    "63625": {
+      "name": "ALGORITMOS Y PROGRAMACION (27698)",
+      "seen_activities": [
+        388090,
+        393827,
+        396033,
+        397261,
+        397762,
+        399987,
+        401655,
+        403789,
+        405406,
+        409086,
+        409563,
+        409851,
+        410656,
+        413124,
+        414890,
+        416113,
+        417388,
+        419173,
+        417391
+      ]
+    },
+    "65316": {
+      "name": "MATEMÁTICAS DISCRETAS_ TC",
+      "seen_activities": [
+        396876,
+        400549,
+        401794,
+        401795,
+        401797,
+        401798,
+        403292,
+        407619,
+        407620,
+        407621,
+        419758,
+        419759
+      ]
+    },
+    "72787": {
+      "name": "BASES DE DATOS RELACIONALES (32343) - 2024",
+      "seen_activities": [
+        481815,
+        481816,
+        481817,
+        481818,
+        481822,
+        481820,
+        481819,
+        481821
+      ]
+    },
+    "72874": {
+      "name": "SISTEMAS OPERATIVOS (32437)",
+      "seen_activities": [
+        446340,
+        453823,
+        462816,
+        464280,
+        468535,
+        469573,
+        475776,
+        476953,
+        479188,
+        480197,
+        483894,
+        486791,
+        487530,
+        489996,
+        490590,
+        497007,
+        497773,
+        499386,
+        499891,
+        502183,
+        504945,
+        506117,
+        506130,
+        507884,
+        508635,
+        509530,
+        509800,
+        511708
+      ]
+    },
+    "73513": {
+      "name": "PROBABILIDAD Y ESTADISTICA (32395)",
+      "seen_activities": [
+        456518,
+        469047,
+        471865,
+        481612,
+        485251,
+        493576,
+        502568,
+        508157
+      ]
+    },
+    "73879": {
+      "name": "Networking",
+      "seen_activities": [
+        454333,
+        454432,
+        481564,
+        484697,
+        491806,
+        492662,
+        497896,
+        498734,
+        510920
+      ]
+    },
+    "74258": {
+      "name": "INTERACCION HUMANO COMPUTADORA (32404)",
+      "seen_activities": [
+        452086,
+        463056,
+        475877,
+        489207,
+        493381,
+        498826,
+        499453,
+        502476,
+        506845
+      ]
+    },
+    "78996": {
+      "name": "EXAMEN DE COMPETENCIAS 120924-XALAPA S2",
+      "seen_activities": [
+        476561,
+        476569,
+        476572,
+        476574,
+        476896
+      ]
+    },
+    "82088": {
+      "name": "Programación",
+      "seen_activities": [
+        518713
+      ]
+    },
+    "82876": {
+      "name": "ADMINISTRACION DE SERVIDORES (40184)",
+      "seen_activities": [
+        546291,
+        560356,
+        565680,
+        570882,
+        581904,
+        581905,
+        583955,
+        587131,
+        587269,
+        594222,
+        594225,
+        596316,
+        596317,
+        599844,
+        602317,
+        605082,
+        606710,
+        621848
+      ]
+    },
+    "86474": {
+      "name": "BASES DE DATOS POST-RELACIONAL (40174)",
+      "seen_activities": [
+        588658,
+        597878,
+        612942
+      ]
+    },
+    "87507": {
+      "name": "Procesos de Desarrollo de Software Feb-Julio 2025",
+      "seen_activities": [
+        550798,
+        555831,
+        555848,
+        558464,
+        561800,
+        567952,
+        572927,
+        574473,
+        575009,
+        575897,
+        579142,
+        580484,
+        582059,
+        584555,
+        587200,
+        588456,
+        588460,
+        588498,
+        589551,
+        589553,
+        590330,
+        591704,
+        592749,
+        592772,
+        594161,
+        596325,
+        598284,
+        604997,
+        605000,
+        608954,
+        611881,
+        612815,
+        613010
+      ]
+    },
+    "94651": {
+      "name": "AFBG Examen Competencias Lectura y Escritura / Lectura y Redacción 4mar2025 Xal02",
+      "seen_activities": [
+        569621
+      ]
+    },
+    "95063": {
+      "name": "ÉTICA Y GESTIÓN NORMATIVA",
+      "seen_activities": [
+        576997,
+        577003,
+        584781,
+        594708,
+        602915,
+        608557
+      ]
+    },
+    "95647": {
+      "name": "UX-LISTI Viviana",
+      "seen_activities": [
+        582167,
+        582169,
+        582174,
+        582175,
+        582177,
+        582178,
+        582179,
+        595265,
+        595266,
+        595267,
+        595269,
+        595270,
+        602188,
+        602189,
+        602191,
+        602192,
+        602194,
+        602198,
+        616919
+      ]
+    },
+    "96393": {
+      "name": "FUNDAMENTOS DE TECNOLOGIA WEB (40260)",
+      "seen_activities": [
+        613305,
+        613326
+      ]
+    },
+    "103697": {
+      "name": "PRINCIPIOS DE CIBERSEGURIDAD (17212)",
+      "seen_activities": [
+        639661,
+        652238,
+        658403,
+        658847,
+        670740,
+        673249,
+        676582,
+        680584,
+        682728,
+        687218,
+        695359,
+        699954,
+        703841,
+        705470,
+        713601,
+        717428,
+        720761
+      ]
+    },
+    "104315": {
+      "name": "INTERFACES DE USUARIO AVANZAD (17285)",
+      "seen_activities": [
+        675227,
+        674762,
+        681667,
+        685888,
+        700494,
+        708511,
+        718590
+      ]
+    },
+    "104910": {
+      "name": "Liderazgo y Emprendimiento",
+      "seen_activities": [
+        662502,
+        670491,
+        678494,
+        710465,
+        714345
+      ]
+    },
+    "107693": {
+      "name": "ADMINISTRACION DE BASES DE DAT (17234) - 2025",
+      "seen_activities": [
+        658781,
+        656772,
+        666709,
+        681642,
+        687974,
+        692683,
+        703172,
+        715576
+      ]
+    },
+    "111723": {
+      "name": "Gestión del Proceso de Desarrollo Agos25 Ene26",
+      "seen_activities": [
+        683812,
+        683826,
+        683839,
+        684753,
+        688070,
+        688854,
+        692563,
+        696426,
+        698806,
+        699354,
+        699393,
+        701814,
+        704454,
+        707887,
+        710725,
+        710779,
+        710780,
+        714456,
+        714459
+      ]
+    },
+    "113520": {
+      "name": "DESARROLLO WEB (17289)",
+      "seen_activities": [
+        720413
+      ]
+    },
+    "119489": {
+      "name": "SEMINARIO DE INVESTIGACION (49062)",
+      "seen_activities": [
+        786654,
+        796170
+      ]
+    },
+    "119506": {
+      "name": "INGENIERIA DE DATOS (49083)",
+      "seen_activities": [
+        773832,
+        777054,
+        789206
+      ]
+    },
+    "119835": {
+      "name": "Ciberseguridad Aplicada",
+      "seen_activities": [
+        761248,
+        766880,
+        773503,
+        780877,
+        787998,
+        794028
+      ]
+    },
+    "121253": {
+      "name": "TECNOLOGIA PARA LA INTEGRACION (49097)",
+      "seen_activities": [
+        756323,
+        763422,
+        763442,
+        775080,
+        776781,
+        777702,
+        777778,
+        781981,
+        784991,
+        788365,
+        792927,
+        793588,
+        794528,
+        796396,
+        797695,
+        797753
+      ]
+    },
+    "122063": {
+      "name": "DesarrolloMovil_Feb26",
+      "seen_activities": [
+        753449,
+        753469,
+        763207,
+        774385,
+        774394,
+        774395,
+        776628,
+        780046,
+        781025,
+        786211,
+        786213,
+        788073,
+        792191,
+        792930,
+        793429,
+        795713,
+        796285,
+        796854,
+        796896
+      ]
+    },
+    "122747": {
+      "name": "Gestión de Proyectos de Tecnologías de la Información 2026",
+      "seen_activities": [
+        770098,
+        774790,
+        786529,
+        786536,
+        793003,
+        793657,
+        797055
+      ]
+    }
+  },
+  "history": [
+    {
+      "section": "actividades",
+      "label": "Gestión de Proyectos de Tecnologías de la Información 2026: Práctica 3 Excel ",
+      "time": "2026-04-17T23:22:26.348371"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión de Proyectos de Tecnologías de la Información 2026: Práctica 2 Excel ",
+      "time": "2026-04-17T23:22:26.287463"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión de Proyectos de Tecnologías de la Información 2026: Práctica Excel",
+      "time": "2026-04-17T23:22:26.226083"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión de Proyectos de Tecnologías de la Información 2026: 1er Avance Proyecto",
+      "time": "2026-04-17T23:22:26.168942"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión de Proyectos de Tecnologías de la Información 2026: Preguntas Unidad II",
+      "time": "2026-04-17T23:22:26.103127"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión de Proyectos de Tecnologías de la Información 2026: Preguntas Unidad I",
+      "time": "2026-04-17T23:22:26.046372"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión de Proyectos de Tecnologías de la Información 2026: ¿PROYECTO o PROCESO?",
+      "time": "2026-04-17T23:22:25.984026"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad XIX Programacion primer caso de uso",
+      "time": "2026-04-17T23:22:25.693594"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad XVIII Programación primer caso de uso- avance",
+      "time": "2026-04-17T23:22:25.635509"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad XVII Casos de Prueba V2",
+      "time": "2026-04-17T23:22:25.573221"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad XVI Casos de Prueba",
+      "time": "2026-04-17T23:22:25.514127"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad XV Casos de Uso del proyecto",
+      "time": "2026-04-17T23:22:25.452926"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad XIV Wireframe del proyecto",
+      "time": "2026-04-17T23:22:25.392950"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad XIII Descripción del proyecto integrador y diagramas de caso de uso",
+      "time": "2026-04-17T23:22:25.323574"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad XII  Finalizando aspectos básicos de android ",
+      "time": "2026-04-17T23:22:25.261193"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad XI Persistencia de datos",
+      "time": "2026-04-17T23:22:25.194198"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad X Agenda activa ( I love my time). Primera Versión ",
+      "time": "2026-04-17T23:22:25.114166"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad IX Como conectarse a Internet",
+      "time": "2026-04-17T23:22:25.051458"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad VIII Aplicación en equipo ",
+      "time": "2026-04-17T23:22:24.989999"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad VII notas de presentaciones de equipos",
+      "time": "2026-04-17T23:22:24.920110"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad VI Navegación y Arquitectura",
+      "time": "2026-04-17T23:22:24.850634"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad V listas ",
+      "time": "2026-04-17T23:22:24.794969"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad IV Conversor de divisas",
+      "time": "2026-04-17T23:22:24.730040"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad III Building App UI",
+      "time": "2026-04-17T23:22:24.671105"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad II   Cómputo Móvil",
+      "time": "2026-04-17T23:22:24.608479"
+    },
+    {
+      "section": "actividades",
+      "label": "DesarrolloMovil_Feb26: Actividad I mi primera aplicación ",
+      "time": "2026-04-17T23:22:24.542451"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 16 Tipos MIME",
+      "time": "2026-04-17T23:22:24.234748"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 15 Laboratorio RPC Java",
+      "time": "2026-04-17T23:22:24.176953"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 14 Protocolos y Arquitecturas de Integración (SOAP vs REST)",
+      "time": "2026-04-17T23:22:24.107282"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 13 Investigación \"La Evolución de RPC\"",
+      "time": "2026-04-17T23:22:24.040508"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 12 Ejercicio XSD Java Parte I",
+      "time": "2026-04-17T23:22:23.981976"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 11 Creación de XSD",
+      "time": "2026-04-17T23:22:23.917213"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 10 Creación de DTD",
+      "time": "2026-04-17T23:22:23.856617"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 09 Creación de un archivo XML",
+      "time": "2026-04-17T23:22:23.794621"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 08 Herramientas para desarrollo/despliegue continuo (CI/CD)",
+      "time": "2026-04-17T23:22:23.730352"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 07 Caso de estudio VMs - Dictamen arquitectónico.",
+      "time": "2026-04-17T23:22:23.660015"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 06 Máquinas Virtuales",
+      "time": "2026-04-17T23:22:23.590614"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 05 La Anatomía Interna de los Contenedores - Los Cimientos del Aislamiento",
+      "time": "2026-04-17T23:22:23.533422"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 04 Tipos de nube y modelos de servicios en la nube",
+      "time": "2026-04-17T23:22:23.475125"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 03 Uso de diagramas para diseño de proyectos",
+      "time": "2026-04-17T23:22:23.412027"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 02 Proyecto PetFoodNow",
+      "time": "2026-04-17T23:22:23.346841"
+    },
+    {
+      "section": "actividades",
+      "label": "TECNOLOGIA PARA LA INTEGRACION (49097): Actividad 01 Identificando plataformas",
+      "time": "2026-04-17T23:22:23.282043"
+    },
+    {
+      "section": "actividades",
+      "label": "Ciberseguridad Aplicada: Práctica con snort y OSSEC",
+      "time": "2026-04-17T23:22:22.972305"
+    },
+    {
+      "section": "actividades",
+      "label": "Ciberseguridad Aplicada: Implementación y uso de un Proxy con Squid e iptables en Kali Linux",
+      "time": "2026-04-17T23:22:22.914260"
+    },
+    {
+      "section": "actividades",
+      "label": "Ciberseguridad Aplicada: Práctica con Firewall",
+      "time": "2026-04-17T23:22:22.852065"
+    },
+    {
+      "section": "actividades",
+      "label": "Ciberseguridad Aplicada: Práctica OSSTMM",
+      "time": "2026-04-17T23:22:22.787244"
+    },
+    {
+      "section": "actividades",
+      "label": "Ciberseguridad Aplicada: Práctica de Modelo de seguridad en profundidad",
+      "time": "2026-04-17T23:22:22.725867"
+    },
+    {
+      "section": "actividades",
+      "label": "Ciberseguridad Aplicada: Actividad relacionada con el marco legal",
+      "time": "2026-04-17T23:22:22.661176"
+    },
+    {
+      "section": "actividades",
+      "label": "INGENIERIA DE DATOS (49083): A5- Arquitectura de Datos",
+      "time": "2026-04-17T23:22:22.366142"
+    },
+    {
+      "section": "actividades",
+      "label": "INGENIERIA DE DATOS (49083): A3- ETL vs ELT",
+      "time": "2026-04-17T23:22:22.302742"
+    },
+    {
+      "section": "actividades",
+      "label": "INGENIERIA DE DATOS (49083): A2 - Aplicación del Ciclo de Vida de la ID a un caso de estudio",
+      "time": "2026-04-17T23:22:22.243131"
+    },
+    {
+      "section": "actividades",
+      "label": "SEMINARIO DE INVESTIGACION (49062): Actividad 2: Problema, Objetivos, Preguntas",
+      "time": "2026-04-17T23:22:21.949572"
+    },
+    {
+      "section": "actividades",
+      "label": "SEMINARIO DE INVESTIGACION (49062): Actividad 1: Bosquejo de fundamentos",
+      "time": "2026-04-17T23:22:21.885608"
+    },
+    {
+      "section": "actividades",
+      "label": "DESARROLLO WEB (17289): Proyecto final",
+      "time": "2026-04-17T23:22:21.590871"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 19 Revisión del proyecto",
+      "time": "2026-04-17T23:22:21.288071"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 18 Retrospectiva Actividades pendientes",
+      "time": "2026-04-17T23:22:21.227252"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 17 Retrospectiva Sprint 5 y actividades pendientes",
+      "time": "2026-04-17T23:22:21.167522"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 16 Tutorial creación del proyecto",
+      "time": "2026-04-17T23:22:21.108927"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 15 Retrospectiva Sprint 4 y Planeación Sprint 5",
+      "time": "2026-04-17T23:22:21.042151"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 14 Retrospectiva Sprint 3 y Planeación Sprint 4",
+      "time": "2026-04-17T23:22:20.980386"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 13 Retrospectiva Sprint 2 y Planeación Sprint 3",
+      "time": "2026-04-17T23:22:20.922715"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 12 Retrospectiva Sprint 1 y Planeación Sprint 2",
+      "time": "2026-04-17T23:22:20.864190"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 11 Planeación y ejecución Sprint 1",
+      "time": "2026-04-17T23:22:20.805257"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 10 Product Backlog y gráfico burndown",
+      "time": "2026-04-17T23:22:20.743750"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 9 Roles en Scrum",
+      "time": "2026-04-17T23:22:20.685678"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 8 Requisitos del sistema de venta en línea y punto de venta.",
+      "time": "2026-04-17T23:22:20.618586"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 7 Análisis de las 12 prácticas de XP",
+      "time": "2026-04-17T23:22:20.558217"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 6 Entrega proyecto rutas Xalapa",
+      "time": "2026-04-17T23:22:20.496840"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 5 avances en actividades individuales",
+      "time": "2026-04-17T23:22:20.438780"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 4 avances en la programación",
+      "time": "2026-04-17T23:22:20.378025"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 3 Planeación de la Actividad",
+      "time": "2026-04-17T23:22:20.321483"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 2 Planeación del Proyecto",
+      "time": "2026-04-17T23:22:20.258882"
+    },
+    {
+      "section": "actividades",
+      "label": "Gestión del Proceso de Desarrollo Agos25 Ene26: Actividad 1 Gestión Ágil",
+      "time": "2026-04-17T23:22:20.193566"
+    },
+    {
+      "section": "actividades",
+      "label": "ADMINISTRACION DE BASES DE DAT (17234) - 2025: Proyecto Integrador",
+      "time": "2026-04-17T23:22:19.873030"
+    },
+    {
+      "section": "actividades",
+      "label": "ADMINISTRACION DE BASES DE DAT (17234) - 2025: A7 - Optimización heurística de consultas",
+      "time": "2026-04-17T23:22:19.801239"
+    },
+    {
+      "section": "actividades",
+      "label": "ADMINISTRACION DE BASES DE DAT (17234) - 2025: A6 - Implementación de un índice B+",
+      "time": "2026-04-17T23:22:19.736084"
+    },
+    {
+      "section": "actividades",
+      "label": "ADMINISTRACION DE BASES DE DAT (17234) - 2025: A5 - Archivos  e índices",
+      "time": "2026-04-17T23:22:19.677245"
+    },
+    {
+      "section": "actividades",
+      "label": "ADMINISTRACION DE BASES DE DAT (17234) - 2025: A4 - Respaldo/recuperación y monitoreo/optimización",
+      "time": "2026-04-17T23:22:19.611134"
+    },
+    {
+      "section": "actividades",
+      "label": "ADMINISTRACION DE BASES DE DAT (17234) - 2025: A3- Administración de usuarios/roles e integridad de datos",
+      "time": "2026-04-17T23:22:19.554197"
+    },
+    {
+      "section": "actividades",
+      "label": "ADMINISTRACION DE BASES DE DAT (17234) - 2025: A2 - Instalación del SGBD",
+      "time": "2026-04-17T23:22:19.492294"
+    },
+    {
+      "section": "actividades",
+      "label": "ADMINISTRACION DE BASES DE DAT (17234) - 2025: A1 - Conceptos básicos",
+      "time": "2026-04-17T23:22:19.423036"
+    },
+    {
+      "section": "actividades",
+      "label": "Liderazgo y Emprendimiento: TRABAJO FINAL",
+      "time": "2026-04-17T23:22:19.113643"
+    },
+    {
+      "section": "actividades",
+      "label": "Liderazgo y Emprendimiento: PRIMERA ETAPA DEL PROYECTO FINAL",
+      "time": "2026-04-17T23:22:19.053681"
+    },
+    {
+      "section": "actividades",
+      "label": "Liderazgo y Emprendimiento: REPORTE DE DESAFÍOS DEL LIDERAZGO",
+      "time": "2026-04-17T23:22:18.993353"
+    },
+    {
+      "section": "actividades",
+      "label": "Liderazgo y Emprendimiento: RAZONES POR LAS CUALES EL DIRECTOR DEBE TENER PRESENTE LAS DIFERENCIAS INDIVIDUALES.",
+      "time": "2026-04-17T23:22:18.928796"
+    },
+    {
+      "section": "actividades",
+      "label": "Liderazgo y Emprendimiento: RELACIÓN ENTRE EL PROGRAMA DE LA EE Y EL PERFIL DE EGRESO.",
+      "time": "2026-04-17T23:22:18.860902"
+    },
+    {
+      "section": "actividades",
+      "label": "INTERFACES DE USUARIO AVANZAD (17285): Proyecto Final: ENTREGA",
+      "time": "2026-04-17T23:22:18.552213"
+    },
+    {
+      "section": "actividades",
+      "label": "INTERFACES DE USUARIO AVANZAD (17285): Proyecto Final: Descripción y selección de los integrantes",
+      "time": "2026-04-17T23:22:18.492530"
+    },
+    {
+      "section": "actividades",
+      "label": "INTERFACES DE USUARIO AVANZAD (17285): Actividad 6 y 7 y 8: Interfaces gestuales",
+      "time": "2026-04-17T23:22:18.426793"
+    },
+    {
+      "section": "actividades",
+      "label": "INTERFACES DE USUARIO AVANZAD (17285): Actividad 5: Evaluando un sitio web con WCAG",
+      "time": "2026-04-17T23:22:18.368813"
+    },
+    {
+      "section": "actividades",
+      "label": "INTERFACES DE USUARIO AVANZAD (17285): Actividad 4: Diseñando para usuarios con capacidades diferentes",
+      "time": "2026-04-17T23:22:18.303102"
+    },
+    {
+      "section": "actividades",
+      "label": "INTERFACES DE USUARIO AVANZAD (17285): Actividad 3: Diseño Universal ",
+      "time": "2026-04-17T23:22:18.240297"
+    },
+    {
+      "section": "actividades",
+      "label": "INTERFACES DE USUARIO AVANZAD (17285): Actividad 1 y 2: Interfaces y evoluación",
+      "time": "2026-04-17T23:22:18.172788"
+    },
+    {
+      "section": "actividades",
+      "label": "PRINCIPIOS DE CIBERSEGURIDAD (17212): Actividades pendientes",
+      "time": "2026-04-17T23:22:17.873383"
+    },
+    {
+      "section": "actividades",
+      "label": "PRINCIPIOS DE CIBERSEGURIDAD (17212): Proyecto Final...",
+      "time": "2026-04-17T23:22:17.811134"
+    },
+    {
+      "section": "actividades",
+      "label": "PRINCIPIOS DE CIBERSEGURIDAD (17212): La última y nos vamos Virus, Keylogger       :´(",
+      "time": "2026-04-17T23:22:17.752993"
+    },
+    {
+      "section": "actividades",
+      "label": "PRINCIPIOS DE CIBERSEGURIDAD (17212): Minimos privilegios y permisos",
+      "time": "2026-04-17T23:22:17.682440"
+    },
+    {
+      "section": "actividades",
+      "label": "PRINCIPIOS DE CIBERSEGURIDAD (17212): Hardening en SO",
+      "time": "2026-04-17T23:22:17.623160"
+    },
+    {
+      "section": "actividades",
+      "label": "PRINCIPIOS DE CIBERSEGURIDAD (17212): XSS",
+      "time": "2026-04-17T23:22:17.564326"
+    },
+    {
+      "section": "actividades",
+      "label": "PRINCIPIOS DE CIBERSEGURIDAD (17212): SQLi",
+      "time": "2026-04-17T23:22:17.504305"
+    }
+  ],
+  "sent_reminders": [],
+  "last_reminder_date": "2026-04-18"
+}

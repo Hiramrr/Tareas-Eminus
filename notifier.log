@@ -1,0 +1,484 @@
+2026-04-17 20:53:04 [INFO] =======================================================
+2026-04-17 20:53:04 [INFO] Eminus Notifier iniciando...
+2026-04-17 20:53:04 [INFO] ====== WebDriver manager ======
+2026-04-17 20:53:04 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 20:53:04 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 20:53:04 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-17 20:53:06 [INFO] Navegando a Eminus 4...
+2026-04-17 20:53:09 [INFO] URL tras navegar: https://eminus.uv.mx/eminus4/
+2026-04-17 20:53:09 [INFO] Sesion activa.
+2026-04-17 20:53:09 [INFO] Revisando: actividades
+2026-04-17 20:53:11 [INFO]   Baseline guardado: actividades
+2026-04-17 20:53:11 [INFO] Revisando: evaluaciones
+2026-04-17 20:53:14 [INFO]   Baseline guardado: evaluaciones
+2026-04-17 20:53:14 [INFO] Revisando: foros
+2026-04-17 20:53:16 [INFO]   Baseline guardado: foros
+2026-04-17 20:53:16 [INFO] Revisando: mensajes
+2026-04-17 20:53:18 [INFO]   Baseline guardado: mensajes
+2026-04-17 20:53:18 [INFO] Revision completada.
+2026-04-17 21:23:56 [INFO] =======================================================
+2026-04-17 21:23:56 [INFO] Eminus Notifier iniciando...
+2026-04-17 21:23:56 [INFO] ====== WebDriver manager ======
+2026-04-17 21:23:57 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 21:23:57 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 21:23:57 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-17 21:23:58 [INFO] Navegando a Eminus 4...
+2026-04-17 21:24:02 [INFO] URL tras navegar: https://eminus.uv.mx/eminus4/
+2026-04-17 21:24:02 [INFO] Sesion activa.
+2026-04-17 21:24:02 [INFO] Revisando: actividades
+2026-04-17 21:24:05 [INFO]   HTML capturado: 1006 chars
+2026-04-17 21:24:05 [WARNING]   Error en actividades: [Errno 30] Read-only file system: 'debug_actividades.html'
+2026-04-17 21:24:05 [INFO] Revisando: evaluaciones
+2026-04-17 21:24:08 [INFO]   HTML capturado: 1011 chars
+2026-04-17 21:24:08 [WARNING]   Error en evaluaciones: [Errno 30] Read-only file system: 'debug_evaluaciones.html'
+2026-04-17 21:24:08 [INFO] Revisando: foros
+2026-04-17 21:24:12 [INFO]   HTML capturado: 1011 chars
+2026-04-17 21:24:12 [WARNING]   Error en foros: [Errno 30] Read-only file system: 'debug_foros.html'
+2026-04-17 21:24:12 [INFO] Revisando: mensajes
+2026-04-17 21:24:15 [INFO]   HTML capturado: 1011 chars
+2026-04-17 21:24:15 [WARNING]   Error en mensajes: [Errno 30] Read-only file system: 'debug_mensajes.html'
+2026-04-17 21:24:15 [INFO] Revision completada.
+2026-04-17 21:49:12 [INFO] =======================================================
+2026-04-17 21:49:12 [INFO] Eminus Notifier iniciando...
+2026-04-17 21:49:12 [INFO] ====== WebDriver manager ======
+2026-04-17 21:49:12 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 21:49:13 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 21:49:13 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-17 21:50:13 [ERROR] Error inesperado: Message: session not created: DevToolsActivePort file doesn't exist; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+0   chromedriver                        0x0000000102c6fabc cxxbridge1$str$ptr + 3192864
+1   chromedriver                        0x0000000102c67a8c cxxbridge1$str$ptr + 3160048
+2   chromedriver                        0x00000001027337c0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75348
+3   chromedriver                        0x000000010276c8d8 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 309100
+4   chromedriver                        0x00000001027694b4 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 295752
+5   chromedriver                        0x0000000102765ac4 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 280920
+6   chromedriver                        0x00000001027a96c0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 558420
+7   chromedriver                        0x00000001027a90f0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 556932
+8   chromedriver                        0x0000000102770e50 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 326884
+9   chromedriver                        0x0000000102c2d248 cxxbridge1$str$ptr + 2920364
+10  chromedriver                        0x0000000102c30a28 cxxbridge1$str$ptr + 2934668
+11  chromedriver                        0x0000000102c131fc cxxbridge1$str$ptr + 2813792
+12  chromedriver                        0x0000000102c312a8 cxxbridge1$str$ptr + 2936844
+13  chromedriver                        0x0000000102c04024 cxxbridge1$str$ptr + 2751880
+14  chromedriver                        0x0000000102c56988 cxxbridge1$str$ptr + 3090156
+15  chromedriver                        0x0000000102c56b04 cxxbridge1$str$ptr + 3090536
+16  chromedriver                        0x0000000102c676e4 cxxbridge1$str$ptr + 3159112
+17  libsystem_pthread.dylib             0x0000000185037c58 _pthread_start + 136
+18  libsystem_pthread.dylib             0x0000000185032c1c thread_start + 8
+Traceback (most recent call last):
+  File "/Users/hiram/Downloads/eminus-notifier-v2/eminus_notifier.py", line 290, in main
+    driver = create_driver()
+  File "/Users/hiram/Downloads/eminus-notifier-v2/eminus_notifier.py", line 113, in create_driver
+    driver = webdriver.Chrome(service=svc, options=opts)
+  File "/Users/hiram/Downloads/eminus-notifier-v2/.venv/lib/python3.13/site-packages/selenium/webdriver/chrome/webdriver.py", line 45, in __init__
+    super().__init__(
+    ~~~~~~~~~~~~~~~~^
+        browser_name=DesiredCapabilities.CHROME["browserName"],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        keep_alive=keep_alive,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/hiram/Downloads/eminus-notifier-v2/.venv/lib/python3.13/site-packages/selenium/webdriver/chromium/webdriver.py", line 66, in __init__
+    super().__init__(command_executor=executor, options=self.options)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hiram/Downloads/eminus-notifier-v2/.venv/lib/python3.13/site-packages/selenium/webdriver/common/webdriver.py", line 25, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/hiram/Downloads/eminus-notifier-v2/.venv/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py", line 274, in __init__
+    self.start_session(capabilities)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/Users/hiram/Downloads/eminus-notifier-v2/.venv/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py", line 370, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hiram/Downloads/eminus-notifier-v2/.venv/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py", line 450, in execute
+    self.error_handler.check_response(response)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/hiram/Downloads/eminus-notifier-v2/.venv/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py", line 232, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: DevToolsActivePort file doesn't exist; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+0   chromedriver                        0x0000000102c6fabc cxxbridge1$str$ptr + 3192864
+1   chromedriver                        0x0000000102c67a8c cxxbridge1$str$ptr + 3160048
+2   chromedriver                        0x00000001027337c0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75348
+3   chromedriver                        0x000000010276c8d8 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 309100
+4   chromedriver                        0x00000001027694b4 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 295752
+5   chromedriver                        0x0000000102765ac4 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 280920
+6   chromedriver                        0x00000001027a96c0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 558420
+7   chromedriver                        0x00000001027a90f0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 556932
+8   chromedriver                        0x0000000102770e50 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 326884
+9   chromedriver                        0x0000000102c2d248 cxxbridge1$str$ptr + 2920364
+10  chromedriver                        0x0000000102c30a28 cxxbridge1$str$ptr + 2934668
+11  chromedriver                        0x0000000102c131fc cxxbridge1$str$ptr + 2813792
+12  chromedriver                        0x0000000102c312a8 cxxbridge1$str$ptr + 2936844
+13  chromedriver                        0x0000000102c04024 cxxbridge1$str$ptr + 2751880
+14  chromedriver                        0x0000000102c56988 cxxbridge1$str$ptr + 3090156
+15  chromedriver                        0x0000000102c56b04 cxxbridge1$str$ptr + 3090536
+16  chromedriver                        0x0000000102c676e4 cxxbridge1$str$ptr + 3159112
+17  libsystem_pthread.dylib             0x0000000185037c58 _pthread_start + 136
+18  libsystem_pthread.dylib             0x0000000185032c1c thread_start + 8
+
+2026-04-17 22:05:13 [INFO] =======================================================
+2026-04-17 22:05:13 [INFO] Eminus Notifier iniciando...
+2026-04-17 22:05:14 [INFO] ====== WebDriver manager ======
+2026-04-17 22:05:14 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 22:05:14 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 22:05:14 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-17 22:05:15 [INFO] Navegando a Eminus 4...
+2026-04-17 22:05:18 [INFO] Sesion no detectada o expirada. Iniciando login...
+2026-04-17 22:05:19 [ERROR] Error inesperado: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: unable to send message to renderer
+  (Session info: chrome=147.0.7727.56); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+0   chromedriver                        0x00000001028b3abc cxxbridge1$str$ptr + 3192864
+1   chromedriver                        0x00000001028aba8c cxxbridge1$str$ptr + 3160048
+2   chromedriver                        0x00000001023777c0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75348
+3   chromedriver                        0x0000000102360c68 cxxbridge1$string$len + 324
+4   chromedriver                        0x000000010235f240 chromedriver + 225856
+5   chromedriver                        0x000000010236003c chromedriver + 229436
+6   chromedriver                        0x000000010237bd38 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 93132
+7   chromedriver                        0x000000010237c578 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 95244
+8   chromedriver                        0x000000010237fc74 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 109320
+9   chromedriver                        0x000000010237fd2c _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 109504
+10  chromedriver                        0x00000001023bf050 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 368356
+11  chromedriver                        0x00000001023ff448 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 631516
+12  chromedriver                        0x00000001023b4e50 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 326884
+13  chromedriver                        0x0000000102871248 cxxbridge1$str$ptr + 2920364
+14  chromedriver                        0x0000000102874a28 cxxbridge1$str$ptr + 2934668
+15  chromedriver                        0x00000001028571fc cxxbridge1$str$ptr + 2813792
+16  chromedriver                        0x00000001028752a8 cxxbridge1$str$ptr + 2936844
+17  chromedriver                        0x0000000102848024 cxxbridge1$str$ptr + 2751880
+18  chromedriver                        0x000000010289a988 cxxbridge1$str$ptr + 3090156
+19  chromedriver                        0x000000010289ab04 cxxbridge1$str$ptr + 3090536
+20  chromedriver                        0x00000001028ab6e4 cxxbridge1$str$ptr + 3159112
+21  libsystem_pthread.dylib             0x0000000185037c58 _pthread_start + 136
+22  libsystem_pthread.dylib             0x0000000185032c1c thread_start + 8
+Traceback (most recent call last):
+  File "/Users/hiram/Downloads/eminus-notifier-v2/eminus_notifier.py", line 295, in main
+    if not login(driver, username, password):
+           ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hiram/Downloads/eminus-notifier-v2/eminus_notifier.py", line 166, in login
+    user_field = wait.until(EC.presence_of_element_located((by, sel)))
+  File "/Users/hiram/Downloads/eminus-notifier-v2/.venv/lib/python3.13/site-packages/selenium/webdriver/support/wait.py", line 112, in until
+    value = method(self._driver)
+  File "/Users/hiram/Downloads/eminus-notifier-v2/.venv/lib/python3.13/site-packages/selenium/webdriver/support/expected_conditions.py", line 92, in _predicate
+    return driver.find_element(*locator)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/hiram/Downloads/eminus-notifier-v2/.venv/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py", line 823, in find_element
+    return self.execute(Command.FIND_ELEMENT, {"using": by, "value": value})["value"]
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hiram/Downloads/eminus-notifier-v2/.venv/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py", line 450, in execute
+    self.error_handler.check_response(response)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/hiram/Downloads/eminus-notifier-v2/.venv/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py", line 232, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.InvalidSessionIdException: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: unable to send message to renderer
+  (Session info: chrome=147.0.7727.56); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+0   chromedriver                        0x00000001028b3abc cxxbridge1$str$ptr + 3192864
+1   chromedriver                        0x00000001028aba8c cxxbridge1$str$ptr + 3160048
+2   chromedriver                        0x00000001023777c0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75348
+3   chromedriver                        0x0000000102360c68 cxxbridge1$string$len + 324
+4   chromedriver                        0x000000010235f240 chromedriver + 225856
+5   chromedriver                        0x000000010236003c chromedriver + 229436
+6   chromedriver                        0x000000010237bd38 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 93132
+7   chromedriver                        0x000000010237c578 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 95244
+8   chromedriver                        0x000000010237fc74 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 109320
+9   chromedriver                        0x000000010237fd2c _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 109504
+10  chromedriver                        0x00000001023bf050 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 368356
+11  chromedriver                        0x00000001023ff448 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 631516
+12  chromedriver                        0x00000001023b4e50 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 326884
+13  chromedriver                        0x0000000102871248 cxxbridge1$str$ptr + 2920364
+14  chromedriver                        0x0000000102874a28 cxxbridge1$str$ptr + 2934668
+15  chromedriver                        0x00000001028571fc cxxbridge1$str$ptr + 2813792
+16  chromedriver                        0x00000001028752a8 cxxbridge1$str$ptr + 2936844
+17  chromedriver                        0x0000000102848024 cxxbridge1$str$ptr + 2751880
+18  chromedriver                        0x000000010289a988 cxxbridge1$str$ptr + 3090156
+19  chromedriver                        0x000000010289ab04 cxxbridge1$str$ptr + 3090536
+20  chromedriver                        0x00000001028ab6e4 cxxbridge1$str$ptr + 3159112
+21  libsystem_pthread.dylib             0x0000000185037c58 _pthread_start + 136
+22  libsystem_pthread.dylib             0x0000000185032c1c thread_start + 8
+
+2026-04-17 22:20:19 [INFO] =======================================================
+2026-04-17 22:20:19 [INFO] Eminus Notifier iniciando...
+2026-04-17 22:20:19 [INFO] ====== WebDriver manager ======
+2026-04-17 22:20:20 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 22:20:20 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 22:20:20 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-17 22:20:20 [INFO] Navegando a Eminus 4...
+2026-04-17 22:20:26 [INFO] Sesion no detectada o expirada. Iniciando login...
+2026-04-17 22:20:27 [INFO] Click en botón de inicio enviado.
+2026-04-17 22:21:08 [WARNING] Login incierto. URL actual: https://eminus.uv.mx/eminus4/page/404
+2026-04-17 22:21:08 [INFO] Revisando: actividades
+2026-04-17 22:21:29 [WARNING]   Posible error o carga incompleta en actividades. Reintentando...
+2026-04-17 22:21:54 [INFO]   Captura: 1011 chars HTML, 0 chars texto
+2026-04-17 22:21:54 [WARNING]   Ignorando contenido insuficiente en actividades
+2026-04-17 22:21:54 [INFO] Revisando: evaluaciones
+2026-04-17 22:22:37 [WARNING]   Posible error o carga incompleta en evaluaciones. Reintentando...
+2026-04-17 22:23:02 [WARNING]   Error en evaluaciones: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=147.0.7727.56); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+0   chromedriver                        0x000000010534babc cxxbridge1$str$ptr + 3192864
+1   chromedriver                        0x0000000105343a8c cxxbridge1$str$ptr + 3160048
+2   chromedriver                        0x0000000104e0f7c0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75348
+3   chromedriver                        0x0000000104df856c chromedriver + 230764
+4   chromedriver                        0x0000000104e1c9a4 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 129080
+5   chromedriver                        0x0000000104e8013c _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 536528
+6   chromedriver                        0x0000000104e96f58 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 630252
+7   chromedriver                        0x0000000104e4ce50 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 326884
+8   chromedriver                        0x0000000105309248 cxxbridge1$str$ptr + 2920364
+9   chromedriver                        0x000000010530ca28 cxxbridge1$str$ptr + 2934668
+10  chromedriver                        0x00000001052ef1fc cxxbridge1$str$ptr + 2813792
+11  chromedriver                        0x000000010530d2a8 cxxbridge1$str$ptr + 2936844
+12  chromedriver                        0x00000001052e0024 cxxbridge1$str$ptr + 2751880
+13  chromedriver                        0x0000000105332988 cxxbridge1$str$ptr + 3090156
+14  chromedriver                        0x0000000105332b04 cxxbridge1$str$ptr + 3090536
+15  chromedriver                        0x00000001053436e4 cxxbridge1$str$ptr + 3159112
+16  libsystem_pthread.dylib             0x0000000185037c58 _pthread_start + 136
+17  libsystem_pthread.dylib             0x0000000185032c1c thread_start + 8
+
+2026-04-17 22:23:02 [INFO] Revisando: foros
+2026-04-17 22:23:02 [WARNING]   Error en foros: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+0   chromedriver                        0x000000010534babc cxxbridge1$str$ptr + 3192864
+1   chromedriver                        0x0000000105343a8c cxxbridge1$str$ptr + 3160048
+2   chromedriver                        0x0000000104e0f5c4 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 74840
+3   chromedriver                        0x0000000104e4c1bc _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 323664
+4   chromedriver                        0x0000000104e736e0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 484724
+5   chromedriver                        0x0000000104e72bb8 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 481868
+6   chromedriver                        0x0000000104ddc984 chromedriver + 117124
+7   chromedriver                        0x0000000105309248 cxxbridge1$str$ptr + 2920364
+8   chromedriver                        0x000000010530ca28 cxxbridge1$str$ptr + 2934668
+9   chromedriver                        0x00000001052ef1fc cxxbridge1$str$ptr + 2813792
+10  chromedriver                        0x000000010530d2a8 cxxbridge1$str$ptr + 2936844
+11  chromedriver                        0x00000001052e0024 cxxbridge1$str$ptr + 2751880
+12  chromedriver                        0x0000000104dda714 chromedriver + 108308
+13  dyld                                0x0000000184c7bda4 start + 6992
+
+2026-04-17 22:23:02 [INFO] Revisando: mensajes
+2026-04-17 22:23:02 [WARNING]   Error en mensajes: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+0   chromedriver                        0x000000010534babc cxxbridge1$str$ptr + 3192864
+1   chromedriver                        0x0000000105343a8c cxxbridge1$str$ptr + 3160048
+2   chromedriver                        0x0000000104e0f5c4 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 74840
+3   chromedriver                        0x0000000104e4c1bc _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 323664
+4   chromedriver                        0x0000000104e736e0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 484724
+5   chromedriver                        0x0000000104e72bb8 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 481868
+6   chromedriver                        0x0000000104ddc984 chromedriver + 117124
+7   chromedriver                        0x0000000105309248 cxxbridge1$str$ptr + 2920364
+8   chromedriver                        0x000000010530ca28 cxxbridge1$str$ptr + 2934668
+9   chromedriver                        0x00000001052ef1fc cxxbridge1$str$ptr + 2813792
+10  chromedriver                        0x000000010530d2a8 cxxbridge1$str$ptr + 2936844
+11  chromedriver                        0x00000001052e0024 cxxbridge1$str$ptr + 2751880
+12  chromedriver                        0x0000000104dda714 chromedriver + 108308
+13  dyld                                0x0000000184c7bda4 start + 6992
+
+2026-04-17 22:23:02 [INFO] Revision completada.
+2026-04-17 22:57:25 [INFO] =======================================================
+2026-04-17 22:57:25 [INFO] Eminus Notifier iniciando...
+2026-04-17 22:57:25 [INFO] ====== WebDriver manager ======
+2026-04-17 22:57:25 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 22:57:25 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 22:57:26 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-17 22:57:28 [INFO] Navegando a Eminus 4...
+2026-04-17 22:57:33 [INFO] Sesion no detectada o expirada. Iniciando login...
+2026-04-17 22:57:35 [INFO] Click en botón de inicio enviado.
+2026-04-17 22:57:50 [INFO] Login exitoso. Dashboard detectado.
+2026-04-17 22:57:50 [INFO] Revisando: actividades
+2026-04-17 22:58:56 [WARNING]   Posible carga incompleta. Reintentando con: https://eminus.uv.mx/eminus4/page/actividades
+2026-04-17 22:59:16 [INFO]   Captura: 1011 chars HTML, 0 chars texto
+2026-04-17 22:59:16 [WARNING]   Ignorando contenido insuficiente en actividades
+2026-04-17 22:59:16 [INFO] Revisando: evaluaciones
+2026-04-17 23:00:21 [WARNING]   Posible carga incompleta. Reintentando con: https://eminus.uv.mx/eminus4/page/evaluaciones
+2026-04-17 23:00:41 [INFO]   Captura: 1006 chars HTML, 0 chars texto
+2026-04-17 23:00:41 [WARNING]   Ignorando contenido insuficiente en evaluaciones
+2026-04-17 23:00:41 [INFO] Revisando: foros
+2026-04-17 23:00:51 [WARNING]   Error en foros: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: Unable to receive message from renderer
+  (Session info: chrome=147.0.7727.56); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+0   chromedriver                        0x000000010269babc cxxbridge1$str$ptr + 3192864
+1   chromedriver                        0x0000000102693a8c cxxbridge1$str$ptr + 3160048
+2   chromedriver                        0x000000010215f7c0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75348
+3   chromedriver                        0x0000000102149b64 cxxbridge1$string$len + 4160
+4   chromedriver                        0x0000000102149884 cxxbridge1$string$len + 3424
+5   chromedriver                        0x0000000102147448 chromedriver + 226376
+6   chromedriver                        0x000000010214803c chromedriver + 229436
+7   chromedriver                        0x0000000102163d38 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 93132
+8   chromedriver                        0x0000000102164578 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 95244
+9   chromedriver                        0x0000000102167c74 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 109320
+10  chromedriver                        0x0000000102167d2c _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 109504
+11  chromedriver                        0x00000001021a7050 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 368356
+12  chromedriver                        0x00000001021e7448 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 631516
+13  chromedriver                        0x000000010219ce50 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 326884
+14  chromedriver                        0x0000000102659248 cxxbridge1$str$ptr + 2920364
+15  chromedriver                        0x000000010265ca28 cxxbridge1$str$ptr + 2934668
+16  chromedriver                        0x000000010263f1fc cxxbridge1$str$ptr + 2813792
+17  chromedriver                        0x000000010265d2a8 cxxbridge1$str$ptr + 2936844
+18  chromedriver                        0x0000000102630024 cxxbridge1$str$ptr + 2751880
+19  chromedriver                        0x0000000102682988 cxxbridge1$str$ptr + 3090156
+20  chromedriver                        0x0000000102682b04 cxxbridge1$str$ptr + 3090536
+21  chromedriver                        0x00000001026936e4 cxxbridge1$str$ptr + 3159112
+22  libsystem_pthread.dylib             0x0000000185037c58 _pthread_start + 136
+23  libsystem_pthread.dylib             0x0000000185032c1c thread_start + 8
+
+2026-04-17 23:00:51 [INFO] Revisando: mensajes
+2026-04-17 23:00:51 [WARNING]   Error en mensajes: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+0   chromedriver                        0x000000010269babc cxxbridge1$str$ptr + 3192864
+1   chromedriver                        0x0000000102693a8c cxxbridge1$str$ptr + 3160048
+2   chromedriver                        0x000000010215f5c4 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 74840
+3   chromedriver                        0x000000010219c1bc _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 323664
+4   chromedriver                        0x00000001021c36e0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 484724
+5   chromedriver                        0x00000001021c2bb8 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 481868
+6   chromedriver                        0x000000010212c984 chromedriver + 117124
+7   chromedriver                        0x0000000102659248 cxxbridge1$str$ptr + 2920364
+8   chromedriver                        0x000000010265ca28 cxxbridge1$str$ptr + 2934668
+9   chromedriver                        0x000000010263f1fc cxxbridge1$str$ptr + 2813792
+10  chromedriver                        0x000000010265d2a8 cxxbridge1$str$ptr + 2936844
+11  chromedriver                        0x0000000102630024 cxxbridge1$str$ptr + 2751880
+12  chromedriver                        0x000000010212a714 chromedriver + 108308
+13  dyld                                0x0000000184c7bda4 start + 6992
+
+2026-04-17 23:00:51 [INFO] Revision completada.
+2026-04-17 23:17:55 [INFO] =======================================================
+2026-04-17 23:17:55 [INFO] Eminus Notifier iniciando...
+2026-04-17 23:17:55 [INFO] ====== WebDriver manager ======
+2026-04-17 23:17:55 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 23:17:55 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 23:17:56 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-17 23:17:57 [INFO] Navegando a Eminus 4...
+2026-04-17 23:18:03 [INFO] Sesion no detectada o expirada. Iniciando login...
+2026-04-17 23:18:04 [INFO] Click en botón de inicio enviado.
+2026-04-17 23:18:20 [INFO] Login exitoso. Dashboard detectado.
+2026-04-17 23:18:20 [INFO] Revisando: actividades
+2026-04-17 23:19:25 [WARNING]   Posible carga incompleta. Reintentando con: https://eminus.uv.mx/eminus4/page/actividades
+2026-04-17 23:19:45 [INFO]   Captura: 1006 chars HTML, 0 chars texto
+2026-04-17 23:19:45 [WARNING]   Ignorando contenido insuficiente en actividades
+2026-04-17 23:19:45 [INFO] Revisando: evaluaciones
+2026-04-17 23:20:20 [WARNING]   Error en evaluaciones: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: unable to send message to renderer
+  (Session info: chrome=147.0.7727.56); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+0   chromedriver                        0x0000000100633abc cxxbridge1$str$ptr + 3192864
+1   chromedriver                        0x000000010062ba8c cxxbridge1$str$ptr + 3160048
+2   chromedriver                        0x00000001000f77c0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75348
+3   chromedriver                        0x00000001000e0c68 cxxbridge1$string$len + 324
+4   chromedriver                        0x00000001000df240 chromedriver + 225856
+5   chromedriver                        0x00000001000e003c chromedriver + 229436
+6   chromedriver                        0x00000001000fbd38 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 93132
+7   chromedriver                        0x00000001000fc578 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 95244
+8   chromedriver                        0x00000001000ffc74 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 109320
+9   chromedriver                        0x00000001000ffd2c _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 109504
+10  chromedriver                        0x000000010013f050 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 368356
+11  chromedriver                        0x000000010017f448 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 631516
+12  chromedriver                        0x0000000100134e50 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 326884
+13  chromedriver                        0x00000001005f1248 cxxbridge1$str$ptr + 2920364
+14  chromedriver                        0x00000001005f4a28 cxxbridge1$str$ptr + 2934668
+15  chromedriver                        0x00000001005d71fc cxxbridge1$str$ptr + 2813792
+16  chromedriver                        0x00000001005f52a8 cxxbridge1$str$ptr + 2936844
+17  chromedriver                        0x00000001005c8024 cxxbridge1$str$ptr + 2751880
+18  chromedriver                        0x000000010061a988 cxxbridge1$str$ptr + 3090156
+19  chromedriver                        0x000000010061ab04 cxxbridge1$str$ptr + 3090536
+20  chromedriver                        0x000000010062b6e4 cxxbridge1$str$ptr + 3159112
+21  libsystem_pthread.dylib             0x0000000185037c58 _pthread_start + 136
+22  libsystem_pthread.dylib             0x0000000185032c1c thread_start + 8
+
+2026-04-17 23:20:20 [INFO] Revisando: foros
+2026-04-17 23:20:20 [WARNING]   Error en foros: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+0   chromedriver                        0x0000000100633abc cxxbridge1$str$ptr + 3192864
+1   chromedriver                        0x000000010062ba8c cxxbridge1$str$ptr + 3160048
+2   chromedriver                        0x00000001000f75c4 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 74840
+3   chromedriver                        0x00000001001341bc _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 323664
+4   chromedriver                        0x000000010015b6e0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 484724
+5   chromedriver                        0x000000010015abb8 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 481868
+6   chromedriver                        0x00000001000c4984 chromedriver + 117124
+7   chromedriver                        0x00000001005f1248 cxxbridge1$str$ptr + 2920364
+8   chromedriver                        0x00000001005f4a28 cxxbridge1$str$ptr + 2934668
+9   chromedriver                        0x00000001005d71fc cxxbridge1$str$ptr + 2813792
+10  chromedriver                        0x00000001005f52a8 cxxbridge1$str$ptr + 2936844
+11  chromedriver                        0x00000001005c8024 cxxbridge1$str$ptr + 2751880
+12  chromedriver                        0x00000001000c2714 chromedriver + 108308
+13  dyld                                0x0000000184c7bda4 start + 6992
+
+2026-04-17 23:20:20 [INFO] Revisando: mensajes
+2026-04-17 23:20:20 [WARNING]   Error en mensajes: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+0   chromedriver                        0x0000000100633abc cxxbridge1$str$ptr + 3192864
+1   chromedriver                        0x000000010062ba8c cxxbridge1$str$ptr + 3160048
+2   chromedriver                        0x00000001000f75c4 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 74840
+3   chromedriver                        0x00000001001341bc _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 323664
+4   chromedriver                        0x000000010015b6e0 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 484724
+5   chromedriver                        0x000000010015abb8 _RNvCs10ygTOo3JCa_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 481868
+6   chromedriver                        0x00000001000c4984 chromedriver + 117124
+7   chromedriver                        0x00000001005f1248 cxxbridge1$str$ptr + 2920364
+8   chromedriver                        0x00000001005f4a28 cxxbridge1$str$ptr + 2934668
+9   chromedriver                        0x00000001005d71fc cxxbridge1$str$ptr + 2813792
+10  chromedriver                        0x00000001005f52a8 cxxbridge1$str$ptr + 2936844
+11  chromedriver                        0x00000001005c8024 cxxbridge1$str$ptr + 2751880
+12  chromedriver                        0x00000001000c2714 chromedriver + 108308
+13  dyld                                0x0000000184c7bda4 start + 6992
+
+2026-04-17 23:20:20 [INFO] Revision completada.
+2026-04-17 23:37:34 [INFO] =======================================================
+2026-04-17 23:37:34 [INFO] Eminus Notifier (API Mode) iniciando...
+2026-04-17 23:37:34 [INFO] ====== WebDriver manager ======
+2026-04-17 23:37:34 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 23:37:35 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-17 23:37:35 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-17 23:37:37 [INFO] Navegando a Eminus 4 para autenticación...
+2026-04-17 23:37:42 [INFO] Sesion no detectada. Iniciando login...
+2026-04-17 23:37:44 [INFO] Credenciales enviadas.
+2026-04-17 23:37:54 [INFO] Token de acceso obtenido.
+2026-04-17 23:37:54 [INFO] Procesando 30 cursos...
+2026-04-17 23:37:54 [INFO]   Revisando: INTRODUCCION AL PENSAMIENTO CO (24019)
+2026-04-17 23:37:54 [INFO]   Revisando: Sistemas Electrónicos en TI
+2026-04-17 23:37:55 [INFO]   Revisando: ALGORITMOS Y PROGRAMACION (27698)
+2026-04-17 23:37:55 [INFO]   Revisando: MATEMÁTICAS DISCRETAS_ TC
+2026-04-17 23:37:55 [INFO]   Revisando: BASES DE DATOS RELACIONALES (32343) - 2024
+2026-04-17 23:37:56 [INFO]   Revisando: SISTEMAS OPERATIVOS (32437)
+2026-04-17 23:37:56 [INFO]   Revisando: PROBABILIDAD Y ESTADISTICA (32395)
+2026-04-17 23:37:56 [INFO]   Revisando: Networking
+2026-04-17 23:37:57 [INFO]   Revisando: INTERACCION HUMANO COMPUTADORA (32404)
+2026-04-17 23:37:57 [INFO]   Revisando: EXAMEN DE COMPETENCIAS 120924-XALAPA S2
+2026-04-17 23:37:57 [INFO]   Revisando: Programación
+2026-04-17 23:37:57 [INFO]   Revisando: ADMINISTRACION DE SERVIDORES (40184)
+2026-04-17 23:37:58 [INFO]   Revisando: BASES DE DATOS POST-RELACIONAL (40174)
+2026-04-17 23:37:58 [INFO]   Revisando: Procesos de Desarrollo de Software Feb-Julio 2025
+2026-04-17 23:37:58 [INFO]   Revisando: AFBG Examen Competencias Lectura y Escritura / Lectura y Redacción 4mar2025 Xal02
+2026-04-17 23:37:59 [INFO]   Revisando: ÉTICA Y GESTIÓN NORMATIVA
+2026-04-17 23:37:59 [INFO]   Revisando: UX-LISTI Viviana
+2026-04-17 23:37:59 [INFO]   Revisando: FUNDAMENTOS DE TECNOLOGIA WEB (40260)
+2026-04-17 23:38:00 [INFO]   Revisando: PRINCIPIOS DE CIBERSEGURIDAD (17212)
+2026-04-17 23:38:00 [INFO]   Revisando: INTERFACES DE USUARIO AVANZAD (17285)
+2026-04-17 23:38:00 [INFO]   Revisando: Liderazgo y Emprendimiento
+2026-04-17 23:38:00 [INFO]   Revisando: ADMINISTRACION DE BASES DE DAT (17234) - 2025
+2026-04-17 23:38:01 [INFO]   Revisando: Gestión del Proceso de Desarrollo Agos25 Ene26
+2026-04-17 23:38:01 [INFO]   Revisando: DESARROLLO WEB (17289)
+2026-04-17 23:38:01 [INFO]   Revisando: SEMINARIO DE INVESTIGACION (49062)
+2026-04-17 23:38:02 [INFO]   Revisando: INGENIERIA DE DATOS (49083)
+2026-04-17 23:38:02 [INFO]   Revisando: Ciberseguridad Aplicada
+2026-04-17 23:38:02 [INFO]   Revisando: TECNOLOGIA PARA LA INTEGRACION (49097)
+2026-04-17 23:38:03 [INFO]   Revisando: DesarrolloMovil_Feb26
+2026-04-17 23:38:03 [INFO]   Revisando: Gestión de Proyectos de Tecnologías de la Información 2026
+2026-04-17 23:38:03 [INFO] Revisión completada exitosamente.
+2026-04-18 00:07:11 [INFO] =======================================================
+2026-04-18 00:07:11 [INFO] Eminus Notifier (API Mode) iniciando...
+2026-04-18 00:07:11 [INFO] ====== WebDriver manager ======
+2026-04-18 00:07:11 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-18 00:07:11 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-18 00:07:11 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-18 00:07:13 [INFO] Navegando a Eminus 4 para autenticación...
+2026-04-18 00:07:18 [INFO] Sesion no detectada. Iniciando login...
+2026-04-18 00:07:20 [INFO] Credenciales enviadas.
+2026-04-18 00:07:30 [INFO] Token de acceso obtenido.
+2026-04-18 00:07:31 [INFO] Filtrando por NRCs definidos en schedule.json: 48913, 49062, 49065, 49083, 49097, 49104
+2026-04-18 00:07:31 [INFO] Procesando cursos...
+2026-04-18 00:07:31 [INFO]   Revisando: SEMINARIO DE INVESTIGACION (49062)
+2026-04-18 00:07:31 [INFO]   Revisando: INGENIERIA DE DATOS (49083)
+2026-04-18 00:07:31 [INFO]   Revisando: TECNOLOGIA PARA LA INTEGRACION (49097)
+2026-04-18 00:07:32 [INFO] Revisión completada exitosamente.

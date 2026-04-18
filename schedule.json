@@ -1,0 +1,57 @@
+{
+  "courses": [
+    {
+      "nrc": "48913",
+      "name": "DesarrolloMovil_Feb26",
+      "schedule": {
+        "MAR": "07:00-08:59",
+        "MIE": "09:00-09:59",
+        "JUE": "07:00-08:59"
+      }
+    },
+    {
+      "nrc": "49062",
+      "name": "SEMINARIO DE INVESTIGACION (49062)",
+      "schedule": {
+        "LUN": "09:00-10:59",
+        "MAR": "09:00-10:59"
+      }
+    },
+    {
+      "nrc": "49065",
+      "name": "Gestión de Proyectos de Tecnologías de la Información 2026",
+      "schedule": {
+        "MAR": "11:00-12:59",
+        "MIE": "10:00-10:59",
+        "JUE": "11:00-12:59"
+      }
+    },
+    {
+      "nrc": "49083",
+      "name": "INGENIERIA DE DATOS (49083)",
+      "schedule": {
+        "LUN": "11:00-12:59",
+        "JUE": "13:00-14:59",
+        "VIE": "11:00-12:59"
+      }
+    },
+    {
+      "nrc": "49097",
+      "name": "TECNOLOGIA PARA LA INTEGRACION (49097)",
+      "schedule": {
+        "MIE": "11:00-12:59",
+        "JUE": "09:00-10:59",
+        "VIE": "09:00-10:59"
+      }
+    },
+    {
+      "nrc": "49104",
+      "name": "Ciberseguridad Aplicada",
+      "schedule": {
+        "LUN": "07:00-08:59",
+        "MIE": "07:00-08:59",
+        "VIE": "07:00-08:59"
+      }
+    }
+  ]
+}
