@@ -482,3 +482,71 @@ Stacktrace:
 2026-04-18 00:07:31 [INFO]   Revisando: INGENIERIA DE DATOS (49083)
 2026-04-18 00:07:31 [INFO]   Revisando: TECNOLOGIA PARA LA INTEGRACION (49097)
 2026-04-18 00:07:32 [INFO] Revisión completada exitosamente.
+2026-04-18 00:24:38 [INFO] =======================================================
+2026-04-18 00:24:38 [INFO] Eminus Notifier (API Mode) iniciando...
+2026-04-18 00:24:38 [INFO] Horario cargado desde schedule.json (6 cursos)
+2026-04-18 00:24:38 [INFO] ====== WebDriver manager ======
+2026-04-18 00:24:39 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-18 00:24:39 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-18 00:24:39 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-18 00:24:40 [INFO] Navegando a Eminus 4...
+2026-04-18 00:24:46 [INFO] Iniciando login...
+2026-04-18 00:24:56 [INFO] Procesando 30 cursos...
+2026-04-18 00:24:56 [INFO]   Revisando: SEMINARIO DE INVESTIGACION (49062)
+2026-04-18 00:24:57 [INFO]   Revisando: INGENIERIA DE DATOS (49083)
+2026-04-18 00:24:57 [INFO]   Revisando: Ciberseguridad Aplicada
+2026-04-18 00:24:57 [INFO]   Revisando: TECNOLOGIA PARA LA INTEGRACION (49097)
+2026-04-18 00:24:58 [INFO]   Revisando: DesarrolloMovil_Feb26
+2026-04-18 00:24:58 [INFO]   Revisando: Gestión de Proyectos de Tecnologías de la Información 2026
+2026-04-18 00:24:58 [INFO] Revisión completada exitosamente.
+2026-04-18 00:39:58 [INFO] =======================================================
+2026-04-18 00:39:58 [INFO] Eminus Notifier (API Mode) iniciando...
+2026-04-18 00:39:58 [INFO] Horario cargado desde schedule.json (6 cursos)
+2026-04-18 00:39:58 [INFO] ====== WebDriver manager ======
+2026-04-18 00:39:59 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-18 00:39:59 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-18 00:39:59 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-18 00:40:00 [INFO] Navegando a Eminus 4...
+2026-04-18 00:40:06 [INFO] Iniciando login...
+2026-04-18 00:40:16 [INFO] Procesando 30 cursos...
+2026-04-18 00:40:16 [INFO]   Revisando: SEMINARIO DE INVESTIGACION (49062)
+2026-04-18 00:40:17 [INFO]   Revisando: INGENIERIA DE DATOS (49083)
+2026-04-18 00:40:17 [INFO]   Revisando: Ciberseguridad Aplicada
+2026-04-18 00:40:17 [INFO]   Revisando: TECNOLOGIA PARA LA INTEGRACION (49097)
+2026-04-18 00:40:17 [INFO]   Revisando: DesarrolloMovil_Feb26
+2026-04-18 00:40:18 [INFO]   Revisando: Gestión de Proyectos de Tecnologías de la Información 2026
+2026-04-18 00:40:18 [INFO] Revisión completada exitosamente.
+2026-04-18 08:01:08 [INFO] =======================================================
+2026-04-18 08:01:08 [INFO] Eminus Notifier (API Mode) iniciando...
+2026-04-18 08:01:08 [INFO] Horario cargado desde schedule.json (6 cursos)
+2026-04-18 08:01:08 [INFO] ====== WebDriver manager ======
+2026-04-18 08:18:21 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-18 08:18:21 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-18 08:18:21 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-18 08:18:22 [INFO] Navegando a Eminus 4...
+2026-04-18 08:18:53 [INFO] Iniciando login...
+2026-04-18 08:19:28 [INFO] Procesando 30 cursos...
+2026-04-18 08:19:28 [INFO]   Revisando: SEMINARIO DE INVESTIGACION (49062)
+2026-04-18 08:19:29 [INFO]   Revisando: INGENIERIA DE DATOS (49083)
+2026-04-18 08:19:29 [INFO]   Revisando: Ciberseguridad Aplicada
+2026-04-18 08:19:29 [INFO]   Revisando: TECNOLOGIA PARA LA INTEGRACION (49097)
+2026-04-18 08:19:29 [INFO]   Revisando: DesarrolloMovil_Feb26
+2026-04-18 08:19:30 [INFO]   Revisando: Gestión de Proyectos de Tecnologías de la Información 2026
+2026-04-18 08:19:30 [INFO] Revisión completada exitosamente.
+2026-04-18 10:40:45 [INFO] =======================================================
+2026-04-18 10:40:45 [INFO] Eminus Notifier (API Mode) iniciando...
+2026-04-18 10:40:45 [INFO] Horario cargado desde schedule.json (6 cursos)
+2026-04-18 10:40:45 [INFO] ====== WebDriver manager ======
+2026-04-18 10:40:46 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-18 10:40:46 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-18 10:40:46 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-18 10:40:48 [INFO] Navegando a Eminus 4...
+2026-04-18 10:40:53 [INFO] Iniciando login...
+2026-04-18 10:41:04 [INFO] Procesando 30 cursos...
+2026-04-18 10:41:04 [INFO]   Revisando: SEMINARIO DE INVESTIGACION (49062)
+2026-04-18 10:41:04 [INFO]   Revisando: INGENIERIA DE DATOS (49083)
+2026-04-18 10:41:04 [INFO]   Revisando: Ciberseguridad Aplicada
+2026-04-18 10:41:04 [INFO]   Revisando: TECNOLOGIA PARA LA INTEGRACION (49097)
+2026-04-18 10:41:05 [INFO]   Revisando: DesarrolloMovil_Feb26
+2026-04-18 10:41:05 [INFO]   Revisando: Gestión de Proyectos de Tecnologías de la Información 2026
+2026-04-18 10:41:05 [INFO] Revisión completada exitosamente.

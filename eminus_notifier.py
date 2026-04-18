@@ -263,6 +263,8 @@ def main():
         allowed_courses = schedule.get("courses", [])
         log.info("Procesando %d cursos...", len(courses))
 
+        pending_for_ui = []
+
         for c_entry in courses:
             course = c_entry.get("curso", {})
             c_id, c_name = str(course.get("idCurso")), course.get("nombre")
@@ -284,8 +286,6 @@ def main():
                 a_id = act.get("idActividad")
                 a_title = act.get("titulo")
                 
-                # Intentamos obtener la fecha de varios campos posibles (fechaTermino suele ser la real de cierre)
-                # en Eminus 4, fechaFin a veces viene vacío pero los otros campos no.
                 fields = ["fechaTermino", "fechaVencimiento", "fechaFin"]
                 a_end_str = next((act.get(f) for f in fields if act.get(f) and act.get(f) != "Sin fecha"), "Sin fecha")
                 
@@ -293,6 +293,13 @@ def main():
                 time_rem = get_time_remaining(a_end_date)
                 
                 display_deadline = f"{a_end_str} ({time_rem})" if time_rem else a_end_str
+                
+                pending_for_ui.append({
+                    "course": c_name,
+                    "title": a_title,
+                    "deadline": display_deadline,
+                    "urgent": a_end_date and (a_end_date - datetime.now()).total_seconds() < 172800
+                })
                 
                 if args.list:
                     log.info("    [Tarea] %s - Vence: %s", a_title, display_deadline)
@@ -312,6 +319,7 @@ def main():
                     hist.insert(0, {"label": f"{c_name}: {a_title}", "time": datetime.now().isoformat()})
                     state["history"] = hist[:100]
 
+        state["pending_activities"] = pending_for_ui
         state["last_check"] = datetime.now().isoformat()
         save_state(state)
         log.info("Revisión completada exitosamente.")

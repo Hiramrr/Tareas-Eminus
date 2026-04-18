@@ -1,5 +1,5 @@
 {
-  "last_check": "2026-04-18T00:15:46.433166",
+  "last_check": "2026-04-18T10:41:05.689442",
   "courses": {
     "55982": {
       "name": "INTRODUCCION AL PENSAMIENTO CO (24019)",
@@ -986,5 +986,19 @@
     }
   ],
   "sent_reminders": [],
-  "last_reminder_date": "2026-04-18"
+  "last_reminder_date": "2026-04-18",
+  "pending_activities": [
+    {
+      "course": "INGENIERIA DE DATOS (49083)",
+      "title": "A3- ETL vs ELT",
+      "deadline": "2026-03-05T23:45:00 (Vencida)",
+      "urgent": true
+    },
+    {
+      "course": "TECNOLOGIA PARA LA INTEGRACION (49097)",
+      "title": "Actividad 16 Tipos MIME",
+      "deadline": "2026-04-20T23:45:00 (en 2d 13h)",
+      "urgent": false
+    }
+  ]
 }
