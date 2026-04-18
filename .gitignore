@@ -1,0 +1,13 @@
+# Archivos de la aplicacion
+state.json
+schedule.json
+notifier.log
+run_hidden.vbs
+
+# Entorno Virtual Python
+.venv/
+__pycache__/
+*.pyc
+
+# Aplicaciones de macOS empaquetadas
+*.app/
