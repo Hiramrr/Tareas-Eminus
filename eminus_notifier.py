@@ -306,7 +306,7 @@ def main():
                 
                 if a_id and a_id not in seen:
                     is_urgent = a_end_date and (a_end_date - datetime.now()).total_seconds() < 172800 # 48h
-                    prefix = "⚠️ VENCE PRONTO: " if is_urgent else ""
+                    prefix = "[URGENTE] " if is_urgent else ""
                     
                     notify(
                         title=f"Eminus: {c_name}",

@@ -15,7 +15,7 @@ NOTIFIER_SCRIPT = SCRIPT_DIR / "eminus_notifier.py"
 class Dashboard(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Tareas pendientes")
+        self.title("Eminus Notifier")
         self.geometry("900x600")
 
         # Colores (Inspirados en la interfaz de macOS)
@@ -100,7 +100,7 @@ class Dashboard(tk.Tk):
         title_container = ttk.Frame(self.header_frame)
         title_container.pack(side=tk.LEFT)
 
-        self.title_label = ttk.Label(title_container, text="Tareas pendientes", style="Header.TLabel")
+        self.title_label = ttk.Label(title_container, text="Eminus Notifier", style="Header.TLabel")
         self.title_label.pack(anchor=tk.W)
 
         self.last_check_label = ttk.Label(title_container, text="Última revisión: ...", style="Subheader.TLabel")
@@ -142,15 +142,11 @@ class Dashboard(tk.Tk):
         self.footer_frame = ttk.Frame(self.main_frame)
         self.footer_frame.pack(fill=tk.X, pady=(15, 0))
 
-        self.status_icon = ttk.Label(self.footer_frame, text="●", font=("Helvetica Neue", 14), foreground="#34C759") # Punto verde
-        self.status_icon.pack(side=tk.LEFT, padx=(0, 5))
-
         self.footer_label = ttk.Label(self.footer_frame, text="Listo.", style="Subheader.TLabel")
         self.footer_label.pack(side=tk.LEFT, pady=(2, 0))
 
     def run_update_thread(self):
         self.refresh_btn.config(state=tk.DISABLED, text="Actualizando...")
-        self.status_icon.config(foreground="#FF9500") # Punto naranja
         self.footer_label.config(text="Sincronizando con Eminus... Esto puede tardar varios segundos.")
         thread = threading.Thread(target=self.run_notifier)
         thread.daemon = True
@@ -165,16 +161,13 @@ class Dashboard(tk.Tk):
                 capture_output=True,
                 text=True
             )
-        except subprocess.CalledProcessError as e:
-            print(f"Error running notifier (Exit code {e.returncode}):\n{e.stderr}")
-        except Exception as e:
-            print(f"Error running notifier: {e}")
+        except Exception:
+            pass
         finally:
             self.after(0, self.on_update_finished)
 
     def on_update_finished(self):
         self.refresh_btn.config(state=tk.NORMAL, text="Actualizar Datos")
-        self.status_icon.config(foreground="#34C759") # Punto verde
         self.footer_label.config(text="Sincronización completada.")
         self.load_state_data()
 
@@ -233,8 +226,8 @@ class Dashboard(tk.Tk):
                     self.tree.insert("", tk.END, values=("", "No hay actividades pendientes", ""), tags=('odd',))
             else:
                 self.last_check_label.config(text="Esperando la primera revisión de Eminus...")
-        except Exception as e:
-            print(f"Error reading state: {e}")
+        except Exception:
+            pass
 
 if __name__ == "__main__":
     app = Dashboard()

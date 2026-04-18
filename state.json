@@ -1,5 +1,5 @@
 {
-  "last_check": "2026-04-18T10:41:05.689442",
+  "last_check": "2026-04-18T10:56:25.699136",
   "courses": {
     "55982": {
       "name": "INTRODUCCION AL PENSAMIENTO CO (24019)",
@@ -997,7 +997,7 @@
     {
       "course": "TECNOLOGIA PARA LA INTEGRACION (49097)",
       "title": "Actividad 16 Tipos MIME",
-      "deadline": "2026-04-20T23:45:00 (en 2d 13h)",
+      "deadline": "2026-04-20T23:45:00 (en 2d 12h)",
       "urgent": false
     }
   ]

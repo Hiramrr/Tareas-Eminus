@@ -550,3 +550,20 @@ Stacktrace:
 2026-04-18 10:41:05 [INFO]   Revisando: DesarrolloMovil_Feb26
 2026-04-18 10:41:05 [INFO]   Revisando: Gestión de Proyectos de Tecnologías de la Información 2026
 2026-04-18 10:41:05 [INFO] Revisión completada exitosamente.
+2026-04-18 10:56:06 [INFO] =======================================================
+2026-04-18 10:56:06 [INFO] Eminus Notifier (API Mode) iniciando...
+2026-04-18 10:56:06 [INFO] Horario cargado desde schedule.json (6 cursos)
+2026-04-18 10:56:06 [INFO] ====== WebDriver manager ======
+2026-04-18 10:56:06 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-18 10:56:06 [INFO] Get LATEST chromedriver version for google-chrome
+2026-04-18 10:56:06 [INFO] Driver [/Users/hiram/.wdm/drivers/chromedriver/mac64/147.0.7727.57/chromedriver-mac-arm64/chromedriver] found in cache
+2026-04-18 10:56:08 [INFO] Navegando a Eminus 4...
+2026-04-18 10:56:13 [INFO] Iniciando login...
+2026-04-18 10:56:24 [INFO] Procesando 30 cursos...
+2026-04-18 10:56:24 [INFO]   Revisando: SEMINARIO DE INVESTIGACION (49062)
+2026-04-18 10:56:24 [INFO]   Revisando: INGENIERIA DE DATOS (49083)
+2026-04-18 10:56:24 [INFO]   Revisando: Ciberseguridad Aplicada
+2026-04-18 10:56:24 [INFO]   Revisando: TECNOLOGIA PARA LA INTEGRACION (49097)
+2026-04-18 10:56:25 [INFO]   Revisando: DesarrolloMovil_Feb26
+2026-04-18 10:56:25 [INFO]   Revisando: Gestión de Proyectos de Tecnologías de la Información 2026
+2026-04-18 10:56:25 [INFO] Revisión completada exitosamente.
