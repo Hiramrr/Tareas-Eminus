@@ -3,7 +3,7 @@ import json
 import tkinter as tk
 from tkinter import ttk
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 import threading
 import subprocess
 
@@ -19,9 +19,9 @@ DAYS_MAP = {0: "LUN", 1: "MAR", 2: "MIE", 3: "JUE", 4: "VIE", 5: "SAB", 6: "DOM"
 class Dashboard(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Tareas de Eminus")
-        self.geometry("1000x750")
-        self.minsize(1000, 750)
+        self.title("Tareas Eminus")
+        self.geometry("1050x850")
+        self.minsize(1050, 800)
 
         self.logo_art = (
             "▒▒▒▒         ▒▒▒▒\n"
@@ -55,6 +55,11 @@ class Dashboard(tk.Tk):
         self.imminent_fg = "#E65100"
         self.urgent_bg = "#FEF9E7"
         self.urgent_fg = "#827717"
+
+        # Estado de UI
+        self.schedule_day_offset = 0 # 0 para Hoy, 1 para Mañana
+        self.search_query = tk.StringVar()
+        self.search_query.trace_add("write", lambda *args: self.load_state_data())
 
         # Fuentes
         self.font_family = "Helvetica"
@@ -107,6 +112,9 @@ class Dashboard(tk.Tk):
         style.map("Service.TButton",
                   background=[("active", self.border_color)])
 
+        # Day Toggle Style
+        style.configure("Day.TButton", font=(self.font_family, 9, "bold"), padding=(10, 4))
+
         style.configure("Vertical.TScrollbar",
                         background="#F5F5F5",
                         troughcolor=self.bg_color,
@@ -138,7 +146,7 @@ class Dashboard(tk.Tk):
         self.main_frame.pack(fill=tk.BOTH, expand=True)
 
         header_frame = ttk.Frame(self.main_frame)
-        header_frame.pack(fill=tk.X, pady=(0, 30))
+        header_frame.pack(fill=tk.X, pady=(0, 20))
 
         # Logo y Título
         logo_label = tk.Label(
@@ -164,9 +172,15 @@ class Dashboard(tk.Tk):
         self.service_btn = ttk.Button(header_frame, text="COMPROBANDO...", style="Service.TButton", command=self.toggle_service)
         self.service_btn.pack(side=tk.RIGHT, anchor=tk.CENTER, padx=(15, 0))
 
-        # Counters Frame
-        self.counter_frame = ttk.Frame(title_container)
-        self.counter_frame.pack(anchor=tk.W, pady=(10, 0))
+        self.refresh_btn = ttk.Button(header_frame, text="ACTUALIZAR", style="Primary.TButton", command=self.run_update_thread)
+        self.refresh_btn.pack(side=tk.RIGHT, anchor=tk.CENTER)
+
+        # Middle Content: Status Row (Counters + Search)
+        status_row = ttk.Frame(self.main_frame)
+        status_row.pack(fill=tk.X, pady=(0, 20))
+
+        self.counter_frame = ttk.Frame(status_row)
+        self.counter_frame.pack(side=tk.LEFT)
 
         self.overdue_count_label = ttk.Label(self.counter_frame, text="0 VENCIDAS", style="Overdue.Counter.TLabel")
         self.overdue_count_label.pack(side=tk.LEFT, padx=(0, 8))
@@ -177,23 +191,44 @@ class Dashboard(tk.Tk):
         self.urgent_count_label = ttk.Label(self.counter_frame, text="0 PRÓXIMAS", style="Urgent.Counter.TLabel")
         self.urgent_count_label.pack(side=tk.LEFT)
 
-        self.refresh_btn = ttk.Button(header_frame, text="ACTUALIZAR", style="Primary.TButton", command=self.run_update_thread)
-        self.refresh_btn.pack(side=tk.RIGHT, anchor=tk.CENTER)
+        # Buscador
+        search_frame = ttk.Frame(status_row)
+        search_frame.pack(side=tk.RIGHT)
+
+        ttk.Label(search_frame, text="FILTRAR:", font=(self.font_family, 9, "bold"), foreground=self.text_secondary).pack(side=tk.LEFT, padx=(0, 10))
+        self.search_entry = tk.Entry(search_frame, textvariable=self.search_query, font=(self.font_family, 11),
+                                     bg="#FFFFFF", fg=self.text_primary, relief=tk.FLAT, width=25, highlightthickness=1, highlightbackground=self.border_color)
+        self.search_entry.pack(side=tk.LEFT)
+
+        # Workload Bar
+        self.workload_container = tk.Frame(self.main_frame, height=4, bg=self.border_color)
+        self.workload_container.pack(fill=tk.X, pady=(0, 25))
+        self.workload_container.pack_propagate(False)
+
+        self.workload_overdue = tk.Frame(self.workload_container, bg=self.overdue_fg)
+        self.workload_imminent = tk.Frame(self.workload_container, bg=self.imminent_fg)
+        self.workload_urgent = tk.Frame(self.workload_container, bg=self.urgent_fg)
+        self.workload_normal = tk.Frame(self.workload_container, bg=self.border_color) # Fondo base
 
         # Middle Content: Schedule + Table
         self.content_frame = ttk.Frame(self.main_frame)
         self.content_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Schedule Section (Lateral o Superior? Vamos con Superior Compacto)
+        # Schedule Section
         self.schedule_frame = ttk.Frame(self.content_frame, padding=(0, 0, 0, 20))
         self.schedule_frame.pack(fill=tk.X)
 
-        ttk.Label(self.schedule_frame, text="CLASES DE HOY", font=(self.font_family, 10, "bold"), foreground=self.text_secondary).pack(anchor=tk.W, pady=(0, 8))
+        schedule_header = ttk.Frame(self.schedule_frame)
+        schedule_header.pack(fill=tk.X, pady=(0, 10))
+
+        self.schedule_title = ttk.Label(schedule_header, text="CLASES DE HOY", font=(self.font_family, 10, "bold"), foreground=self.text_secondary)
+        self.schedule_title.pack(side=tk.LEFT)
+
+        self.day_toggle_btn = ttk.Button(schedule_header, text="VER MAÑANA", style="Day.TButton", command=self.toggle_schedule_day)
+        self.day_toggle_btn.pack(side=tk.RIGHT)
 
         self.schedule_list_frame = ttk.Frame(self.schedule_frame)
         self.schedule_list_frame.pack(fill=tk.X)
-        self.no_classes_label = ttk.Label(self.schedule_list_frame, text="No hay clases programadas para hoy.", style="Subheader.TLabel")
-        self.no_classes_label.pack(anchor=tk.W)
 
         # Tabla
         self.table_container = ttk.Frame(self.content_frame)
@@ -227,8 +262,13 @@ class Dashboard(tk.Tk):
         self.footer_label = ttk.Label(self.main_frame, text="Listo.", style="Footer.TLabel")
         self.footer_label.pack(anchor=tk.W, pady=(20, 0))
 
+    def toggle_schedule_day(self):
+        self.schedule_day_offset = 1 if self.schedule_day_offset == 0 else 0
+        self.schedule_title.config(text="CLASES DE HOY" if self.schedule_day_offset == 0 else "CLASES DE MAÑANA")
+        self.day_toggle_btn.config(text="VER MAÑANA" if self.schedule_day_offset == 0 else "VER HOY")
+        self.load_schedule_data()
+
     def load_schedule_data(self):
-        # Limpiar clases previas
         for widget in self.schedule_list_frame.winfo_children():
             widget.destroy()
 
@@ -237,23 +277,22 @@ class Dashboard(tk.Tk):
                 with open(SCHEDULE_FILE, "r", encoding="utf-8") as f:
                     schedule = json.load(f)
 
-                now = datetime.now()
-                day_name = DAYS_MAP.get(now.weekday())
-                today_classes = []
+                target_date = datetime.now() + timedelta(days=self.schedule_day_offset)
+                day_name = DAYS_MAP.get(target_date.weekday())
+                target_classes = []
 
                 for course in schedule.get("courses", []):
                     time_str = course.get("schedule", {}).get(day_name)
                     if time_str:
-                        today_classes.append({
+                        target_classes.append({
                             "name": course.get("name", "Curso"),
                             "time": time_str
                         })
 
-                # Ordenar por hora
-                today_classes.sort(key=lambda x: x["time"])
+                target_classes.sort(key=lambda x: x["time"])
 
-                if today_classes:
-                    for cls in today_classes:
+                if target_classes:
+                    for cls in target_classes:
                         f = ttk.Frame(self.schedule_list_frame, style="Surface.TFrame", padding=(12, 8))
                         f.pack(side=tk.LEFT, padx=(0, 10))
 
@@ -265,18 +304,15 @@ class Dashboard(tk.Tk):
                                             bg=self.surface_color, fg=self.text_secondary)
                         time_lbl.pack(anchor=tk.W)
                 else:
-                    self.no_classes_label = ttk.Label(self.schedule_list_frame, text="No hay clases programadas para hoy.", style="Subheader.TLabel")
-                    self.no_classes_label.pack(anchor=tk.W)
+                    ttk.Label(self.schedule_list_frame, text="No hay clases programadas.", style="Subheader.TLabel").pack(anchor=tk.W)
         except Exception as e:
             print(f"Error cargando horario: {e}")
 
     def is_service_loaded(self):
         try:
-            # Comprobar si el plist está cargado en launchctl
             res = subprocess.run(["launchctl", "list", "mx.uv.eminus.notifier"], capture_output=True, text=True)
             return res.returncode == 0
-        except:
-            return False
+        except: return False
 
     def update_service_btn_ui(self):
         if self.is_service_loaded():
@@ -288,10 +324,8 @@ class Dashboard(tk.Tk):
 
     def toggle_service(self):
         if self.is_service_loaded():
-            # Detener
             subprocess.run(["launchctl", "unload", str(PLIST_PATH)], capture_output=True)
         else:
-            # Reanudar
             subprocess.run(["launchctl", "load", str(PLIST_PATH)], capture_output=True)
         self.update_service_btn_ui()
 
@@ -304,17 +338,9 @@ class Dashboard(tk.Tk):
 
     def run_notifier(self):
         try:
-            subprocess.run(
-                [str(PYTHON_EXE), str(NOTIFIER_SCRIPT), "--list"],
-                cwd=str(SCRIPT_DIR),
-                check=True,
-                capture_output=True,
-                text=True
-            )
-        except Exception:
-            pass
-        finally:
-            self.after(0, self.on_update_finished)
+            subprocess.run([str(PYTHON_EXE), str(NOTIFIER_SCRIPT), "--list"], cwd=str(SCRIPT_DIR), check=True, capture_output=True, text=True)
+        except: pass
+        finally: self.after(0, self.on_update_finished)
 
     def on_update_finished(self):
         self.refresh_btn.config(state=tk.NORMAL, text="ACTUALIZAR")
@@ -339,30 +365,32 @@ class Dashboard(tk.Tk):
                     try:
                         dt = datetime.fromisoformat(last_check_str)
                         self.last_check_label.config(text=f"Actualizado: {dt.strftime('%d/%m/%Y %H:%M')}")
-                    except:
-                        pass
+                    except: pass
 
                 for item in self.tree.get_children():
                     self.tree.delete(item)
 
-                pending = state.get("pending_activities", [])
+                all_pending = state.get("pending_activities", [])
 
-                # Inteligencia de Ordenamiento: Vencidas > Inminentes > Urgentes > Resto
+                # Filtro de búsqueda
+                query = self.search_query.get().lower()
+                pending = [a for a in all_pending if query in a.get("course", "").lower() or query in a.get("title", "").lower()]
+
+                # Ordenamiento
                 def sort_key(act):
                     if act.get("overdue"): return 0
                     if act.get("imminent"): return 1
                     if act.get("urgent"): return 2
                     return 3
-
                 pending.sort(key=sort_key)
 
                 overdue_c, imminent_c, urgent_c = 0, 0, 0
+                total_tasks = len(all_pending)
 
                 if pending:
                     for i, act in enumerate(pending):
                         course_name = act.get("course", "")
-                        if " - " in course_name:
-                            course_name = course_name.split(" - ")[0]
+                        if " - " in course_name: course_name = course_name.split(" - ")[0]
 
                         is_overdue = act.get("overdue")
                         is_imminent = act.get("imminent")
@@ -382,19 +410,29 @@ class Dashboard(tk.Tk):
                             tags.append('even' if i % 2 == 0 else 'odd')
                             tags.append('normal')
 
-                        self.tree.insert("", tk.END, values=(
-                            course_name.upper(),
-                            act.get("title", ""),
-                            act.get("deadline", "")
-                        ), tags=tuple(tags))
+                        self.tree.insert("", tk.END, values=(course_name.upper(), act.get("title", ""), act.get("deadline", "")), tags=tuple(tags))
                 else:
-                    self.tree.insert("", tk.END, values=("", "No hay actividades pendientes", ""), tags=('odd',))
+                    self.tree.insert("", tk.END, values=("", "No hay coincidencias", ""), tags=('odd',))
 
-                # Actualizar contadores
-                self.overdue_count_label.config(text=f"{overdue_c} VENCIDAS")
-                self.imminent_count_label.config(text=f"{imminent_c} HOY")
-                self.urgent_count_label.config(text=f"{urgent_c} PRÓXIMAS")
+                # Actualizar contadores y Workload Bar (basado en total_tasks, no filtrado)
+                # Re-contar para la barra (usando all_pending)
+                o_c = sum(1 for a in all_pending if a.get("overdue"))
+                i_c = sum(1 for a in all_pending if a.get("imminent"))
+                u_c = sum(1 for a in all_pending if a.get("urgent"))
 
+                self.overdue_count_label.config(text=f"{o_c} VENCIDAS")
+                self.imminent_count_label.config(text=f"{i_c} HOY")
+                self.urgent_count_label.config(text=f"{u_c} PRÓXIMAS")
+
+                # Actualizar Barra de Trabajo
+                if total_tasks > 0:
+                    self.workload_overdue.place(relx=0, rely=0, relwidth=o_c/total_tasks, relheight=1)
+                    self.workload_imminent.place(relx=o_c/total_tasks, rely=0, relwidth=i_c/total_tasks, relheight=1)
+                    self.workload_urgent.place(relx=(o_c+i_c)/total_tasks, rely=0, relwidth=u_c/total_tasks, relheight=1)
+                else:
+                    self.workload_overdue.place_forget()
+                    self.workload_imminent.place_forget()
+                    self.workload_urgent.place_forget()
             else:
                 self.last_check_label.config(text="Esperando sincronización...")
         except Exception as e:
