@@ -294,20 +294,29 @@ def main():
                 
                 display_deadline = f"{a_end_str} ({time_rem})" if time_rem else a_end_str
                 
+                # Calcular niveles de urgencia
+                diff_seconds = (a_end_date - datetime.now()).total_seconds() if a_end_date else None
+                is_overdue = a_end_date and a_end_date < datetime.now()
+                is_imminent = diff_seconds is not None and 0 <= diff_seconds < 86400  # < 24h
+                is_urgent = diff_seconds is not None and 86400 <= diff_seconds < 172800 # 24h - 48h
+
                 pending_for_ui.append({
                     "course": c_name,
                     "title": a_title,
                     "deadline": display_deadline,
-                    "urgent": a_end_date and (a_end_date - datetime.now()).total_seconds() < 172800
+                    "overdue": is_overdue,
+                    "imminent": is_imminent,
+                    "urgent": is_urgent
                 })
-                
+
                 if args.list:
                     log.info("    [Tarea] %s - Vence: %s", a_title, display_deadline)
-                
+
                 if a_id and a_id not in seen:
-                    is_urgent = a_end_date and (a_end_date - datetime.now()).total_seconds() < 172800 # 48h
-                    prefix = "[URGENTE] " if is_urgent else ""
-                    
+                    if is_overdue: prefix = "[VENCIDA] "
+                    elif is_imminent: prefix = "[INMINENTE] "
+                    elif is_urgent: prefix = "[URGENTE] "
+                    else: prefix = ""
                     notify(
                         title=f"Eminus: {c_name}",
                         message=f"{prefix}{a_title}",
