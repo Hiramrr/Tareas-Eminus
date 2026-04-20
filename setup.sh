@@ -22,7 +22,7 @@ fi
 
 echo "📦 Instalando dependencias..."
 "$VENV/bin/pip" install --quiet --upgrade pip
-"$VENV/bin/pip" install --quiet selenium webdriver-manager keyring
+"$VENV/bin/pip" install --quiet selenium webdriver-manager keyring requests plyer
 
 echo "🌐 Descargando ChromeDriver..."
 "$VENV/bin/python3" -c "from webdriver_manager.chrome import ChromeDriverManager; ChromeDriverManager().install()" 2>/dev/null

@@ -1,20 +1,110 @@
 #!/usr/bin/env python3
 import json
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox, simpledialog
 from pathlib import Path
 from datetime import datetime, timedelta
 import threading
 import subprocess
+import os
+import platform
 
+try:
+    import keyring
+except ImportError:
+    keyring = None
+
+IS_WINDOWS = platform.system() == "Windows"
 SCRIPT_DIR = Path(__file__).parent.resolve()
 STATE_FILE = SCRIPT_DIR / "state.json"
 SCHEDULE_FILE = SCRIPT_DIR / "schedule.json"
-PYTHON_EXE = SCRIPT_DIR / ".venv" / "bin" / "python3"
-NOTIFIER_SCRIPT = SCRIPT_DIR / "eminus_notifier.py"
-PLIST_PATH = Path.home() / "Library" / "LaunchAgents" / "mx.uv.eminus.notifier.plist"
+
+if IS_WINDOWS:
+    PYTHON_EXE = SCRIPT_DIR / ".venv" / "Scripts" / "python.exe"
+    NOTIFIER_SCRIPT = SCRIPT_DIR / "eminus_notifier.py"
+    # Para Windows no necesitamos una ruta fija de PLIST, usamos schtasks
+else:
+    PYTHON_EXE = SCRIPT_DIR / ".venv" / "bin" / "python3"
+    NOTIFIER_SCRIPT = SCRIPT_DIR / "eminus_notifier.py"
+    PLIST_PATH = Path.home() / "Library" / "LaunchAgents" / "mx.uv.eminus.notifier.plist"
 
 DAYS_MAP = {0: "LUN", 1: "MAR", 2: "MIE", 3: "JUE", 4: "VIE", 5: "SAB", 6: "DOM"}
+
+class LoginDialog(tk.Toplevel):
+    def __init__(self, parent, callback):
+        super().__init__(parent)
+        self.title("Configurar Cuenta")
+        self.geometry("400x350")
+        self.resizable(False, False)
+        self.configure(bg="#FFFFFF")
+        self.callback = callback
+        self.transient(parent)
+        self.grab_set()
+
+        self.font = ("Helvetica", 11)
+
+        ttk.Label(self, text="INICIAR SESIÓN", font=("Helvetica", 16, "bold"), background="#FFFFFF").pack(pady=(30, 20))
+
+        container = ttk.Frame(self, padding=20)
+        container.pack(fill=tk.BOTH, expand=True)
+
+        ttk.Label(container, text="MATRÍCULA / USUARIO UV", font=("Helvetica", 9, "bold"), foreground="#757575", background="#FFFFFF").pack(anchor=tk.W)
+        self.user_entry = tk.Entry(container, font=self.font, bg="#F5F5F5", relief=tk.FLAT, highlightthickness=1, highlightbackground="#EEEEEE")
+        self.user_entry.pack(fill=tk.X, pady=(5, 15), ipady=5)
+
+        ttk.Label(container, text="CONTRASEÑA", font=("Helvetica", 9, "bold"), foreground="#757575", background="#FFFFFF").pack(anchor=tk.W)
+        self.pass_entry = tk.Entry(container, font=self.font, show="•", bg="#F5F5F5", relief=tk.FLAT, highlightthickness=1, highlightbackground="#EEEEEE")
+        self.pass_entry.pack(fill=tk.X, pady=(5, 20), ipady=5)
+
+        self.status_label = ttk.Label(container, text="", font=("Helvetica", 9), foreground="#B71C1C", background="#FFFFFF")
+        self.status_label.pack(pady=(0, 10))
+
+        self.login_btn = ttk.Button(container, text="GUARDAR Y VALIDAR", command=self.validate)
+        self.login_btn.pack(fill=tk.X)
+
+        self.eval('tk::PlaceWindow . center')
+
+    def validate(self):
+        user = self.user_entry.get().strip()
+        pwd = self.pass_entry.get().strip()
+        
+        if not user or not pwd:
+            self.status_label.config(text="Complete todos los campos")
+            return
+
+        if not keyring:
+            messagebox.showerror("Error", "La librería 'keyring' no está instalada. Por favor ejecuta el setup o instala: pip install keyring")
+            return
+
+        self.login_btn.config(state=tk.DISABLED, text="VALIDANDO...")
+        thread = threading.Thread(target=self.run_validation, args=(user, pwd))
+        thread.daemon = True
+        thread.start()
+
+    def run_validation(self, user, pwd):
+        try:
+            res = subprocess.run(
+                [str(PYTHON_EXE), str(NOTIFIER_SCRIPT), "--validate", "--username", user, "--password", pwd],
+                cwd=str(SCRIPT_DIR), capture_output=True, text=True
+            )
+            if "VALID_CREDENTIALS" in res.stdout:
+                keyring.set_password('eminus-notifier', 'username', user)
+                keyring.set_password('eminus-notifier', 'password', pwd)
+                self.after(0, lambda: self.finish(True))
+            else:
+                self.after(0, lambda: self.finish(False))
+        except Exception as e:
+            print(f"Error val: {e}")
+            self.after(0, lambda: self.finish(False))
+
+    def finish(self, success):
+        if success:
+            messagebox.showinfo("Éxito", "Cuenta vinculada correctamente.")
+            self.callback()
+            self.destroy()
+        else:
+            self.login_btn.config(state=tk.NORMAL, text="GUARDAR Y VALIDAR")
+            self.status_label.config(text="Credenciales inválidas. Intente de nuevo.")
 
 class Dashboard(tk.Tk):
     def __init__(self):
@@ -74,6 +164,7 @@ class Dashboard(tk.Tk):
         self.load_state_data()
         self.load_schedule_data()
         self.update_service_btn_ui()
+        self.update_session_ui()
         self.auto_refresh_from_file()
 
     def setup_styles(self):
@@ -168,12 +259,15 @@ class Dashboard(tk.Tk):
         self.last_check_label = ttk.Label(title_container, text="...", style="Subheader.TLabel")
         self.last_check_label.pack(anchor=tk.W)
 
-        # Service Control Button
+        # Buttons
         self.service_btn = ttk.Button(header_frame, text="COMPROBANDO...", style="Service.TButton", command=self.toggle_service)
         self.service_btn.pack(side=tk.RIGHT, anchor=tk.CENTER, padx=(15, 0))
 
         self.refresh_btn = ttk.Button(header_frame, text="ACTUALIZAR", style="Primary.TButton", command=self.run_update_thread)
         self.refresh_btn.pack(side=tk.RIGHT, anchor=tk.CENTER)
+
+        self.login_btn = ttk.Button(header_frame, text="INICIAR SESIÓN", style="Service.TButton", command=self.login)
+        # Se empaqueta solo si no hay sesión activa en update_session_ui
 
         # Middle Content: Status Row (Counters + Search)
         status_row = ttk.Frame(self.main_frame)
@@ -260,7 +354,11 @@ class Dashboard(tk.Tk):
         self.tree.tag_configure('normal', foreground=self.text_primary)
 
         self.footer_label = ttk.Label(self.main_frame, text="Listo.", style="Footer.TLabel")
-        self.footer_label.pack(anchor=tk.W, pady=(20, 0))
+        self.footer_label.pack(side=tk.LEFT, anchor=tk.W, pady=(20, 0))
+
+        self.logout_btn = tk.Button(self.main_frame, text="Cerrar Sesión", font=(self.font_family, 9), 
+                                   fg="#B71C1C", bg=self.bg_color, relief=tk.FLAT, cursor="hand2", command=self.logout)
+        # Se empaqueta solo si hay sesión activa en update_session_ui
 
     def toggle_schedule_day(self):
         self.schedule_day_offset = 1 if self.schedule_day_offset == 0 else 0
@@ -310,8 +408,12 @@ class Dashboard(tk.Tk):
 
     def is_service_loaded(self):
         try:
-            res = subprocess.run(["launchctl", "list", "mx.uv.eminus.notifier"], capture_output=True, text=True)
-            return res.returncode == 0
+            if IS_WINDOWS:
+                res = subprocess.run(["schtasks", "/query", "/tn", "EminusNotifier"], capture_output=True, text=True)
+                return res.returncode == 0
+            else:
+                res = subprocess.run(["launchctl", "list", "mx.uv.eminus.notifier"], capture_output=True, text=True)
+                return res.returncode == 0
         except: return False
 
     def update_service_btn_ui(self):
@@ -322,11 +424,56 @@ class Dashboard(tk.Tk):
             self.service_btn.config(text="REANUDAR SERVICIO")
             self.footer_label.config(text="Servicio automático detenido. Actualización manual.")
 
-    def toggle_service(self):
-        if self.is_service_loaded():
-            subprocess.run(["launchctl", "unload", str(PLIST_PATH)], capture_output=True)
+    def update_session_ui(self):
+        user = None
+        if keyring:
+            user = keyring.get_password("eminus-notifier", "username")
+        
+        if user:
+            self.login_btn.pack_forget()
+            self.logout_btn.config(text=f"Cerrar Sesión ({user})")
+            self.logout_btn.pack(side=tk.RIGHT, anchor=tk.E, pady=(15, 0))
         else:
-            subprocess.run(["launchctl", "load", str(PLIST_PATH)], capture_output=True)
+            self.logout_btn.pack_forget()
+            self.login_btn.pack(side=tk.RIGHT, anchor=tk.CENTER, padx=(0, 15))
+
+    def login(self):
+        LoginDialog(self, self.on_login_success)
+
+    def logout(self):
+        if messagebox.askyesno("Cerrar Sesión", "¿Desea eliminar las credenciales y borrar los datos locales?"):
+            if keyring:
+                keyring.delete_password("eminus-notifier", "username")
+                keyring.delete_password("eminus-notifier", "password")
+            
+            if STATE_FILE.exists():
+                STATE_FILE.unlink()
+            
+            self.update_session_ui()
+            self.load_state_data()
+            messagebox.showinfo("Sesión Cerrada", "Datos locales eliminados.")
+
+    def on_login_success(self):
+        self.update_session_ui()
+        self.run_update_thread()
+
+    def toggle_service(self):
+        if IS_WINDOWS:
+            if self.is_service_loaded():
+                subprocess.run(["schtasks", "/delete", "/tn", "EminusNotifier", "/f"], capture_output=True)
+            else:
+                vbs_runner = SCRIPT_DIR / "run_hidden.vbs"
+                if vbs_runner.exists():
+                    # Usar wscript con el runner VBS para evitar ventana CMD
+                    subprocess.run(["schtasks", "/create", "/tn", "EminusNotifier", "/tr", f"wscript.exe \"{vbs_runner}\"", "/sc", "minute", "/mo", "15", "/f"], capture_output=True)
+                else:
+                    # Fallback si no hay VBS
+                    subprocess.run(["schtasks", "/create", "/tn", "EminusNotifier", "/tr", f"\"{PYTHON_EXE}\" \"{NOTIFIER_SCRIPT}\"", "/sc", "minute", "/mo", "15", "/f"], capture_output=True)
+        else:
+            if self.is_service_loaded():
+                subprocess.run(["launchctl", "unload", str(PLIST_PATH)], capture_output=True)
+            else:
+                subprocess.run(["launchctl", "load", str(PLIST_PATH)], capture_output=True)
         self.update_service_btn_ui()
 
     def run_update_thread(self):
@@ -434,6 +581,14 @@ class Dashboard(tk.Tk):
                     self.workload_imminent.place_forget()
                     self.workload_urgent.place_forget()
             else:
+                for item in self.tree.get_children():
+                    self.tree.delete(item)
+                self.overdue_count_label.config(text="0 VENCIDAS")
+                self.imminent_count_label.config(text="0 HOY")
+                self.urgent_count_label.config(text="0 PRÓXIMAS")
+                self.workload_overdue.place_forget()
+                self.workload_imminent.place_forget()
+                self.workload_urgent.place_forget()
                 self.last_check_label.config(text="Esperando sincronización...")
         except Exception as e:
             print(f"Error cargando estado: {e}")

@@ -142,16 +142,16 @@ def get_credentials():
         sys.exit(1)
 
 def notify(title, message, subtitle="", sound="Glass"):
-    def esc(s):
-        return s.replace("\\", "\\\\").replace('"', '\\"')
-    script = (
-        f'display notification "{esc(message)}" '
-        f'with title "{esc(title)}" '
-        f'subtitle "{esc(subtitle)}" '
-        f'sound name "{sound}"'
-    )
     try:
-        subprocess.run(["osascript", "-e", script], capture_output=True, timeout=5)
+        from plyer import notification
+        # En macOS combinamos titulo y subtitulo para mejor visualizacion
+        full_title = f"{title}: {subtitle}" if subtitle else title
+        notification.notify(
+            title=full_title,
+            message=message,
+            app_name="Eminus Notifier",
+            timeout=10
+        )
         log.info("Notificacion: %s | %s", title, subtitle)
     except Exception as exc:
         log.warning("No se pudo notificar: %s", exc)
@@ -232,7 +232,34 @@ def get_activities(token, course_id):
 def main():
     parser = argparse.ArgumentParser(description="Eminus Notifier")
     parser.add_argument("--list", action="store_true", help="Listar tareas actuales")
+    parser.add_argument("--validate", action="store_true", help="Validar credenciales")
+    parser.add_argument("--username", help="Usuario para validar")
+    parser.add_argument("--password", help="Contraseña para validar")
     args = parser.parse_args()
+
+    if args.validate:
+        if args.username and args.password:
+            u, p = args.username, args.password
+        else:
+            u, p = get_credentials()
+        
+        log.info("Validando credenciales para %s...", u)
+        driver = None
+        try:
+            driver = create_driver()
+            token = login(driver, u, p)
+            if token:
+                print("VALID_CREDENTIALS")
+                sys.exit(0)
+            else:
+                print("INVALID_CREDENTIALS")
+                sys.exit(1)
+        except Exception as e:
+            log.error("Error durante validación: %s", e)
+            print("ERROR_VALIDATING")
+            sys.exit(1)
+        finally:
+            if driver: driver.quit()
 
     log.info("=" * 55)
     log.info("Eminus Notifier (API Mode) iniciando...")
