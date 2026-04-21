@@ -38,7 +38,7 @@ set PIP_EXE=%VENV_DIR%\Scripts\pip.exe
 echo.
 echo [ ] Instalando dependencias (puede tardar unos segundos)...
 "%PIP_EXE%" install --quiet --upgrade pip
-"%PIP_EXE%" install --quiet selenium webdriver-manager keyring requests plyer
+"%PIP_EXE%" install --quiet selenium webdriver-manager keyring requests plyer beautifulsoup4
 
 echo.
 echo [ ] Configurando ChromeDriver...
