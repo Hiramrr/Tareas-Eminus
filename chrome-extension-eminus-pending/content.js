@@ -318,7 +318,8 @@
         offsetY: event.clientY - rect.top,
         startX: event.clientX,
         startY: event.clientY,
-        moved: false
+        moved: false,
+        target: event.target
       };
       panelEls.root.classList.add("ep-dragging");
       panelEls.header.setPointerCapture(event.pointerId);
@@ -333,15 +334,21 @@
       applyPanelPosition(next);
     });
 
-    const finishDrag = async () => {
+    const finishDrag = async (event) => {
       if (!dragState) return;
       const wasMoved = dragState.moved;
+      const originalTarget = dragState.target;
       dragState = null;
       panelEls.root.classList.remove("ep-dragging");
       await persistPanelPosition();
       
-      if (!wasMoved && state.isCollapsed) {
-        toggleCollapse();
+      if (!wasMoved) {
+        const isCatClick = originalTarget instanceof HTMLElement && originalTarget.closest("#ep-seal-art");
+        if (state.isCollapsed) {
+          toggleCollapse();
+        } else if (isCatClick) {
+          toggleCollapse();
+        }
       }
     };
 
@@ -694,6 +701,13 @@
       if (courseId) {
         savePendingNavigationTarget({ ...item, activityId, courseId });
         await setCourseContext(courseId);
+        
+        try {
+          setStatus("Inicializando contexto del curso...");
+          await fetch(`${location.origin}/aplicativoEminus/actividad-principal/?courseId=${encodeURIComponent(courseId)}&_timestamp=${Date.now()}`);
+        } catch (e) {
+          console.warn("Error preload actividad-principal:", e);
+        }
       }
       setStatus(`Abriendo detalle: ${item.title}`);
       const detailUrl = new URL(`${location.origin}/aplicativoEminus/actividad-detalle/${encodeURIComponent(activityId)}`);

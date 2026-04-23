@@ -54,13 +54,17 @@
   display: flex;
   flex: 0 0 auto;
 }
-
 .ep-seal-art, .ep-miyu-text {
   margin: 0;
   padding: 0;
   font: 400 6px/1 ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   white-space: pre;
   overflow: hidden;
+}
+
+.ep-seal-art {
+  cursor: pointer;
+}
   background: transparent;
   color: #000;
 }
