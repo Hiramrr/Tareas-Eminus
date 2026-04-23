@@ -203,6 +203,11 @@
              <button class="ep-theme-option" data-theme="dark">Dark</button>
              <button class="ep-theme-option" data-theme="hacker">Hacker</button>
              <button class="ep-theme-option" data-theme="ocean">Ocean</button>
+             <button class="ep-theme-option" data-theme="dracula">Dracula</button>
+             <button class="ep-theme-option" data-theme="nord">Nord</button>
+             <button class="ep-theme-option" data-theme="solarized">Solarized</button>
+             <button class="ep-theme-option" data-theme="solarizedlight">Solarized Light</button>
+             <button class="ep-theme-option" data-theme="gruvbox">Gruvbox</button>
           </div>
           <button class="ep-btn" id="ep-refresh" title="Actualizar">[ ref ]</button>
           <button class="ep-btn" id="ep-collapse" title="Desplegar">[ + ]</button>
@@ -367,7 +372,7 @@
   }
 
   async function setTheme(themeName) {
-    panelEls.root.classList.remove("ep-dark-theme", "ep-hacker-theme", "ep-ocean-theme");
+    panelEls.root.classList.remove("ep-dark-theme", "ep-hacker-theme", "ep-ocean-theme", "ep-dracula-theme", "ep-nord-theme", "ep-solarized-theme", "ep-solarizedlight-theme", "ep-gruvbox-theme");
     if (themeName !== "light") {
       panelEls.root.classList.add(`ep-${themeName}-theme`);
     }
@@ -704,9 +709,31 @@
         
         try {
           setStatus("Inicializando contexto del curso...");
-          await fetch(`${location.origin}/aplicativoEminus/actividad-principal/?courseId=${encodeURIComponent(courseId)}&_timestamp=${Date.now()}`);
+          await new Promise((resolve) => {
+            const iframe = document.createElement("iframe");
+            iframe.style.display = "none";
+            iframe.src = `${location.origin}/aplicativoEminus/actividad-principal/?courseId=${encodeURIComponent(courseId)}&_timestamp=${Date.now()}`;
+            
+            const cleanup = () => {
+              if (iframe.parentElement) {
+                iframe.parentElement.removeChild(iframe);
+              }
+              resolve();
+            };
+
+            iframe.onload = () => {
+              // Darle un instante para que procese scripts/cookies
+              setTimeout(cleanup, 500);
+            };
+            iframe.onerror = cleanup;
+            
+            document.body.appendChild(iframe);
+            
+            // Timeout de seguridad de 5 segundos
+            setTimeout(cleanup, 5000);
+          });
         } catch (e) {
-          console.warn("Error preload actividad-principal:", e);
+          console.warn("Error preload actividad-principal iframe:", e);
         }
       }
       setStatus(`Abriendo detalle: ${item.title}`);

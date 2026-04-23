@@ -647,33 +647,233 @@
   background: #0c4a6e;
 }
 
-/* Fix hover states for items in themes */
-#eminus-pending-panel.ep-dark-theme .ep-item-btn:hover .ep-item {
-  background: #e0e0e0;
-  color: #121212;
+/* Dracula Theme */
+#eminus-pending-panel.ep-dracula-theme {
+  background: #282a36;
+  color: #f8f8f2;
+  border-color: #44475a;
 }
-#eminus-pending-panel.ep-dark-theme .ep-item-btn:hover .ep-item .ep-course,
-#eminus-pending-panel.ep-dark-theme .ep-item-btn:hover .ep-item .ep-title-task,
-#eminus-pending-panel.ep-dark-theme .ep-item-btn:hover .ep-item .ep-meta {
-  color: #121212 !important;
+#eminus-pending-panel.ep-dracula-theme .ep-header,
+#eminus-pending-panel.ep-dracula-theme .ep-tabs,
+#eminus-pending-panel.ep-dracula-theme .ep-body,
+#eminus-pending-panel.ep-dracula-theme .ep-footer,
+#eminus-pending-panel.ep-dracula-theme .ep-item,
+#eminus-pending-panel.ep-dracula-theme .ep-log-item,
+#eminus-pending-panel.ep-dracula-theme .ep-theme-menu {
+  background: #282a36;
+  border-color: #44475a;
+}
+#eminus-pending-panel.ep-dracula-theme .ep-seal-art,
+#eminus-pending-panel.ep-dracula-theme .ep-miyu-text,
+#eminus-pending-panel.ep-dracula-theme .ep-title-wrap .ep-title,
+#eminus-pending-panel.ep-dracula-theme .ep-subtitle,
+#eminus-pending-panel.ep-dracula-theme .ep-btn,
+#eminus-pending-panel.ep-dracula-theme .ep-course,
+#eminus-pending-panel.ep-dracula-theme .ep-title-task,
+#eminus-pending-panel.ep-dracula-theme .ep-meta,
+#eminus-pending-panel.ep-dracula-theme .ep-log-time,
+#eminus-pending-panel.ep-dracula-theme .ep-log-summary,
+#eminus-pending-panel.ep-dracula-theme .ep-log-lines,
+#eminus-pending-panel.ep-dracula-theme .ep-theme-option {
+  color: #f8f8f2 !important;
+}
+#eminus-pending-panel.ep-dracula-theme .ep-tab-active {
+  background: #44475a;
+}
+#eminus-pending-panel.ep-dracula-theme .ep-item-btn {
+  background: #44475a;
+}
+#eminus-pending-panel.ep-dracula-theme .ep-btn:hover,
+#eminus-pending-panel.ep-dracula-theme .ep-item-btn:hover {
+  background: #bd93f9;
+  color: #282a36 !important;
+}
+#eminus-pending-panel.ep-dracula-theme .ep-theme-option:hover {
+  background: #44475a;
 }
 
-#eminus-pending-panel.ep-hacker-theme .ep-item-btn:hover .ep-item {
-  background: #00ff00;
-  color: #000000;
+/* Nord Theme */
+#eminus-pending-panel.ep-nord-theme {
+  background: #2E3440;
+  color: #D8DEE9;
+  border-color: #4C566A;
 }
-#eminus-pending-panel.ep-hacker-theme .ep-item-btn:hover .ep-item .ep-course,
-#eminus-pending-panel.ep-hacker-theme .ep-item-btn:hover .ep-item .ep-title-task,
-#eminus-pending-panel.ep-hacker-theme .ep-item-btn:hover .ep-item .ep-meta {
-  color: #000000 !important;
+#eminus-pending-panel.ep-nord-theme .ep-header,
+#eminus-pending-panel.ep-nord-theme .ep-tabs,
+#eminus-pending-panel.ep-nord-theme .ep-body,
+#eminus-pending-panel.ep-nord-theme .ep-footer,
+#eminus-pending-panel.ep-nord-theme .ep-item,
+#eminus-pending-panel.ep-nord-theme .ep-log-item,
+#eminus-pending-panel.ep-nord-theme .ep-theme-menu {
+  background: #2E3440;
+  border-color: #4C566A;
+}
+#eminus-pending-panel.ep-nord-theme .ep-seal-art,
+#eminus-pending-panel.ep-nord-theme .ep-miyu-text,
+#eminus-pending-panel.ep-nord-theme .ep-title-wrap .ep-title,
+#eminus-pending-panel.ep-nord-theme .ep-subtitle,
+#eminus-pending-panel.ep-nord-theme .ep-btn,
+#eminus-pending-panel.ep-nord-theme .ep-course,
+#eminus-pending-panel.ep-nord-theme .ep-title-task,
+#eminus-pending-panel.ep-nord-theme .ep-meta,
+#eminus-pending-panel.ep-nord-theme .ep-log-time,
+#eminus-pending-panel.ep-nord-theme .ep-log-summary,
+#eminus-pending-panel.ep-nord-theme .ep-log-lines,
+#eminus-pending-panel.ep-nord-theme .ep-theme-option {
+  color: #D8DEE9 !important;
+}
+#eminus-pending-panel.ep-nord-theme .ep-tab-active {
+  background: #4C566A;
+}
+#eminus-pending-panel.ep-nord-theme .ep-item-btn {
+  background: #4C566A;
+}
+#eminus-pending-panel.ep-nord-theme .ep-btn:hover,
+#eminus-pending-panel.ep-nord-theme .ep-item-btn:hover {
+  background: #88C0D0;
+  color: #2E3440 !important;
+}
+#eminus-pending-panel.ep-nord-theme .ep-theme-option:hover {
+  background: #4C566A;
 }
 
-#eminus-pending-panel.ep-ocean-theme .ep-item-btn:hover .ep-item {
-  background: #38bdf8;
-  color: #0f172a;
+
+/* Solarized Theme */
+#eminus-pending-panel.ep-solarized-theme {
+  background: #002b36;
+  color: #839496;
+  border-color: #073642;
 }
-#eminus-pending-panel.ep-ocean-theme .ep-item-btn:hover .ep-item .ep-course,
-#eminus-pending-panel.ep-ocean-theme .ep-item-btn:hover .ep-item .ep-title-task,
-#eminus-pending-panel.ep-ocean-theme .ep-item-btn:hover .ep-item .ep-meta {
-  color: #0f172a !important;
+#eminus-pending-panel.ep-solarized-theme .ep-header,
+#eminus-pending-panel.ep-solarized-theme .ep-tabs,
+#eminus-pending-panel.ep-solarized-theme .ep-body,
+#eminus-pending-panel.ep-solarized-theme .ep-footer,
+#eminus-pending-panel.ep-solarized-theme .ep-item,
+#eminus-pending-panel.ep-solarized-theme .ep-log-item,
+#eminus-pending-panel.ep-solarized-theme .ep-theme-menu {
+  background: #002b36;
+  border-color: #073642;
 }
+#eminus-pending-panel.ep-solarized-theme .ep-seal-art,
+#eminus-pending-panel.ep-solarized-theme .ep-miyu-text,
+#eminus-pending-panel.ep-solarized-theme .ep-title-wrap .ep-title,
+#eminus-pending-panel.ep-solarized-theme .ep-subtitle,
+#eminus-pending-panel.ep-solarized-theme .ep-btn,
+#eminus-pending-panel.ep-solarized-theme .ep-course,
+#eminus-pending-panel.ep-solarized-theme .ep-title-task,
+#eminus-pending-panel.ep-solarized-theme .ep-meta,
+#eminus-pending-panel.ep-solarized-theme .ep-log-time,
+#eminus-pending-panel.ep-solarized-theme .ep-log-summary,
+#eminus-pending-panel.ep-solarized-theme .ep-log-lines,
+#eminus-pending-panel.ep-solarized-theme .ep-theme-option {
+  color: #839496 !important;
+}
+#eminus-pending-panel.ep-solarized-theme .ep-tab-active {
+  background: #073642;
+  color: #268bd2;
+}
+#eminus-pending-panel.ep-solarized-theme .ep-item-btn {
+  background: #073642;
+}
+#eminus-pending-panel.ep-solarized-theme .ep-btn:hover,
+#eminus-pending-panel.ep-solarized-theme .ep-item-btn:hover {
+  background: #268bd2;
+  color: #002b36 !important;
+}
+#eminus-pending-panel.ep-solarized-theme .ep-theme-option:hover {
+  background: #073642;
+}
+
+/* Solarized Light Theme */
+#eminus-pending-panel.ep-solarizedlight-theme {
+  background: #fdf6e3;
+  color: #586e75;
+  border-color: #eee8d5;
+}
+#eminus-pending-panel.ep-solarizedlight-theme .ep-header,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-tabs,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-body,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-footer,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-item,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-log-item,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-theme-menu {
+  background: #fdf6e3;
+  border-color: #eee8d5;
+}
+#eminus-pending-panel.ep-solarizedlight-theme .ep-seal-art,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-miyu-text,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-title-wrap .ep-title,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-subtitle,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-btn,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-course,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-title-task,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-meta,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-log-time,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-log-summary,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-log-lines,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-theme-option {
+  color: #586e75 !important;
+}
+#eminus-pending-panel.ep-solarizedlight-theme .ep-tab-active {
+  background: #eee8d5;
+  color: #268bd2;
+}
+#eminus-pending-panel.ep-solarizedlight-theme .ep-item-btn {
+  background: #eee8d5;
+}
+#eminus-pending-panel.ep-solarizedlight-theme .ep-btn:hover,
+#eminus-pending-panel.ep-solarizedlight-theme .ep-item-btn:hover {
+  background: #268bd2;
+  color: #fdf6e3 !important;
+}
+#eminus-pending-panel.ep-solarizedlight-theme .ep-theme-option:hover {
+  background: #eee8d5;
+}
+
+/* Gruvbox Theme */
+#eminus-pending-panel.ep-gruvbox-theme {
+  background: #282828;
+  color: #ebdbb2;
+  border-color: #504945;
+}
+#eminus-pending-panel.ep-gruvbox-theme .ep-header,
+#eminus-pending-panel.ep-gruvbox-theme .ep-tabs,
+#eminus-pending-panel.ep-gruvbox-theme .ep-body,
+#eminus-pending-panel.ep-gruvbox-theme .ep-footer,
+#eminus-pending-panel.ep-gruvbox-theme .ep-item,
+#eminus-pending-panel.ep-gruvbox-theme .ep-log-item,
+#eminus-pending-panel.ep-gruvbox-theme .ep-theme-menu {
+  background: #282828;
+  border-color: #504945;
+}
+#eminus-pending-panel.ep-gruvbox-theme .ep-seal-art,
+#eminus-pending-panel.ep-gruvbox-theme .ep-miyu-text,
+#eminus-pending-panel.ep-gruvbox-theme .ep-title-wrap .ep-title,
+#eminus-pending-panel.ep-gruvbox-theme .ep-subtitle,
+#eminus-pending-panel.ep-gruvbox-theme .ep-btn,
+#eminus-pending-panel.ep-gruvbox-theme .ep-course,
+#eminus-pending-panel.ep-gruvbox-theme .ep-title-task,
+#eminus-pending-panel.ep-gruvbox-theme .ep-meta,
+#eminus-pending-panel.ep-gruvbox-theme .ep-log-time,
+#eminus-pending-panel.ep-gruvbox-theme .ep-log-summary,
+#eminus-pending-panel.ep-gruvbox-theme .ep-log-lines,
+#eminus-pending-panel.ep-gruvbox-theme .ep-theme-option {
+  color: #ebdbb2 !important;
+}
+#eminus-pending-panel.ep-gruvbox-theme .ep-tab-active {
+  background: #504945;
+  color: #fabd2f;
+}
+#eminus-pending-panel.ep-gruvbox-theme .ep-item-btn {
+  background: #504945;
+}
+#eminus-pending-panel.ep-gruvbox-theme .ep-btn:hover,
+#eminus-pending-panel.ep-gruvbox-theme .ep-item-btn:hover {
+  background: #fabd2f;
+  color: #282828 !important;
+}
+#eminus-pending-panel.ep-gruvbox-theme .ep-theme-option:hover {
+  background: #504945;
+}
+
+
