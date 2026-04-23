@@ -1,0 +1,35 @@
+#ep-back-home-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2147483647;
+  border: 1px solid #000;
+  border-radius: 0;
+  padding: 8px 16px;
+  background: #fff;
+  color: #000;
+  font: 700 12px/20px ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
+  transition: all 0.2s;
+  text-transform: lowercase;
+}
+
+#ep-back-home-btn::before {
+  content: "[ ";
+}
+#ep-back-home-btn::after {
+  content: " ]";
+}
+
+#ep-back-home-btn:hover {
+  background: #000;
+  color: #fff;
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 1);
+  transform: translate(2px, 2px);
+}
+
+#ep-back-home-btn:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}

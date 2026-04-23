@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Eminus Pending Panel",
+  "description": "Inyecta un panel en Eminus para ver tareas pendientes y su log.",
+  "version": "1.0.0",
+  "permissions": ["storage"],
+  "host_permissions": ["https://eminus.uv.mx/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://eminus.uv.mx/eminus4/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://eminus.uv.mx/aplicativoEminus/actividad-detalle/*"],
+      "js": ["detail-nav.js"],
+      "css": ["detail-nav.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "action": {
+    "default_title": "Eminus Pending Panel",
+    "default_popup": "popup.html"
+  }
+}

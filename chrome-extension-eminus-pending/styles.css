@@ -1,0 +1,675 @@
+#eminus-pending-panel {
+  position: fixed;
+  top: 96px;
+  right: 16px;
+  width: 620px;
+  max-height: calc(100vh - 120px);
+  z-index: 2147483647;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #000;
+  background: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  color: #000;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.1);
+}
+
+#eminus-pending-panel.ep-collapsed {
+  width: auto;
+  max-height: none;
+  cursor: pointer;
+}
+
+#eminus-pending-panel.ep-collapsed .ep-tabs,
+#eminus-pending-panel.ep-collapsed .ep-body,
+#eminus-pending-panel.ep-collapsed .ep-footer,
+#eminus-pending-panel.ep-collapsed .ep-miyu-text,
+#eminus-pending-panel.ep-collapsed .ep-title-wrap,
+#eminus-pending-panel.ep-collapsed .ep-actions {
+  display: none;
+}
+
+#eminus-pending-panel.ep-collapsed .ep-header {
+  padding: 8px;
+  border-bottom: none;
+  gap: 0;
+}
+
+#eminus-pending-panel * {
+  box-sizing: border-box;
+}
+
+.ep-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #000;
+  padding: 12px 16px;
+  cursor: grab;
+  user-select: none;
+}
+
+.ep-brand-inline {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.ep-seal-art, .ep-miyu-text {
+  margin: 0;
+  padding: 0;
+  font: 400 6px/1 ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  white-space: pre;
+  overflow: hidden;
+  background: transparent;
+  color: #000;
+}
+
+.ep-title-wrap {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.ep-title {
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: lowercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ep-title::before {
+  content: "$ ";
+}
+
+.ep-subtitle {
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.ep-actions {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.ep-btn {
+  border: none;
+  background: transparent;
+  width: auto;
+  color: #000;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.ep-btn:hover {
+  background: #000;
+  color: #fff;
+}
+
+.ep-tabs {
+  display: flex;
+  background: #ffffff;
+  border-bottom: 1px dashed #000;
+}
+
+.ep-tab {
+  flex: 1;
+  border: none;
+  border-right: 1px dashed #000;
+  padding: 10px 12px;
+  background: transparent;
+  color: #666;
+  font-size: 12px;
+  cursor: pointer;
+}
+.ep-tab:last-child {
+  border-right: none;
+}
+
+.ep-tab:hover {
+  color: #000;
+  background: #f0f0f0;
+}
+
+.ep-tab-active {
+  color: #000;
+  font-weight: 700;
+  background: #fff;
+}
+
+.ep-body {
+  overflow-y: auto;
+  padding: 16px;
+  min-height: 140px;
+  max-height: 400px;
+  background: #ffffff;
+}
+
+.ep-hidden {
+  display: none;
+}
+
+.ep-empty {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+  font-size: 12px;
+  border: 1px dashed #000;
+}
+
+.ep-item {
+  background: #ffffff;
+  border: 1px solid #000;
+  padding: 12px;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.ep-item.ep-overdue {
+  border-left: 4px solid #000;
+  background-color: #fff0f0;
+}
+
+.ep-item.ep-imminent {
+  border-left: 4px dashed #000;
+  background-color: #ffffe0;
+}
+
+.ep-item.ep-urgent {
+  border-left: 4px dotted #000;
+  background-color: #ffffe0;
+}
+
+.ep-course {
+  font-size: 12px;
+  color: #666;
+  text-transform: lowercase;
+  margin-bottom: 8px;
+}
+.ep-course::before {
+  content: "> ";
+}
+
+.ep-title-task {
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 8px;
+}
+
+.ep-meta {
+  font-size: 12px;
+  color: #000;
+  align-self: flex-end;
+}
+
+.ep-log-item {
+  background: #ffffff;
+  border: 1px solid #000;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.ep-log-time {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.ep-log-summary {
+  font-size: 12px;
+  font-weight: 700;
+  color: #000;
+}
+
+.ep-log-lines {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.ep-footer {
+  border-top: 1px solid #000;
+  background: #ffffff;
+  font-size: 12px;
+  color: #666;
+  padding: 8px 16px;
+}
+
+.ep-item-btn {
+  all: unset;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.ep-item-btn:focus-visible .ep-item {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+.ep-item-btn:hover .ep-item {
+  background: #000;
+  color: #fff;
+}
+.ep-item-btn:hover .ep-item .ep-course,
+.ep-item-btn:hover .ep-item .ep-title-task,
+.ep-item-btn:hover .ep-item .ep-meta {
+  color: #fff;
+}
+
+#eminus-pending-panel.ep-dragging .ep-header {
+  cursor: grabbing;
+}
+
+@media (max-width: 768px) {
+  #eminus-pending-panel {
+    top: 84px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    max-height: calc(100vh - 100px);
+  }
+
+  .ep-seal-art, .ep-miyu-text {
+    font-size: 4px;
+  }
+}
+
+/* Dark Theme */
+#eminus-pending-panel.ep-dark-theme {
+  background: #121212;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-header {
+  background: #121212;
+  border-bottom-color: #444;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-seal-art,
+#eminus-pending-panel.ep-dark-theme .ep-miyu-text {
+  color: #e0e0e0;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-title-wrap .ep-title {
+  color: #e0e0e0;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-subtitle {
+  color: #aaa;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-btn {
+  color: #e0e0e0;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-btn:hover {
+  background: #e0e0e0;
+  color: #121212;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-tabs {
+  background: #121212;
+  border-bottom-color: #444;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-tab {
+  color: #aaa;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-tab-active {
+  color: #e0e0e0;
+  background: #2a2a2a;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-tab:hover:not(.ep-tab-active) {
+  color: #e0e0e0;
+  background: #1e1e1e;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-body {
+  background: #121212;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-empty {
+  color: #aaa;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-item,
+#eminus-pending-panel.ep-dark-theme .ep-log-item {
+  border-color: #444;
+  background: #121212;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-item-title {
+  color: #e0e0e0;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-item-date {
+  color: #aaa;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-item-course {
+  color: #ccc;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-item-btn {
+  background: #1e1e1e;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-item-btn:hover {
+  background: #e0e0e0;
+  color: #121212;
+}
+
+#eminus-pending-panel.ep-dark-theme .ep-footer {
+  border-top-color: #444;
+  background: #121212;
+  color: #aaa;
+}
+
+/* Borrar log en dark mode */
+#eminus-pending-panel.ep-dark-theme #ep-clear-log {
+  border-color: #444 !important;
+  color: #e0e0e0 !important;
+}
+
+/* Theme Menu Dropdown */
+.ep-theme-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: #fff;
+  border: 1px solid #000;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+}
+
+.ep-theme-menu.ep-hidden {
+  display: none !important;
+}
+
+.ep-theme-option {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #000;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  color: #000;
+}
+
+.ep-theme-option:last-child {
+  border-bottom: none;
+}
+
+.ep-theme-option:hover {
+  background: #f0f0f0;
+}
+
+/* Base text contrast fixes for ep-dark-theme */
+#eminus-pending-panel.ep-dark-theme .ep-theme-menu {
+  background: #1e1e1e;
+  border-color: #444;
+}
+#eminus-pending-panel.ep-dark-theme .ep-theme-option {
+  color: #e0e0e0;
+  border-bottom-color: #444;
+}
+#eminus-pending-panel.ep-dark-theme .ep-theme-option:hover {
+  background: #2a2a2a;
+}
+#eminus-pending-panel.ep-dark-theme .ep-course,
+#eminus-pending-panel.ep-dark-theme .ep-title-task,
+#eminus-pending-panel.ep-dark-theme .ep-meta,
+#eminus-pending-panel.ep-dark-theme .ep-log-time,
+#eminus-pending-panel.ep-dark-theme .ep-log-summary,
+#eminus-pending-panel.ep-dark-theme .ep-log-lines {
+  color: #e0e0e0 !important;
+}
+
+/* Hacker Theme */
+#eminus-pending-panel.ep-hacker-theme {
+  background: #000000;
+  color: #00ff00;
+  border-color: #00ff00;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-header {
+  background: #000000;
+  border-bottom-color: #00ff00;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-seal-art,
+#eminus-pending-panel.ep-hacker-theme .ep-miyu-text,
+#eminus-pending-panel.ep-hacker-theme .ep-title-wrap .ep-title,
+#eminus-pending-panel.ep-hacker-theme .ep-subtitle,
+#eminus-pending-panel.ep-hacker-theme .ep-btn,
+#eminus-pending-panel.ep-hacker-theme .ep-course,
+#eminus-pending-panel.ep-hacker-theme .ep-title-task,
+#eminus-pending-panel.ep-hacker-theme .ep-meta,
+#eminus-pending-panel.ep-hacker-theme .ep-log-time,
+#eminus-pending-panel.ep-hacker-theme .ep-log-summary,
+#eminus-pending-panel.ep-hacker-theme .ep-log-lines {
+  color: #00ff00 !important;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-btn:hover {
+  background: #00ff00;
+  color: #000000 !important;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-tabs {
+  background: #000000;
+  border-bottom-color: #00ff00;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-tab {
+  color: #008800;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-tab-active {
+  color: #00ff00;
+  background: #003300;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-tab:hover:not(.ep-tab-active) {
+  color: #00ff00;
+  background: #002200;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-body {
+  background: #000000;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-empty {
+  color: #008800;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-item,
+#eminus-pending-panel.ep-hacker-theme .ep-log-item {
+  border-color: #00ff00;
+  background: #000000;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-item-btn {
+  background: #002200;
+  border-color: #00ff00;
+  color: #00ff00;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-item-btn:hover {
+  background: #00ff00;
+  color: #000000;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-footer {
+  border-top-color: #00ff00;
+  background: #000000;
+  color: #008800;
+}
+
+#eminus-pending-panel.ep-hacker-theme #ep-clear-log {
+  border-color: #00ff00 !important;
+  color: #00ff00 !important;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-theme-menu {
+  background: #000;
+  border-color: #00ff00;
+}
+#eminus-pending-panel.ep-hacker-theme .ep-theme-option {
+  color: #00ff00;
+  border-bottom-color: #00ff00;
+}
+#eminus-pending-panel.ep-hacker-theme .ep-theme-option:hover {
+  background: #003300;
+}
+
+/* Ocean Theme */
+#eminus-pending-panel.ep-ocean-theme {
+  background: #0f172a;
+  color: #38bdf8;
+  border-color: #1e293b;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-header {
+  background: #0f172a;
+  border-bottom-color: #1e293b;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-seal-art,
+#eminus-pending-panel.ep-ocean-theme .ep-miyu-text,
+#eminus-pending-panel.ep-ocean-theme .ep-title-wrap .ep-title,
+#eminus-pending-panel.ep-ocean-theme .ep-subtitle,
+#eminus-pending-panel.ep-ocean-theme .ep-btn,
+#eminus-pending-panel.ep-ocean-theme .ep-course,
+#eminus-pending-panel.ep-ocean-theme .ep-title-task,
+#eminus-pending-panel.ep-ocean-theme .ep-meta,
+#eminus-pending-panel.ep-ocean-theme .ep-log-time,
+#eminus-pending-panel.ep-ocean-theme .ep-log-summary,
+#eminus-pending-panel.ep-ocean-theme .ep-log-lines {
+  color: #7dd3fc !important;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-btn:hover {
+  background: #38bdf8;
+  color: #0f172a !important;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-tabs {
+  background: #0f172a;
+  border-bottom-color: #1e293b;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-tab {
+  color: #0284c7;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-tab-active {
+  color: #e0f2fe;
+  background: #0284c7;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-tab:hover:not(.ep-tab-active) {
+  color: #bae6fd;
+  background: #0c4a6e;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-body {
+  background: #0f172a;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-empty {
+  color: #0284c7;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-item,
+#eminus-pending-panel.ep-ocean-theme .ep-log-item {
+  border-color: #1e293b;
+  background: #0f172a;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-item-btn {
+  background: #0c4a6e;
+  border-color: #1e293b;
+  color: #7dd3fc;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-item-btn:hover {
+  background: #0ea5e9;
+  color: #f0f9ff;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-footer {
+  border-top-color: #1e293b;
+  background: #0f172a;
+  color: #0284c7;
+}
+
+#eminus-pending-panel.ep-ocean-theme #ep-clear-log {
+  border-color: #38bdf8 !important;
+  color: #38bdf8 !important;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-theme-menu {
+  background: #0f172a;
+  border-color: #1e293b;
+}
+#eminus-pending-panel.ep-ocean-theme .ep-theme-option {
+  color: #38bdf8;
+  border-bottom-color: #1e293b;
+}
+#eminus-pending-panel.ep-ocean-theme .ep-theme-option:hover {
+  background: #0c4a6e;
+}
+
+/* Fix hover states for items in themes */
+#eminus-pending-panel.ep-dark-theme .ep-item-btn:hover .ep-item {
+  background: #e0e0e0;
+  color: #121212;
+}
+#eminus-pending-panel.ep-dark-theme .ep-item-btn:hover .ep-item .ep-course,
+#eminus-pending-panel.ep-dark-theme .ep-item-btn:hover .ep-item .ep-title-task,
+#eminus-pending-panel.ep-dark-theme .ep-item-btn:hover .ep-item .ep-meta {
+  color: #121212 !important;
+}
+
+#eminus-pending-panel.ep-hacker-theme .ep-item-btn:hover .ep-item {
+  background: #00ff00;
+  color: #000000;
+}
+#eminus-pending-panel.ep-hacker-theme .ep-item-btn:hover .ep-item .ep-course,
+#eminus-pending-panel.ep-hacker-theme .ep-item-btn:hover .ep-item .ep-title-task,
+#eminus-pending-panel.ep-hacker-theme .ep-item-btn:hover .ep-item .ep-meta {
+  color: #000000 !important;
+}
+
+#eminus-pending-panel.ep-ocean-theme .ep-item-btn:hover .ep-item {
+  background: #38bdf8;
+  color: #0f172a;
+}
+#eminus-pending-panel.ep-ocean-theme .ep-item-btn:hover .ep-item .ep-course,
+#eminus-pending-panel.ep-ocean-theme .ep-item-btn:hover .ep-item .ep-title-task,
+#eminus-pending-panel.ep-ocean-theme .ep-item-btn:hover .ep-item .ep-meta {
+  color: #0f172a !important;
+}
