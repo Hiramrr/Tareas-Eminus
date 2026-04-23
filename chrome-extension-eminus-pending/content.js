@@ -10,7 +10,8 @@
     SNAPSHOT: "eminusLastSnapshot",
     KNOWN_IDS: "eminusKnownPendingIds",
     PANEL_POSITION: "eminusPanelPosition",
-    THEME: "eminusPanelTheme"
+    THEME: "eminusPanelTheme",
+    ACCOUNT_ID: "eminusAccountId"
   };
   const NAV_KEYS = {
     ACTIVITY_ID: "ep_target_activity_id",
@@ -480,6 +481,35 @@
     return localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken") || "";
   }
 
+  function getAccountIdFromToken(token) {
+    if (!token) return null;
+    try {
+      const base64Url = token.split(".")[1];
+      if (!base64Url) return null;
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const pad = base64.length % 4;
+      const paddedBase64 = pad ? base64 + "=".repeat(4 - pad) : base64;
+      const jsonPayload = decodeURIComponent(
+        atob(paddedBase64)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
+      );
+      const parsed = JSON.parse(jsonPayload);
+      return parsed.nameid || parsed.unique_name || parsed.sub || parsed.email || parsed.idPersona || parsed.matricula || base64Url;
+    } catch (err) {
+      return token.split(".")[1] || token;
+    }
+  }
+
+  function normalizePositiveId(value) {
+    const raw = String(value ?? "").trim();
+    if (!/^\d+$/.test(raw)) return "";
+    const asNumber = Number(raw);
+    if (!Number.isFinite(asNumber) || asNumber <= 0) return "";
+    return String(asNumber);
+  }
+
   function savePendingNavigationTarget(item) {
     sessionStorage.setItem(NAV_KEYS.ACTIVITY_ID, String(item.activityId || ""));
     sessionStorage.setItem(NAV_KEYS.COURSE_ID, String(item.courseId || ""));
@@ -526,7 +556,11 @@
   }
 
   function ensureIframeLoadsDetail(target) {
-    const detailUrl = `${location.origin}/aplicativoEminus/actividad-detalle/${encodeURIComponent(target.activityId)}`;
+    const detailUrlObj = new URL(`${location.origin}/aplicativoEminus/actividad-detalle/${encodeURIComponent(target.activityId)}`);
+    if (target.courseId) {
+      detailUrlObj.searchParams.set("courseId", target.courseId);
+    }
+    const detailUrl = detailUrlObj.toString();
     const principalUrl = `${location.origin}/aplicativoEminus/actividad-principal/?courseId=${encodeURIComponent(target.courseId || "")}&_timestamp=${Date.now()}`;
     const maxMs = 15000;
     const startedAt = Date.now();
@@ -608,7 +642,11 @@
 
     clearPendingNavigationTarget();
     setStatus("No se encontró iframe de Actividades; abriendo detalle directo.");
-    window.location.assign(`${location.origin}/aplicativoEminus/actividad-detalle/${encodeURIComponent(target.activityId)}`);
+    const fallbackUrl = new URL(`${location.origin}/aplicativoEminus/actividad-detalle/${encodeURIComponent(target.activityId)}`);
+    if (target.courseId) {
+      fallbackUrl.searchParams.set("courseId", target.courseId);
+    }
+    window.location.assign(fallbackUrl.toString());
   }
 
   async function setCourseContext(courseId) {
@@ -649,10 +687,20 @@
 
   async function navigateToActivity(item) {
     if (!item) return;
-    if (item.activityId) {
+    const activityId = normalizePositiveId(item.activityId);
+    const courseId = normalizePositiveId(item.courseId);
+    if (activityId) {
       clearPendingNavigationTarget();
+      if (courseId) {
+        savePendingNavigationTarget({ ...item, activityId, courseId });
+        await setCourseContext(courseId);
+      }
       setStatus(`Abriendo detalle: ${item.title}`);
-      window.location.assign(`${location.origin}/aplicativoEminus/actividad-detalle/${encodeURIComponent(item.activityId)}`);
+      const detailUrl = new URL(`${location.origin}/aplicativoEminus/actividad-detalle/${encodeURIComponent(activityId)}`);
+      if (courseId) {
+        detailUrl.searchParams.set("courseId", courseId);
+      }
+      window.location.assign(detailUrl.toString());
       return;
     }
     setStatus("Esta actividad no trae idActividad para abrir detalle directo.");
@@ -671,7 +719,7 @@
         }
         return Array.isArray(bgResponse.contenido) ? bgResponse.contenido : [];
       } catch (err) {
-        throw new Error(`Error de red al consultar ${path}. Recarga Eminus e inténtalo de nuevo.`);
+        throw new Error(err.message || `Error de red al consultar ${path}. Recarga Eminus e inténtalo de nuevo.`);
       }
     }
 
@@ -700,11 +748,18 @@
 
     for (const cEntry of courses) {
       const course = cEntry?.curso || {};
-      const courseId = String(course.idCurso || "");
+      const courseId = normalizePositiveId(course.idCurso ?? cEntry?.idCurso ?? course.courseId ?? cEntry?.courseId);
       const courseName = String(course.nombre || "").trim();
       if (!courseId || !courseName) continue;
 
-      const activities = await fetchJson(`/Activity/getActividadesEstudiante/${courseId}`, token);
+      let activities = [];
+      try {
+        activities = await fetchJson(`/Activity/getActividadesEstudiante/${courseId}`, token);
+      } catch (err) {
+        console.warn(`[Eminus Pending] No se pudieron cargar actividades del curso ${courseId} (${courseName}):`, err);
+        continue;
+      }
+
       for (const act of activities) {
         if (!isActivityPending(act)) continue;
 
@@ -782,7 +837,36 @@
   }
 
   async function hydrateFromStorage() {
-    const data = await storageGet([STORAGE_KEYS.LOG, STORAGE_KEYS.SNAPSHOT, STORAGE_KEYS.THEME]);
+    let data = await storageGet([STORAGE_KEYS.LOG, STORAGE_KEYS.SNAPSHOT, STORAGE_KEYS.THEME, STORAGE_KEYS.ACCOUNT_ID]);
+    
+    const storedAccountId = data[STORAGE_KEYS.ACCOUNT_ID];
+    const currentToken = getToken();
+    const currentAccountId = getAccountIdFromToken(currentToken);
+
+    if (storedAccountId && currentAccountId && storedAccountId !== currentAccountId) {
+      await storageSet({
+        [STORAGE_KEYS.LOG]: [],
+        [STORAGE_KEYS.SNAPSHOT]: null,
+        [STORAGE_KEYS.KNOWN_IDS]: [],
+        [STORAGE_KEYS.ACCOUNT_ID]: currentAccountId
+      });
+      data[STORAGE_KEYS.LOG] = [];
+      data[STORAGE_KEYS.SNAPSHOT] = null;
+      await syncBadge(0);
+    } else if (currentAccountId && !storedAccountId) {
+      await storageSet({ [STORAGE_KEYS.ACCOUNT_ID]: currentAccountId });
+    } else if (!currentToken && storedAccountId) {
+      await storageSet({
+        [STORAGE_KEYS.LOG]: [],
+        [STORAGE_KEYS.SNAPSHOT]: null,
+        [STORAGE_KEYS.KNOWN_IDS]: [],
+        [STORAGE_KEYS.ACCOUNT_ID]: null
+      });
+      data[STORAGE_KEYS.LOG] = [];
+      data[STORAGE_KEYS.SNAPSHOT] = null;
+      await syncBadge(0);
+    }
+
     state.logs = Array.isArray(data[STORAGE_KEYS.LOG]) ? data[STORAGE_KEYS.LOG] : [];
 
     const theme = data[STORAGE_KEYS.THEME] || "light";
@@ -798,6 +882,12 @@
       }
       renderPending(state.pending);
       await syncBadge(snapshot.pendingCount || 0);
+    } else {
+      state.pending = [];
+      renderPending([]);
+      if (panelEls?.subtitle) {
+        panelEls.subtitle.textContent = "Última lectura: Nunca";
+      }
     }
 
     renderLogs(state.logs);
@@ -816,7 +906,22 @@
         return;
       }
 
-      const knownData = await storageGet([STORAGE_KEYS.KNOWN_IDS]);
+      const currentAccountId = getAccountIdFromToken(token);
+      let knownData = await storageGet([STORAGE_KEYS.KNOWN_IDS, STORAGE_KEYS.ACCOUNT_ID]);
+      
+      if (knownData[STORAGE_KEYS.ACCOUNT_ID] && currentAccountId && knownData[STORAGE_KEYS.ACCOUNT_ID] !== currentAccountId) {
+        knownData[STORAGE_KEYS.KNOWN_IDS] = [];
+        state.logs = [];
+        await storageSet({
+          [STORAGE_KEYS.LOG]: [],
+          [STORAGE_KEYS.SNAPSHOT]: null,
+          [STORAGE_KEYS.KNOWN_IDS]: [],
+          [STORAGE_KEYS.ACCOUNT_ID]: currentAccountId
+        });
+      } else if (!knownData[STORAGE_KEYS.ACCOUNT_ID] && currentAccountId) {
+        await storageSet({ [STORAGE_KEYS.ACCOUNT_ID]: currentAccountId });
+      }
+
       const knownIds = new Set(Array.isArray(knownData[STORAGE_KEYS.KNOWN_IDS]) ? knownData[STORAGE_KEYS.KNOWN_IDS] : []);
 
       const pending = await buildPendingData(token);
