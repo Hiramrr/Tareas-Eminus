@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 import time
+import unicodedata
 import requests
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -21,6 +22,7 @@ log = logging.getLogger("eminus-notifier")
 SCRIPT_DIR = Path(__file__).parent.resolve()
 STATE_FILE = SCRIPT_DIR / "state.json"
 SCHEDULE_FILE = SCRIPT_DIR / "schedule.json"
+ACTIVITY_DEBUG_LOG = SCRIPT_DIR / "activity_debug.log"
 BASE_URL = "https://eminus.uv.mx/eminus4"
 
 DAYS_MAP = {0: "LUN", 1: "MAR", 2: "MIE", 3: "JUE", 4: "VIE", 5: "SAB", 6: "DOM"}
@@ -62,15 +64,114 @@ def load_schedule():
             log.warning("No se pudo cargar schedule.json: %s", e)
     return {}
 
+def normalize_text(value):
+    text = str(value or "").strip().lower()
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    return re.sub(r"[^a-z0-9]+", "", text)
+
+def extract_course_nrc(course):
+    if not isinstance(course, dict):
+        return None
+    candidate_fields = ["nrc", "idNrc", "claveNrc"]
+    for field in candidate_fields:
+        raw = course.get(field)
+        if raw is None:
+            continue
+        match = re.search(r"(\d{5})", str(raw))
+        if match:
+            return match.group(1)
+    name_match = re.search(r"(\d{5})", str(course.get("nombre", "")))
+    return name_match.group(1) if name_match else None
+
 def is_course_allowed(c_name, c_nrc, allowed_courses):
     if not allowed_courses: return True
+    norm_c_name = normalize_text(c_name)
     for allowed in allowed_courses:
-        a_nrc = str(allowed.get("nrc", ""))
+        a_nrc = re.search(r"(\d{5})", str(allowed.get("nrc", "")))
+        a_nrc = a_nrc.group(1) if a_nrc else ""
         if c_nrc and a_nrc == c_nrc: return True
-        a_name = allowed.get("name", "").upper().replace(" ", "")
-        norm_c_name = c_name.upper().replace(" ", "")
-        if a_name and a_name in norm_c_name: return True
+        a_name = normalize_text(allowed.get("name", ""))
+        if a_name and (a_name in norm_c_name or norm_c_name in a_name): return True
     return False
+
+def as_bool(value):
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    if isinstance(value, (int, float)):
+        return value != 0
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if not normalized or normalized in {"0", "false", "f", "no", "n", "null", "none", "sin entregar", "pendiente"}:
+            return False
+        if normalized in {"1", "true", "t", "si", "sí", "y", "yes", "entregada", "entregado", "completada", "completado"}:
+            return True
+    return bool(value)
+
+def has_delivery_date(value):
+    if value is None:
+        return False
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        return normalized not in {"", "null", "none", "sin entrega", "sin entregar", "pendiente"}
+    return True
+
+def append_activity_debug(entry):
+    try:
+        with ACTIVITY_DEBUG_LOG.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    except Exception as exc:
+        log.warning("No se pudo escribir activity_debug.log: %s", exc)
+
+def get_activity_deadline_str(act):
+    if not isinstance(act, dict):
+        return "Sin fecha"
+    for field in ["fechaTermino", "fechaVencimiento", "fechaFin"]:
+        value = act.get(field)
+        if value and str(value).strip().lower() != "sin fecha":
+            return str(value).strip()
+    return "Sin fecha"
+
+def is_activity_in_current_year(act, year):
+    deadline_str = get_activity_deadline_str(act)
+    if deadline_str == "Sin fecha":
+        return True
+    deadline_date = parse_eminus_date(deadline_str)
+    if deadline_date:
+        return deadline_date.year == year
+    # Fallback para fechas ISO como "2026-04-15T23:45:00"
+    if isinstance(deadline_str, str):
+        match = re.match(r"^\s*(\d{4})-", deadline_str)
+        if match:
+            return int(match.group(1)) == year
+    return False
+
+def is_activity_pending(act):
+    if not isinstance(act, dict):
+        return False
+    if as_bool(act.get("entregada")):
+        return False
+    if as_bool(act.get("completada")):
+        return False
+    estatus = str(act.get("estatus", "")).strip().lower()
+    if estatus in {"entregada", "entregado", "completada", "completado", "calificada", "cerrada", "cerrado", "finalizada", "finalizado", "enviada", "enviado", "revisada", "revisado"}:
+        return False
+    pending_statuses = {"pendiente", "abierta", "abierto", "activa", "activo", "en progreso", "por entregar", "sin entregar", "no entregada", "no entregado"}
+    fecha_entrega = str(act.get("fechaEntrega", "")).strip()
+    if has_delivery_date(fecha_entrega):
+        # En algunas cuentas fechaEntrega replica la fecha límite.
+        # Si coincide con fecha de cierre/vencimiento, no la tomamos como "entregada".
+        deadline_values = {
+            str(act.get("fechaTermino", "")).strip(),
+            str(act.get("fechaVencimiento", "")).strip(),
+            str(act.get("fechaFin", "")).strip(),
+        }
+        looks_like_deadline = bool(fecha_entrega and fecha_entrega in deadline_values)
+        if not looks_like_deadline and estatus not in pending_statuses:
+            return False
+    return True
 
 def check_class_reminders(schedule, state):
     now = datetime.now()
@@ -296,25 +397,82 @@ def main():
         courses = get_courses(token)
         if not courses: return
         now_ts = datetime.now().timestamp()
-        active_courses = [c for c in courses if (c.get("curso", {}).get("fechaInicioEpoch", 0) - (15 * 86400) <= now_ts <= c.get("curso", {}).get("fechaTerminoEpoch", 0) + (30 * 86400))]
+        active_courses = []
+        for c in courses:
+            course = c.get("curso", {})
+            start_epoch = course.get("fechaInicioEpoch")
+            end_epoch = course.get("fechaTerminoEpoch")
+            if isinstance(start_epoch, (int, float)) and isinstance(end_epoch, (int, float)) and start_epoch > 0 and end_epoch > 0:
+                if (start_epoch - (15 * 86400)) <= now_ts <= (end_epoch + (30 * 86400)):
+                    active_courses.append(c)
+            else:
+                # Si Eminus no entrega epochs válidos, no excluimos el curso.
+                active_courses.append(c)
         if active_courses: courses = active_courses
         allowed_courses = schedule.get("courses", [])
+        if allowed_courses:
+            schedule_filtered_courses = []
+            for c_entry in courses:
+                course = c_entry.get("curso", {})
+                c_name = course.get("nombre")
+                if not c_name:
+                    continue
+                c_nrc = extract_course_nrc(course)
+                if is_course_allowed(c_name, c_nrc, allowed_courses):
+                    schedule_filtered_courses.append(c_entry)
+            if schedule_filtered_courses:
+                courses = schedule_filtered_courses
+                log.info("Filtro de horario aplicado: %d cursos válidos.", len(courses))
+            else:
+                log.warning("schedule.json no coincide con los cursos actuales; se omite ese filtro para evitar perder pendientes.")
         log.info("Procesando %d cursos...", len(courses))
         pending_for_ui = []
+        current_year = datetime.now().year
         for c_entry in courses:
             course = c_entry.get("curso", {})
             c_id, c_name = str(course.get("idCurso")), course.get("nombre")
             if not c_id or not c_name: continue
-            nrc_match = re.search(r"(\d{5})", c_name)
-            c_nrc = nrc_match.group(1) if nrc_match else None
-            if not is_course_allowed(c_name, c_nrc, allowed_courses): continue
             activities = get_activities(token, c_id)
             if c_id not in state["courses"]: state["courses"][c_id] = {"name": c_name, "seen_activities": []}
             seen = state["courses"][c_id]["seen_activities"]
             for act in activities:
-                if act.get("entregada") or act.get("fechaEntrega"): continue
+                if not is_activity_in_current_year(act, current_year):
+                    append_activity_debug({
+                        "time": datetime.now().isoformat(),
+                        "course_id": c_id,
+                        "course_name": c_name,
+                        "activity_id": act.get("idActividad"),
+                        "title": act.get("titulo"),
+                        "pending": False,
+                        "filtered_by_year": True,
+                        "current_year": current_year,
+                        "fechaTermino": act.get("fechaTermino"),
+                        "fechaVencimiento": act.get("fechaVencimiento"),
+                        "fechaFin": act.get("fechaFin"),
+                    })
+                    continue
+                is_pending = is_activity_pending(act)
+                append_activity_debug({
+                    "time": datetime.now().isoformat(),
+                    "course_id": c_id,
+                    "course_name": c_name,
+                    "activity_id": act.get("idActividad"),
+                    "title": act.get("titulo"),
+                    "pending": is_pending,
+                    "entregada": act.get("entregada"),
+                    "completada": act.get("completada"),
+                    "estatus": act.get("estatus"),
+                    "fechaEntrega": act.get("fechaEntrega"),
+                    "fechaTermino": act.get("fechaTermino"),
+                    "fechaVencimiento": act.get("fechaVencimiento"),
+                    "fechaFin": act.get("fechaFin"),
+                    "filtered_by_year": False,
+                    "current_year": current_year,
+                })
+                if not is_pending:
+                    continue
                 a_id, a_title = act.get("idActividad"), act.get("titulo")
-                a_end_str = next((act.get(f) for f in ["fechaTermino", "fechaVencimiento", "fechaFin"] if act.get(f) and act.get(f) != "Sin fecha"), "Sin fecha")
+                a_end_str = get_activity_deadline_str(act)
                 a_end_date = parse_eminus_date(a_end_str)
                 time_rem = get_time_remaining(a_end_date)
                 display_deadline = f"{a_end_str} ({time_rem})" if time_rem else a_end_str
