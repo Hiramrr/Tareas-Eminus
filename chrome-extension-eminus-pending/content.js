@@ -216,10 +216,12 @@
 
       <div class="ep-tabs">
         <button class="ep-tab ep-tab-active" data-tab="pending">Pendientes</button>
+        <button class="ep-tab" data-tab="overdue">Vencidas</button>
         <button class="ep-tab" data-tab="log">Log</button>
       </div>
 
       <section class="ep-body" id="ep-body-pending"></section>
+      <section class="ep-body ep-hidden" id="ep-body-overdue"></section>
       <section class="ep-body ep-hidden" id="ep-body-log"></section>
 
       <footer class="ep-footer" id="ep-footer-status">Listo</footer>
@@ -239,6 +241,7 @@
       collapseBtn: root.querySelector("#ep-collapse"),
       tabButtons: root.querySelectorAll(".ep-tab"),
       pendingBody: root.querySelector("#ep-body-pending"),
+      overdueBody: root.querySelector("#ep-body-overdue"),
       logBody: root.querySelector("#ep-body-log"),
       footer: root.querySelector("#ep-footer-status")
     };
@@ -387,6 +390,7 @@
     });
 
     panelEls.pendingBody.classList.toggle("ep-hidden", tab !== "pending");
+    panelEls.overdueBody.classList.toggle("ep-hidden", tab !== "overdue");
     panelEls.logBody.classList.toggle("ep-hidden", tab !== "log");
   }
 
@@ -405,37 +409,51 @@
 
   function renderPending(items) {
     if (!panelEls?.pendingBody) return;
+    if (!panelEls?.overdueBody) return;
 
-    if (!items.length) {
-      panelEls.pendingBody.innerHTML = `<div class="ep-empty">Sin tareas pendientes detectadas.</div>`;
-      return;
-    }
+    const pendingItems = items.filter(item => item.urgency !== "overdue");
+    const overdueItems = items.filter(item => item.urgency === "overdue");
 
-    panelEls.pendingBody.innerHTML = items
-      .map((item, index) => {
-        const urgencyClass = `ep-${item.urgency}`;
-        const due = item.deadlineLabel || "Sin fecha";
-        return `
-          <button class="ep-item-btn" type="button" data-item-index="${index}">
-            <article class="ep-item ${urgencyClass}">
-              <div class="ep-course">${escapeHtml(item.course)}</div>
-              <div class="ep-title-task">${escapeHtml(item.title)}</div>
-              <div class="ep-meta">Vence: ${escapeHtml(due)}</div>
-            </article>
-          </button>
-        `;
-      })
-      .join("");
+    const renderList = (list, container, emptyMsg) => {
+      if (!list.length) {
+        container.innerHTML = `<div class="ep-empty">${emptyMsg}</div>`;
+        return;
+      }
+      container.innerHTML = list
+        .map((item) => {
+          const urgencyClass = `ep-${item.urgency}`;
+          const due = item.deadlineLabel || "Sin fecha";
+          const originalIndex = items.indexOf(item);
+          return `
+            <button class="ep-item-btn" type="button" data-item-index="${originalIndex}">
+              <article class="ep-item ${urgencyClass}">
+                <div class="ep-course">${escapeHtml(item.course)}</div>
+                <div class="ep-title-task">${escapeHtml(item.title)}</div>
+                <div class="ep-meta">Vence: ${escapeHtml(due)}</div>
+              </article>
+            </button>
+          `;
+        })
+        .join("");
+    };
 
-    panelEls.pendingBody.querySelectorAll(".ep-item-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const index = Number(btn.getAttribute("data-item-index"));
-        const item = state.pending[index];
-        if (item) {
-          navigateToActivity(item);
-        }
+    renderList(pendingItems, panelEls.pendingBody, "Sin tareas pendientes detectadas.");
+    renderList(overdueItems, panelEls.overdueBody, "Sin tareas vencidas detectadas.");
+
+    const addListeners = (container) => {
+      container.querySelectorAll(".ep-item-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const index = Number(btn.getAttribute("data-item-index"));
+          const item = state.pending[index];
+          if (item) {
+            navigateToActivity(item);
+          }
+        });
       });
-    });
+    };
+    
+    addListeners(panelEls.pendingBody);
+    addListeners(panelEls.overdueBody);
   }
 
   function renderLogs(logs) {
