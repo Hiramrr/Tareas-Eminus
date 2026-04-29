@@ -1,56 +1,43 @@
-# Eminus Notifier — macOS
+# Eminus Pending Panel (Chrome Extension)
 
-Monitorea **Eminus 4 (UV)** y envía notificaciones nativas de macOS cuando detecta
-cambios en Actividades, Evaluaciones, Foros y Mensajes.
+Extensión de Chrome (Manifest V3) para inyectar un panel en `eminus.uv.mx/eminus4` y mostrar:
 
-## Cómo funciona
+- Tareas pendientes por curso
+- Estado de urgencia (vencida, inminente, urgente, normal)
+- Log histórico de revisiones
 
-1. `launchd` ejecuta el script cada 15 minutos en background
-2. Selenium abre Chrome en modo headless y hace login automático en el SSO de la UV
-3. Las credenciales se guardan en el **Llavero de macOS** (no en texto plano)
-4. Si detecta cambios en alguna sección, lanza una notificación nativa de macOS
+Todo vive en la raíz de este repositorio.
 
-## Requisitos
+## Archivos
 
-- macOS 12+ | Python 3.9+ | Google Chrome instalado
+- `manifest.json`: configuración de la extensión
+- `content.js`: inyección del panel y consumo de API Eminus
+- `styles.css`: estilos del panel flotante
+- `service-worker.js`: badge en el ícono de la extensión
+- `popup.html` + `popup.js`: popup rápido para abrir/actualizar panel
 
-## Instalación
+## Instalación (modo desarrollador)
 
-```bash
-bash setup.sh
-```
+1. Abre `chrome://extensions/`
+2. Activa **Developer mode**
+3. Clic en **Load unpacked**
+4. Selecciona la carpeta de este repositorio
 
-## Comandos útiles
+## Uso
 
-```bash
-# Probar manualmente
-.venv/bin/python3 eminus_notifier.py
+1. Inicia sesión en Eminus normalmente
+2. Abre cualquier página bajo `https://eminus.uv.mx/eminus4/`
+3. Verás el panel flotante a la derecha
+4. Usa el botón `↻` para refrescar pendientes
+5. En la pestaña `Log` verás el historial de lecturas
 
-# Ver log en tiempo real
-tail -f notifier.log
+## Notas técnicas
 
-# Desinstalar
-bash uninstall.sh
-```
-
-## Cambiar el intervalo (default: 15 min)
-
-Edita `~/Library/LaunchAgents/mx.uv.eminus.notifier.plist`:
-- Cambia `<integer>900</integer>` → 300 (5min), 600 (10min), 1800 (30min)
-
-Recarga:
-```bash
-launchctl unload  ~/Library/LaunchAgents/mx.uv.eminus.notifier.plist
-launchctl load    ~/Library/LaunchAgents/mx.uv.eminus.notifier.plist
-```
-
-## Si el login falla
-
-El formulario del SSO puede tener selectores distintos a lo esperado.
-Corre el script manualmente y revisa `notifier.log` para ver qué URL
-carga después del redirect. Ajusta `user_candidates` en `login()` si es necesario.
-
-## Privacidad
-
-Las credenciales viven únicamente en el Llavero de macOS.
-El script solo accede a `eminus.uv.mx`. Sin servidores externos.
+- Usa `accessToken` de la sesión web de Eminus.
+- Consulta:
+  - `GET /Course/getAllCourses`
+  - `GET /Activity/getActividadesEstudiante/{idCurso}`
+- Guarda en `chrome.storage.local`:
+  - `eminusLastSnapshot`
+  - `eminusPendingLog`
+  - `eminusKnownPendingIds`

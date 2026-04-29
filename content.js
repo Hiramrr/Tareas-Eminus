@@ -679,7 +679,8 @@
       }
     });
 
-    await syncBadge(pendingCount);
+    const overdueCount = state.pending.filter((item) => item.urgency === "overdue" && !item.archived).length;
+    await syncBadge(pendingCount, 0, overdueCount);
   }
 
   async function archiveItemByIndex(index) {
@@ -715,6 +716,46 @@
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#39;");
+  }
+
+  function showToast(message, type = "info") {
+    if (!panelEls?.root) return;
+    let toast = panelEls.root.querySelector(".ep-toast");
+    if (toast) {
+      toast.remove();
+    }
+
+    toast = document.createElement("div");
+    toast.className = `ep-toast ep-toast-${type}`;
+    toast.textContent = message;
+
+    panelEls.root.appendChild(toast);
+
+    requestAnimationFrame(() => {
+      toast.classList.add("ep-toast-visible");
+    });
+
+    setTimeout(() => {
+      toast.classList.remove("ep-toast-visible");
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.parentElement.removeChild(toast);
+        }
+      }, 300);
+    }, 4000);
+  }
+
+  async function notifyUser(title, body) {
+    if (!hasRuntimeApi) return;
+    try {
+      await chrome.runtime.sendMessage({
+        type: "SHOW_NOTIFICATION",
+        title,
+        body
+      });
+    } catch (err) {
+      console.debug("No se pudo enviar notificación", err);
+    }
   }
 
   function getToken() {
@@ -1086,23 +1127,27 @@
     const trimmedLogs = logs.slice(0, 250);
     state.logs = trimmedLogs;
 
+    const overdueCount = pending.filter((item) => item.urgency === "overdue" && !item.archived).length;
+
     await storageSet({
       [STORAGE_KEYS.LOG]: trimmedLogs,
       [STORAGE_KEYS.SNAPSHOT]: {
         updatedAt: nowIso,
         pendingCount,
+        newCount,
+        overdueCount,
         pending
       },
       [STORAGE_KEYS.KNOWN_IDS]: currentIds
     });
 
-    return { newCount, updatedAt: nowIso };
+    return { newCount, overdueCount, updatedAt: nowIso };
   }
 
-  async function syncBadge(count) {
+  async function syncBadge(count, newCount = 0, overdueCount = 0) {
     if (!hasRuntimeApi) return;
     try {
-      await chrome.runtime.sendMessage({ type: "UPDATE_BADGE", count });
+      await chrome.runtime.sendMessage({ type: "UPDATE_BADGE", count, newCount, overdueCount });
     } catch (err) {
       console.debug("No se pudo actualizar badge", err);
     }
@@ -1166,7 +1211,9 @@
         panelEls.subtitle.textContent = `Última lectura: ${formatDateTime(snapshot.updatedAt)}`;
       }
       renderPending(state.pending);
-      await syncBadge(getVisiblePendingCount(state.pending));
+      const visibleCount = getVisiblePendingCount(state.pending);
+      const overdueCount = state.pending.filter((item) => item.urgency === "overdue" && !item.archived).length;
+      await syncBadge(visibleCount, 0, overdueCount);
     } else {
       state.pending = [];
       state.lastUpdatedAt = null;
@@ -1174,7 +1221,7 @@
       if (panelEls?.subtitle) {
         panelEls.subtitle.textContent = "Última lectura: Nunca";
       }
-      await syncBadge(0);
+      await syncBadge(0, 0, 0);
     }
 
     renderLogs(state.logs);
@@ -1225,6 +1272,11 @@
 
       const visiblePending = getVisiblePending(pending);
 
+      const previousOverdueIds = new Set((state.pending || []).filter((item) => item.urgency === "overdue" && !item.archived).map((item) => item.id));
+      const currentOverdue = visiblePending.filter((item) => item.urgency === "overdue");
+      const currentOverdueIds = new Set(currentOverdue.map((item) => item.id));
+      const newlyOverdue = currentOverdue.filter((item) => !previousOverdueIds.has(item.id));
+
       state.pending = pending;
       renderPending(pending);
 
@@ -1238,7 +1290,19 @@
       const status = `${visiblePending.length} pendientes | ${logMeta.newCount} nuevas`;
       setStatus(status);
 
-      await syncBadge(visiblePending.length);
+      if (logMeta.newCount > 0) {
+        const msg = logMeta.newCount === 1 ? "1 nueva tarea detectada" : `${logMeta.newCount} nuevas tareas detectadas`;
+        showToast(msg, "new");
+        await notifyUser("Nueva tarea en Eminus", msg);
+      }
+
+      if (newlyOverdue.length > 0) {
+        const msg = newlyOverdue.length === 1 ? "1 tarea acaba de vencerse" : `${newlyOverdue.length} tareas acaban de vencerse`;
+        showToast(msg, "overdue");
+        await notifyUser("Tarea vencida en Eminus", msg);
+      }
+
+      await syncBadge(visiblePending.length, logMeta.newCount, currentOverdue.length);
     } catch (err) {
       console.error("[Eminus Pending Panel]", err);
       setStatus(err.message || "Error al leer pendientes");

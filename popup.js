@@ -14,15 +14,25 @@ async function render() {
   const snapshot = await getState();
   const countEl = document.getElementById("count");
   const checkEl = document.getElementById("lastCheck");
+  const newEl = document.getElementById("newCount");
+  const overdueEl = document.getElementById("overdueCount");
 
   if (!snapshot) {
     countEl.textContent = "0";
     checkEl.textContent = "Sin lectura";
+    newEl.textContent = "";
+    overdueEl.textContent = "";
     return;
   }
 
   countEl.textContent = String(snapshot.pendingCount || 0);
   checkEl.textContent = fmtTime(snapshot.updatedAt);
+
+  const newCount = Number(snapshot.newCount || 0);
+  const overdueCount = Number(snapshot.overdueCount || 0);
+
+  newEl.textContent = newCount > 0 ? `[ ${newCount} nueva${newCount === 1 ? "" : "s"} ]` : "";
+  overdueEl.textContent = overdueCount > 0 ? `[ ${overdueCount} vencida${overdueCount === 1 ? "" : "s"} ]` : "";
 }
 
 async function openPanelAndRefresh() {

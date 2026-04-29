@@ -3,7 +3,7 @@
   "name": "Eminus Pending Panel",
   "description": "Inyecta un panel en Eminus para ver tareas pendientes y su log.",
   "version": "1.0.0",
-  "permissions": ["storage"],
+  "permissions": ["storage", "notifications"],
   "host_permissions": ["https://eminus.uv.mx/*"],
   "content_scripts": [
     {

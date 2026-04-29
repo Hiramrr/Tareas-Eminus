@@ -477,6 +477,185 @@
   color: #e0e0e0 !important;
 }
 
+/* Toast notifications */
+.ep-toast {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  left: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #000;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+  text-align: center;
+  font-family: inherit;
+}
+
+.ep-toast-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ep-toast-new {
+  background: #ffeaea;
+  color: #c0392b;
+  border-color: #c0392b;
+}
+
+.ep-toast-overdue {
+  background: #fff0f0;
+  color: #e74c3c;
+  border-color: #e74c3c;
+}
+
+.ep-toast-info {
+  background: #f0f8ff;
+  color: #2980b9;
+  border-color: #2980b9;
+}
+
+/* Dark theme toasts */
+#eminus-pending-panel.ep-dark-theme .ep-toast-new {
+  background: #4a1a1a;
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+}
+#eminus-pending-panel.ep-dark-theme .ep-toast-overdue {
+  background: #3b1a1a;
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+}
+#eminus-pending-panel.ep-dark-theme .ep-toast-info {
+  background: #1a2a3a;
+  color: #5dade2;
+  border-color: #5dade2;
+}
+
+/* Hacker theme toasts */
+#eminus-pending-panel.ep-hacker-theme .ep-toast-new {
+  background: #330000;
+  color: #ff0000;
+  border-color: #ff0000;
+}
+#eminus-pending-panel.ep-hacker-theme .ep-toast-overdue {
+  background: #330000;
+  color: #ff0000;
+  border-color: #ff0000;
+}
+#eminus-pending-panel.ep-hacker-theme .ep-toast-info {
+  background: #001100;
+  color: #00ff00;
+  border-color: #00ff00;
+}
+
+/* Ocean theme toasts */
+#eminus-pending-panel.ep-ocean-theme .ep-toast-new {
+  background: #4c1d2e;
+  color: #f43f5e;
+  border-color: #f43f5e;
+}
+#eminus-pending-panel.ep-ocean-theme .ep-toast-overdue {
+  background: #4c1d2e;
+  color: #f43f5e;
+  border-color: #f43f5e;
+}
+#eminus-pending-panel.ep-ocean-theme .ep-toast-info {
+  background: #0c4a6e;
+  color: #7dd3fc;
+  border-color: #7dd3fc;
+}
+
+/* Dracula theme toasts */
+#eminus-pending-panel.ep-dracula-theme .ep-toast-new {
+  background: #42222a;
+  color: #ff5555;
+  border-color: #ff5555;
+}
+#eminus-pending-panel.ep-dracula-theme .ep-toast-overdue {
+  background: #42222a;
+  color: #ff5555;
+  border-color: #ff5555;
+}
+#eminus-pending-panel.ep-dracula-theme .ep-toast-info {
+  background: #2a2d3e;
+  color: #8be9fd;
+  border-color: #8be9fd;
+}
+
+/* Nord theme toasts */
+#eminus-pending-panel.ep-nord-theme .ep-toast-new {
+  background: #3b2a32;
+  color: #bf616a;
+  border-color: #bf616a;
+}
+#eminus-pending-panel.ep-nord-theme .ep-toast-overdue {
+  background: #3b2a32;
+  color: #bf616a;
+  border-color: #bf616a;
+}
+#eminus-pending-panel.ep-nord-theme .ep-toast-info {
+  background: #2e3440;
+  color: #88c0d0;
+  border-color: #88c0d0;
+}
+
+/* Solarized theme toasts */
+#eminus-pending-panel.ep-solarized-theme .ep-toast-new {
+  background: #2b1d24;
+  color: #dc322f;
+  border-color: #dc322f;
+}
+#eminus-pending-panel.ep-solarized-theme .ep-toast-overdue {
+  background: #2b1d24;
+  color: #dc322f;
+  border-color: #dc322f;
+}
+#eminus-pending-panel.ep-solarized-theme .ep-toast-info {
+  background: #1a2a32;
+  color: #268bd2;
+  border-color: #268bd2;
+}
+
+/* Solarized Light theme toasts */
+#eminus-pending-panel.ep-solarizedlight-theme .ep-toast-new {
+  background: #fce8e6;
+  color: #dc322f;
+  border-color: #dc322f;
+}
+#eminus-pending-panel.ep-solarizedlight-theme .ep-toast-overdue {
+  background: #fce8e6;
+  color: #dc322f;
+  border-color: #dc322f;
+}
+#eminus-pending-panel.ep-solarizedlight-theme .ep-toast-info {
+  background: #e8f4fc;
+  color: #268bd2;
+  border-color: #268bd2;
+}
+
+/* Gruvbox theme toasts */
+#eminus-pending-panel.ep-gruvbox-theme .ep-toast-new {
+  background: #3c1f1e;
+  color: #cc241d;
+  border-color: #cc241d;
+}
+#eminus-pending-panel.ep-gruvbox-theme .ep-toast-overdue {
+  background: #3c1f1e;
+  color: #cc241d;
+  border-color: #cc241d;
+}
+#eminus-pending-panel.ep-gruvbox-theme .ep-toast-info {
+  background: #2e3338;
+  color: #458588;
+  border-color: #458588;
+}
+
 /* Theme Menu Dropdown */
 .ep-theme-menu {
   position: absolute;
