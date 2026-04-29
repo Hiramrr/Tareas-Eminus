@@ -218,6 +218,90 @@
   align-self: flex-end;
 }
 
+.ep-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ep-mini-btn {
+  border: 1px dashed currentColor;
+  background: transparent;
+  color: inherit;
+  font-size: 10px;
+  padding: 2px 6px;
+  cursor: pointer;
+  font-family: inherit;
+  text-transform: lowercase;
+}
+
+.ep-mini-btn:hover {
+  opacity: 0.75;
+}
+
+.ep-item.ep-archived {
+  opacity: 0.75;
+  border-style: dashed;
+}
+
+.ep-archive-stack {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ep-archive-stack .ep-btn#ep-collapse {
+  position: relative;
+  z-index: 1;
+}
+
+.ep-archive-stack .ep-archive-btn {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.ep-archive-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  line-height: 1;
+  min-height: 16px;
+  white-space: nowrap;
+}
+
+.ep-archive-back {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.ep-archive-btn .ep-bracket {
+  font-size: 12px;
+}
+
+.ep-archive-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ep-archive-icon svg {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+
+
+#eminus-pending-panel.ep-archive-view .ep-tabs {
+  display: none;
+}
+
 .ep-log-item {
   background: #ffffff;
   border: 1px solid #000;

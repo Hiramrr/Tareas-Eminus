@@ -11,7 +11,8 @@
     KNOWN_IDS: "eminusKnownPendingIds",
     PANEL_POSITION: "eminusPanelPosition",
     THEME: "eminusPanelTheme",
-    ACCOUNT_ID: "eminusAccountId"
+    ACCOUNT_ID: "eminusAccountId",
+    ARCHIVED: "eminusArchivedPendingIds"
   };
   const NAV_KEYS = {
     ACTIVITY_ID: "ep_target_activity_id",
@@ -21,11 +22,35 @@
     STEP: "ep_target_step"
   };
 
+  const ARCHIVE_ICON_SVG = `
+    <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+      <rect x="3" y="4" width="18" height="16" fill="none" stroke="currentColor" stroke-width="1.5"></rect>
+      <path d="M3 10h18" fill="none" stroke="currentColor" stroke-width="1.5"></path>
+      <rect x="8" y="13" width="8" height="3" fill="none" stroke="currentColor" stroke-width="1.5"></rect>
+    </svg>
+  `;
+
+  const ARCHIVE_BUTTON_HTML = `
+    <span class="ep-bracket">[</span>
+    <span class="ep-archive-icon">${ARCHIVE_ICON_SVG}</span>
+    <span class="ep-bracket">]</span>
+  `;
+
+  const ARCHIVE_BACK_HTML = `
+    <span class="ep-bracket">[</span>
+    <span class="ep-archive-back">←</span>
+    <span class="ep-bracket">]</span>
+  `;
+
   const state = {
     isCollapsed: true,
     activeTab: "pending",
     pending: [],
-    logs: []
+    logs: [],
+    archivedIds: new Set(),
+    lastUpdatedAt: null,
+    isArchiveView: false,
+    lastTabBeforeArchive: "pending"
   };
   let routeObserverStarted = false;
   let detailForceTimer = null;
@@ -149,6 +174,49 @@
     return "normal";
   }
 
+  function normalizeArchivedIds(raw) {
+    if (!Array.isArray(raw)) return new Set();
+    const ids = raw.map((id) => String(id)).filter((id) => id);
+    return new Set(ids);
+  }
+
+  function applyArchivedState(items, archivedSet) {
+    if (!Array.isArray(items)) return [];
+    items.forEach((item) => {
+      if (!item || !item.id) return;
+      item.archived = archivedSet.has(item.id);
+    });
+    return items;
+  }
+
+  function pruneArchivedIds(items, archivedSet) {
+    const next = new Set();
+    if (!Array.isArray(items)) return next;
+    items.forEach((item) => {
+      if (item && item.id && archivedSet.has(item.id)) {
+        next.add(item.id);
+      }
+    });
+    return next;
+  }
+
+  function getVisiblePending(items) {
+    if (!Array.isArray(items)) return [];
+    return items.filter((item) => !item.archived);
+  }
+
+  function getVisiblePendingCount(items) {
+    return getVisiblePending(items).length;
+  }
+
+  function setsEqual(a, b) {
+    if (a.size !== b.size) return false;
+    for (const value of a) {
+      if (!b.has(value)) return false;
+    }
+    return true;
+  }
+
   async function storageGet(keys) {
     if (!hasStorageApi) {
       return {};
@@ -210,7 +278,12 @@
              <button class="ep-theme-option" data-theme="gruvbox">Gruvbox</button>
           </div>
           <button class="ep-btn" id="ep-refresh" title="Actualizar">[ ref ]</button>
-          <button class="ep-btn" id="ep-collapse" title="Desplegar">[ + ]</button>
+          <div class="ep-archive-stack">
+            <button class="ep-btn ep-archive-btn" id="ep-archive-toggle" title="Archivadas" aria-label="Archivadas">
+              ${ARCHIVE_BUTTON_HTML}
+            </button>
+            <button class="ep-btn" id="ep-collapse" title="Desplegar">[ + ]</button>
+          </div>
         </div>
       </header>
 
@@ -238,6 +311,7 @@
       themeMenu: root.querySelector("#ep-theme-menu"),
       themeOptions: root.querySelectorAll(".ep-theme-option"),
       refreshBtn: root.querySelector("#ep-refresh"),
+      archiveBtn: root.querySelector("#ep-archive-toggle"),
       collapseBtn: root.querySelector("#ep-collapse"),
       tabButtons: root.querySelectorAll(".ep-tab"),
       pendingBody: root.querySelector("#ep-body-pending"),
@@ -251,6 +325,7 @@
       btn.addEventListener("click", () => setTheme(btn.dataset.theme));
     });
     panelEls.refreshBtn.addEventListener("click", () => scanPending());
+    panelEls.archiveBtn.addEventListener("click", toggleArchiveView);
     panelEls.collapseBtn.addEventListener("click", toggleCollapse);
     panelEls.tabButtons.forEach((btn) => {
       btn.addEventListener("click", () => setTab(btn.dataset.tab));
@@ -258,9 +333,9 @@
 
     document.addEventListener("click", (e) => {
       if (
-        panelEls.themeMenu && 
+        panelEls.themeMenu &&
         !panelEls.themeMenu.classList.contains("ep-hidden") &&
-        e.target instanceof HTMLElement && 
+        e.target instanceof Element &&
         !e.target.closest("#ep-theme-menu") &&
         !e.target.closest("#ep-theme-toggle")
       ) {
@@ -268,6 +343,7 @@
       }
     });
 
+    updateArchiveToggleButton();
     setupPanelDrag();
   }
 
@@ -316,7 +392,7 @@
 
     panelEls.header.addEventListener("pointerdown", (event) => {
       const target = event.target;
-      if (target instanceof HTMLElement && (target.closest("button") || target.closest(".ep-theme-menu"))) {
+      if (target instanceof Element && (target.closest("button") || target.closest(".ep-theme-menu"))) {
         return;
       }
 
@@ -383,15 +459,56 @@
     await storageSet({ [STORAGE_KEYS.THEME]: themeName });
   }
 
-  function setTab(tab) {
-    state.activeTab = tab;
+  function updateArchiveToggleButton() {
+    if (!panelEls?.archiveBtn) return;
+    const label = state.isArchiveView ? "Volver" : "Archivadas";
+    panelEls.archiveBtn.title = label;
+    panelEls.archiveBtn.setAttribute("aria-label", label);
+    panelEls.archiveBtn.innerHTML = state.isArchiveView ? ARCHIVE_BACK_HTML : ARCHIVE_BUTTON_HTML;
+  }
+
+  function updateTabVisibility() {
     panelEls.tabButtons.forEach((btn) => {
-      btn.classList.toggle("ep-tab-active", btn.dataset.tab === tab);
+      btn.classList.toggle("ep-tab-active", btn.dataset.tab === state.activeTab);
     });
 
-    panelEls.pendingBody.classList.toggle("ep-hidden", tab !== "pending");
-    panelEls.overdueBody.classList.toggle("ep-hidden", tab !== "overdue");
-    panelEls.logBody.classList.toggle("ep-hidden", tab !== "log");
+    if (state.isArchiveView) {
+      panelEls.pendingBody.classList.remove("ep-hidden");
+      panelEls.overdueBody.classList.add("ep-hidden");
+      panelEls.logBody.classList.add("ep-hidden");
+      return;
+    }
+
+    panelEls.pendingBody.classList.toggle("ep-hidden", state.activeTab !== "pending");
+    panelEls.overdueBody.classList.toggle("ep-hidden", state.activeTab !== "overdue");
+    panelEls.logBody.classList.toggle("ep-hidden", state.activeTab !== "log");
+  }
+
+  function setArchiveView(isOpen) {
+    if (state.isArchiveView === isOpen) return;
+    if (isOpen) {
+      state.lastTabBeforeArchive = state.activeTab;
+      state.activeTab = "pending";
+    }
+    state.isArchiveView = isOpen;
+    panelEls.root.classList.toggle("ep-archive-view", isOpen);
+    updateArchiveToggleButton();
+
+    if (!isOpen && state.lastTabBeforeArchive) {
+      state.activeTab = state.lastTabBeforeArchive;
+    }
+
+    updateTabVisibility();
+    renderPending(state.pending);
+  }
+
+  function toggleArchiveView() {
+    setArchiveView(!state.isArchiveView);
+  }
+
+  function setTab(tab) {
+    state.activeTab = tab;
+    updateTabVisibility();
   }
 
   function setStatus(text) {
@@ -411,49 +528,97 @@
     if (!panelEls?.pendingBody) return;
     if (!panelEls?.overdueBody) return;
 
-    const pendingItems = items.filter(item => item.urgency !== "overdue");
-    const overdueItems = items.filter(item => item.urgency === "overdue");
+    const pendingItems = items.filter((item) => item.urgency !== "overdue" && !item.archived);
+    const overdueItems = items.filter((item) => item.urgency === "overdue" && !item.archived);
+    const archivedItems = items.filter((item) => item.archived);
 
-    const renderList = (list, container, emptyMsg) => {
+    const buildListHtml = (list, emptyMsg, actionConfig = null) => {
       if (!list.length) {
-        container.innerHTML = `<div class="ep-empty">${emptyMsg}</div>`;
-        return;
+        return `<div class="ep-empty">${emptyMsg}</div>`;
       }
-      container.innerHTML = list
+      return list
         .map((item) => {
           const urgencyClass = `ep-${item.urgency}`;
           const due = item.deadlineLabel || "Sin fecha";
           const originalIndex = items.indexOf(item);
+          const archivedClass = item.archived ? "ep-archived" : "";
+          const actionHtml = actionConfig
+            ? `<button class="ep-mini-btn" type="button" data-action="${actionConfig.action}" data-item-index="${originalIndex}">${escapeHtml(actionConfig.label)}</button>`
+            : "";
+          const metaHtml = actionConfig
+            ? `<div class="ep-meta-row"><div class="ep-meta">Vence: ${escapeHtml(due)}</div>${actionHtml}</div>`
+            : `<div class="ep-meta">Vence: ${escapeHtml(due)}</div>`;
           return `
-            <button class="ep-item-btn" type="button" data-item-index="${originalIndex}">
-              <article class="ep-item ${urgencyClass}">
+            <div class="ep-item-btn" role="button" tabindex="0" data-item-index="${originalIndex}">
+              <article class="ep-item ${urgencyClass} ${archivedClass}">
                 <div class="ep-course">${escapeHtml(item.course)}</div>
                 <div class="ep-title-task">${escapeHtml(item.title)}</div>
-                <div class="ep-meta">Vence: ${escapeHtml(due)}</div>
+                ${metaHtml}
               </article>
-            </button>
+            </div>
           `;
         })
         .join("");
     };
 
-    renderList(pendingItems, panelEls.pendingBody, "Sin tareas pendientes detectadas.");
-    renderList(overdueItems, panelEls.overdueBody, "Sin tareas vencidas detectadas.");
+    if (state.isArchiveView) {
+      panelEls.pendingBody.innerHTML = buildListHtml(archivedItems, "Sin tareas archivadas.", { label: "Restaurar", action: "unarchive" });
+      panelEls.overdueBody.innerHTML = "";
+    } else {
+      panelEls.pendingBody.innerHTML = buildListHtml(pendingItems, "Sin tareas pendientes detectadas.");
+      panelEls.overdueBody.innerHTML = buildListHtml(overdueItems, "Sin tareas vencidas detectadas.", { label: "Archivar", action: "archive" });
+    }
 
-    const addListeners = (container) => {
-      container.querySelectorAll(".ep-item-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const index = Number(btn.getAttribute("data-item-index"));
+    const addItemListeners = (container) => {
+      container.querySelectorAll(".ep-item-btn").forEach((card) => {
+        const openItem = () => {
+          const index = Number(card.getAttribute("data-item-index"));
           const item = state.pending[index];
           if (item) {
             navigateToActivity(item);
           }
+        };
+
+        card.addEventListener("click", (event) => {
+          if (event.target instanceof HTMLElement && event.target.closest(".ep-mini-btn")) {
+            return;
+          }
+          openItem();
+        });
+
+        card.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openItem();
+          }
         });
       });
     };
-    
-    addListeners(panelEls.pendingBody);
-    addListeners(panelEls.overdueBody);
+
+    const addActionListeners = (container) => {
+      container.querySelectorAll(".ep-mini-btn").forEach((btn) => {
+        btn.addEventListener("click", async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const index = Number(btn.getAttribute("data-item-index"));
+          const action = btn.getAttribute("data-action");
+          if (action === "archive") {
+            await archiveItemByIndex(index);
+          } else if (action === "unarchive") {
+            await unarchiveItemByIndex(index);
+          }
+        });
+      });
+    };
+
+    const containers = state.isArchiveView
+      ? [panelEls.pendingBody]
+      : [panelEls.pendingBody, panelEls.overdueBody];
+
+    containers.forEach((container) => {
+      addItemListeners(container);
+      addActionListeners(container);
+    });
   }
 
   function renderLogs(logs) {
@@ -496,6 +661,51 @@
         renderLogs([]);
       });
     }
+  }
+
+  async function persistArchiveState() {
+    const archivedList = Array.from(state.archivedIds);
+    await storageSet({ [STORAGE_KEYS.ARCHIVED]: archivedList });
+
+    const pendingCount = getVisiblePendingCount(state.pending);
+    const updatedAt = state.lastUpdatedAt || new Date().toISOString();
+    state.lastUpdatedAt = updatedAt;
+
+    await storageSet({
+      [STORAGE_KEYS.SNAPSHOT]: {
+        updatedAt,
+        pendingCount,
+        pending: state.pending
+      }
+    });
+
+    await syncBadge(pendingCount);
+  }
+
+  async function archiveItemByIndex(index) {
+    const item = state.pending[index];
+    if (!item || item.urgency !== "overdue") return;
+    if (item.archived) return;
+
+    state.archivedIds.add(item.id);
+    item.archived = true;
+
+    renderPending(state.pending);
+    await persistArchiveState();
+    setStatus(`Archivada: ${item.title}`);
+  }
+
+  async function unarchiveItemByIndex(index) {
+    const item = state.pending[index];
+    if (!item || item.urgency !== "overdue") return;
+    if (!item.archived) return;
+
+    state.archivedIds.delete(item.id);
+    item.archived = false;
+
+    renderPending(state.pending);
+    await persistArchiveState();
+    setStatus(`Restaurada: ${item.title}`);
   }
 
   function escapeHtml(text) {
@@ -837,7 +1047,8 @@
           title: String(act.titulo || "Actividad sin titulo"),
           deadlineRaw: deadlineDate ? deadlineDate.toISOString() : "",
           deadlineLabel: remaining ? `${deadlineStr} (${remaining})` : deadlineStr,
-          urgency
+          urgency,
+          archived: false
         });
       }
     }
@@ -852,20 +1063,22 @@
     return pending;
   }
 
-  async function appendLog(pending, knownIdsBefore) {
+  async function appendLog(pending, knownIdsBefore, visiblePending = pending) {
     const nowIso = new Date().toISOString();
     const currentIds = pending.map((item) => item.id);
     const newCount = currentIds.filter((id) => !knownIdsBefore.has(id)).length;
+    const pendingCount = Array.isArray(visiblePending) ? visiblePending.length : 0;
 
     const data = await storageGet([STORAGE_KEYS.LOG]);
     const logs = Array.isArray(data[STORAGE_KEYS.LOG]) ? data[STORAGE_KEYS.LOG] : [];
     
     if (newCount > 0) {
+      const previewSource = pendingCount ? visiblePending : pending;
       const entry = {
         timestamp: nowIso,
-        pendingCount: pending.length,
+        pendingCount,
         newCount,
-        previewTitles: pending.slice(0, 4).map((p) => `${p.course} - ${p.title}`)
+        previewTitles: previewSource.slice(0, 4).map((p) => `${p.course} - ${p.title}`)
       };
       logs.unshift(entry);
     }
@@ -877,7 +1090,7 @@
       [STORAGE_KEYS.LOG]: trimmedLogs,
       [STORAGE_KEYS.SNAPSHOT]: {
         updatedAt: nowIso,
-        pendingCount: pending.length,
+        pendingCount,
         pending
       },
       [STORAGE_KEYS.KNOWN_IDS]: currentIds
@@ -896,7 +1109,7 @@
   }
 
   async function hydrateFromStorage() {
-    let data = await storageGet([STORAGE_KEYS.LOG, STORAGE_KEYS.SNAPSHOT, STORAGE_KEYS.THEME, STORAGE_KEYS.ACCOUNT_ID]);
+    let data = await storageGet([STORAGE_KEYS.LOG, STORAGE_KEYS.SNAPSHOT, STORAGE_KEYS.THEME, STORAGE_KEYS.ACCOUNT_ID, STORAGE_KEYS.ARCHIVED]);
     
     const storedAccountId = data[STORAGE_KEYS.ACCOUNT_ID];
     const currentToken = getToken();
@@ -907,10 +1120,12 @@
         [STORAGE_KEYS.LOG]: [],
         [STORAGE_KEYS.SNAPSHOT]: null,
         [STORAGE_KEYS.KNOWN_IDS]: [],
+        [STORAGE_KEYS.ARCHIVED]: [],
         [STORAGE_KEYS.ACCOUNT_ID]: currentAccountId
       });
       data[STORAGE_KEYS.LOG] = [];
       data[STORAGE_KEYS.SNAPSHOT] = null;
+      data[STORAGE_KEYS.ARCHIVED] = [];
       await syncBadge(0);
     } else if (currentAccountId && !storedAccountId) {
       await storageSet({ [STORAGE_KEYS.ACCOUNT_ID]: currentAccountId });
@@ -919,14 +1134,17 @@
         [STORAGE_KEYS.LOG]: [],
         [STORAGE_KEYS.SNAPSHOT]: null,
         [STORAGE_KEYS.KNOWN_IDS]: [],
+        [STORAGE_KEYS.ARCHIVED]: [],
         [STORAGE_KEYS.ACCOUNT_ID]: null
       });
       data[STORAGE_KEYS.LOG] = [];
       data[STORAGE_KEYS.SNAPSHOT] = null;
+      data[STORAGE_KEYS.ARCHIVED] = [];
       await syncBadge(0);
     }
 
     state.logs = Array.isArray(data[STORAGE_KEYS.LOG]) ? data[STORAGE_KEYS.LOG] : [];
+    state.archivedIds = normalizeArchivedIds(data[STORAGE_KEYS.ARCHIVED]);
 
     const theme = data[STORAGE_KEYS.THEME] || "light";
     if (theme !== "light") {
@@ -935,18 +1153,28 @@
 
     const snapshot = data[STORAGE_KEYS.SNAPSHOT];
     if (snapshot && Array.isArray(snapshot.pending)) {
-      state.pending = snapshot.pending;
+      state.pending = applyArchivedState(snapshot.pending, state.archivedIds);
+      state.lastUpdatedAt = snapshot.updatedAt || null;
+
+      const prunedArchived = pruneArchivedIds(state.pending, state.archivedIds);
+      if (!setsEqual(prunedArchived, state.archivedIds)) {
+        state.archivedIds = prunedArchived;
+        await storageSet({ [STORAGE_KEYS.ARCHIVED]: Array.from(prunedArchived) });
+      }
+
       if (panelEls?.subtitle) {
         panelEls.subtitle.textContent = `Última lectura: ${formatDateTime(snapshot.updatedAt)}`;
       }
       renderPending(state.pending);
-      await syncBadge(snapshot.pendingCount || 0);
+      await syncBadge(getVisiblePendingCount(state.pending));
     } else {
       state.pending = [];
+      state.lastUpdatedAt = null;
       renderPending([]);
       if (panelEls?.subtitle) {
         panelEls.subtitle.textContent = "Última lectura: Nunca";
       }
+      await syncBadge(0);
     }
 
     renderLogs(state.logs);
@@ -966,15 +1194,17 @@
       }
 
       const currentAccountId = getAccountIdFromToken(token);
-      let knownData = await storageGet([STORAGE_KEYS.KNOWN_IDS, STORAGE_KEYS.ACCOUNT_ID]);
+      let knownData = await storageGet([STORAGE_KEYS.KNOWN_IDS, STORAGE_KEYS.ACCOUNT_ID, STORAGE_KEYS.ARCHIVED]);
       
       if (knownData[STORAGE_KEYS.ACCOUNT_ID] && currentAccountId && knownData[STORAGE_KEYS.ACCOUNT_ID] !== currentAccountId) {
         knownData[STORAGE_KEYS.KNOWN_IDS] = [];
+        knownData[STORAGE_KEYS.ARCHIVED] = [];
         state.logs = [];
         await storageSet({
           [STORAGE_KEYS.LOG]: [],
           [STORAGE_KEYS.SNAPSHOT]: null,
           [STORAGE_KEYS.KNOWN_IDS]: [],
+          [STORAGE_KEYS.ARCHIVED]: [],
           [STORAGE_KEYS.ACCOUNT_ID]: currentAccountId
         });
       } else if (!knownData[STORAGE_KEYS.ACCOUNT_ID] && currentAccountId) {
@@ -982,21 +1212,33 @@
       }
 
       const knownIds = new Set(Array.isArray(knownData[STORAGE_KEYS.KNOWN_IDS]) ? knownData[STORAGE_KEYS.KNOWN_IDS] : []);
+      state.archivedIds = normalizeArchivedIds(knownData[STORAGE_KEYS.ARCHIVED]);
 
       const pending = await buildPendingData(token);
+      applyArchivedState(pending, state.archivedIds);
+
+      const prunedArchived = pruneArchivedIds(pending, state.archivedIds);
+      if (!setsEqual(prunedArchived, state.archivedIds)) {
+        state.archivedIds = prunedArchived;
+        await storageSet({ [STORAGE_KEYS.ARCHIVED]: Array.from(prunedArchived) });
+      }
+
+      const visiblePending = getVisiblePending(pending);
+
       state.pending = pending;
       renderPending(pending);
 
-      const logMeta = await appendLog(pending, knownIds);
+      const logMeta = await appendLog(pending, knownIds, visiblePending);
       renderLogs(state.logs);
+      state.lastUpdatedAt = logMeta.updatedAt;
 
       if (panelEls?.subtitle) {
         panelEls.subtitle.textContent = `Última lectura: ${formatDateTime(logMeta.updatedAt)}`;
       }
-      const status = `${pending.length} pendientes | ${logMeta.newCount} nuevas`;
+      const status = `${visiblePending.length} pendientes | ${logMeta.newCount} nuevas`;
       setStatus(status);
 
-      await syncBadge(pending.length);
+      await syncBadge(visiblePending.length);
     } catch (err) {
       console.error("[Eminus Pending Panel]", err);
       setStatus(err.message || "Error al leer pendientes");
