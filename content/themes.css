@@ -951,7 +951,8 @@
 #eminus-pending-panel.ep-solarized-theme .ep-item-btn:hover .ep-item.ep-overdue,
 #eminus-pending-panel.ep-gruvbox-theme .ep-item-btn:hover .ep-item.ep-overdue,
 #eminus-pending-panel.ep-solarized-osaka-theme .ep-item-btn:hover .ep-item.ep-overdue,
-#eminus-pending-panel.ep-olivia-theme .ep-item-btn:hover .ep-item.ep-overdue {
+#eminus-pending-panel.ep-olivia-theme .ep-item-btn:hover .ep-item.ep-overdue,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-item-btn:hover .ep-item.ep-overdue {
   background-color: rgba(255, 0, 0, 0.3);
 }
 
@@ -962,7 +963,8 @@
 #eminus-pending-panel.ep-solarized-theme .ep-item-btn:hover .ep-item.ep-imminent,
 #eminus-pending-panel.ep-gruvbox-theme .ep-item-btn:hover .ep-item.ep-imminent,
 #eminus-pending-panel.ep-solarized-osaka-theme .ep-item-btn:hover .ep-item.ep-imminent,
-#eminus-pending-panel.ep-olivia-theme .ep-item-btn:hover .ep-item.ep-imminent {
+#eminus-pending-panel.ep-olivia-theme .ep-item-btn:hover .ep-item.ep-imminent,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-item-btn:hover .ep-item.ep-imminent {
   background-color: rgba(255, 165, 0, 0.3);
 }
 
@@ -973,7 +975,8 @@
 #eminus-pending-panel.ep-solarized-theme .ep-item-btn:hover .ep-item.ep-urgent,
 #eminus-pending-panel.ep-gruvbox-theme .ep-item-btn:hover .ep-item.ep-urgent,
 #eminus-pending-panel.ep-solarized-osaka-theme .ep-item-btn:hover .ep-item.ep-urgent,
-#eminus-pending-panel.ep-olivia-theme .ep-item-btn:hover .ep-item.ep-urgent {
+#eminus-pending-panel.ep-olivia-theme .ep-item-btn:hover .ep-item.ep-urgent,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-item-btn:hover .ep-item.ep-urgent {
   background-color: rgba(255, 255, 0, 0.2);
 }
 
@@ -2939,4 +2942,132 @@
   background: #1d252b;
   color: #cba694;
   border-color: #cba694;
+}
+
+/* ══════════════════════════════════════════
+   THEME: PASSION FRUIT
+   ══════════════════════════════════════════ */
+
+#eminus-pending-panel.ep-passion-fruit-theme {
+  background: #6B2D3C;
+  color: #E8A0B0;
+  border-color: #E8A0B0;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-header,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-tabs,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-body,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-footer,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-item,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-log-item,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-theme-menu {
+  background: #6B2D3C;
+  border-color: #E8A0B0;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-seal-art,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-miyu-text,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-title-wrap .ep-title,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-subtitle,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-btn,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-autorefresh-select,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-course,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-title-task,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-meta,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-log-time,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-log-summary,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-log-lines,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-log-changes,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-theme-option {
+  color: #E8A0B0 !important;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-tab {
+  color: #B08090;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-tab-active {
+  color: #6B2D3C;
+  background: #E8A0B0;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-tab:hover:not(.ep-tab-active) {
+  color: #E8A0B0;
+  background: #7A3A48;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-btn:hover {
+  background: #E8A0B0;
+  color: #6B2D3C !important;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-item-btn {
+  background: #7A3A48;
+  border-color: #E8A0B0;
+  color: #E8A0B0;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-item-btn:hover {
+  background: #E8A0B0;
+  color: #6B2D3C !important;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-theme-option:hover {
+  background: #7A3A48;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-empty {
+  color: #B08090;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-item-title {
+  color: #E8A0B0;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-item-date {
+  color: #B08090;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-item-course {
+  color: #A07080;
+}
+
+/* Passion Fruit: Urgency */
+#eminus-pending-panel.ep-passion-fruit-theme .ep-item.ep-overdue {
+  background-color: #5C2020;
+  border-left-color: #E84A6F;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-item.ep-imminent {
+  background-color: #5C4A20;
+  border-left-color: #E8C060;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-item.ep-urgent {
+  background-color: #1E3A1E;
+  border-left-color: #88C890;
+}
+
+/* Passion Fruit: Agenda */
+#eminus-pending-panel.ep-passion-fruit-theme .ep-agenda-day-header.ep-agenda-overdue {
+  color: #E84A6F;
+}
+
+/* Passion Fruit: Toasts */
+#eminus-pending-panel.ep-passion-fruit-theme .ep-toast-new {
+  background: #5C2020;
+  color: #E8A0B0;
+  border-color: #E8A0B0;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-toast-overdue {
+  background: #5C2020;
+  color: #E84A6F;
+  border-color: #E84A6F;
+}
+
+#eminus-pending-panel.ep-passion-fruit-theme .ep-toast-info {
+  background: #3A2A48;
+  color: #8B8FA8;
+  border-color: #8B8FA8;
 }

@@ -37,7 +37,7 @@ em.showToast = function (message, type) {
 em.notifyUser = async function (title, body) {
   if (!em.hasRuntimeApi) return;
   try {
-    await chrome.runtime.sendMessage({
+    await browser.runtime.sendMessage({
       type: "SHOW_NOTIFICATION",
       title,
       body
@@ -53,7 +53,7 @@ em.syncBadge = async function (count, newCount, overdueCount) {
   overdueCount = Number(overdueCount || 0);
   count = Number(count || 0);
   try {
-    await chrome.runtime.sendMessage({ type: "UPDATE_BADGE", count, newCount, overdueCount });
+    await browser.runtime.sendMessage({ type: "UPDATE_BADGE", count, newCount, overdueCount });
   } catch (err) {
     console.debug("No se pudo actualizar badge", err);
   }

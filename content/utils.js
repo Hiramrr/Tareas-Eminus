@@ -6,6 +6,11 @@ window.eminus = window.eminus || {};
 
 var em = window.eminus;
 
+// Polyfill para compatibilidad con Firefox (API browser)
+if (typeof browser === "undefined" && typeof chrome !== "undefined") {
+  window.browser = chrome;
+}
+
 em.asBool = function (value) {
   if (typeof value === "boolean") return value;
   if (value === null || value === undefined) return false;

@@ -93,7 +93,8 @@ em.createPanel = function () {
              <button class="ep-theme-chip" data-theme="wispr">Wispr</button>
              <button class="ep-theme-chip" data-theme="solarized-osaka">Solarized Osaka</button>
              <button class="ep-theme-chip" data-theme="olivia">Olivia</button>
-          </div>
+             <button class="ep-theme-chip" data-theme="passion-fruit">Passion Fruit</button>
+           </div>
         </div>
 
         <div class="ep-config-row">
@@ -171,7 +172,7 @@ em.createPanel = function () {
 
   const jazminBg = root.querySelector("#ep-jazmin-bg");
   if (jazminBg) {
-    jazminBg.src = chrome.runtime.getURL("jazmin.png");
+    jazminBg.src = browser.runtime.getURL("jazmin.png");
   }
 
   em.panelEls = {

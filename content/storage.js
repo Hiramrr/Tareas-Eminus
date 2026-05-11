@@ -7,22 +7,22 @@ window.eminus = window.eminus || {};
 var em = window.eminus;
 
 (function () {
-  var hasChrome = typeof chrome !== "undefined";
-  em.hasChrome = hasChrome;
-  em.hasStorageApi = hasChrome && !!((chrome || {}).storage || {}).local;
-  em.hasRuntimeApi = hasChrome && !!chrome.runtime;
+  var api = typeof browser !== "undefined" ? browser : null;
+  em.hasApi = !!api;
+  em.hasStorageApi = !!(api && api.storage && api.storage.local);
+  em.hasRuntimeApi = !!(api && api.runtime);
 })();
 
 em.storageGet = async function (keys) {
   if (!em.hasStorageApi) {
     return {};
   }
-  return chrome.storage.local.get(keys);
+  return browser.storage.local.get(keys);
 };
 
 em.storageSet = async function (payload) {
   if (!em.hasStorageApi) {
     return;
   }
-  return chrome.storage.local.set(payload);
+  return browser.storage.local.set(payload);
 };

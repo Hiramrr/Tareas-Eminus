@@ -1,6 +1,6 @@
-# Miyu --pendientes (Chrome Extension)
+# Miyu --pendientes (Cross-browser Extension)
 
-Extensión de Chrome (Manifest V3) para inyectar un panel en `eminus.uv.mx` y mostrar:
+Extensión (Manifest V3) compatible con Chrome y Firefox para inyectar un panel en `eminus.uv.mx` y mostrar:
 
 - Tareas pendientes por curso
 - Estado de urgencia (vencida, inminente, urgente, normal)
@@ -21,10 +21,16 @@ Extensión de Chrome (Manifest V3) para inyectar un panel en `eminus.uv.mx` y mo
 
 ## Instalación (modo desarrollador)
 
+### Chrome
 1. Abre `chrome://extensions/`
 2. Activa **Developer mode**
 3. Clic en **Load unpacked**
 4. Selecciona la carpeta de este repositorio
+
+### Firefox
+1. Abre `about:debugging#/runtime/this-firefox`
+2. Clic en **Load Temporary Add-on...**
+3. Selecciona el archivo `manifest.json` de la carpeta de este repositorio
 
 ## Uso
 
@@ -41,7 +47,7 @@ Extensión de Chrome (Manifest V3) para inyectar un panel en `eminus.uv.mx` y mo
 - Consulta:
   - `GET /Course/getAllCourses`
   - `GET /Activity/getActividadesEstudiante/{idCurso}`
-- Guarda en `chrome.storage.local`:
+- Guarda en `browser.storage.local`:
   - `eminusLastSnapshot`
   - `eminusPendingLog`
   - `eminusKnownPendingIds`

@@ -154,7 +154,7 @@ em.setCourseContext = async function (courseId) {
     return false;
   }
   try {
-    const res = await chrome.runtime.sendMessage({
+    const res = await browser.runtime.sendMessage({
       type: "SET_COURSE_CONTEXT",
       courseId,
       token

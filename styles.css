@@ -198,7 +198,8 @@
 #eminus-pending-panel.ep-nord-theme .ep-theme-chip-active,
 #eminus-pending-panel.ep-moka-theme .ep-theme-chip-active,
 #eminus-pending-panel.ep-solarized-osaka-theme .ep-theme-chip-active,
-#eminus-pending-panel.ep-wispr-theme .ep-theme-chip-active {
+#eminus-pending-panel.ep-wispr-theme .ep-theme-chip-active,
+#eminus-pending-panel.ep-passion-fruit-theme .ep-theme-chip-active {
   background: #fff !important;
   color: #000 !important;
   border-color: #fff !important;

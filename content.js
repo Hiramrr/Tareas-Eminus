@@ -14,8 +14,8 @@ window.eminus = window.eminus || {};
 
   const em = window.eminus;
 
-  if (em.hasRuntimeApi && chrome.runtime?.onMessage) {
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (em.hasRuntimeApi && browser.runtime?.onMessage) {
+    browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message?.type === "OPEN_AND_REFRESH_PANEL") {
         if (em.state.isCollapsed) em.toggleCollapse();
         em.scanPending();

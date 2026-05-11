@@ -9,7 +9,7 @@ var em = window.eminus;
 em.fetchJson = async function (path, token) {
   if (em.hasRuntimeApi) {
     try {
-      const bgResponse = await chrome.runtime.sendMessage({
+      const bgResponse = await browser.runtime.sendMessage({
         type: "FETCH_EMINUS_JSON",
         path,
         token

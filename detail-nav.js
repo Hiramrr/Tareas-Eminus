@@ -36,7 +36,7 @@
   let currentLang = "es";
 
   async function updateLanguage() {
-    const data = await chrome.storage.local.get("eminusLanguage");
+    const data = await browser.storage.local.get("eminusLanguage");
     currentLang = data.eminusLanguage || "es";
     
     const btn = document.getElementById("ep-back-home-btn");
@@ -61,7 +61,7 @@
   document.body.appendChild(btn);
 
   // Listen for changes in storage (when user changes language in the main panel)
-  chrome.storage.onChanged.addListener((changes, area) => {
+  browser.storage.onChanged.addListener((changes, area) => {
     if (area === "local" && changes.eminusLanguage) {
       currentLang = changes.eminusLanguage.newValue || "es";
       const backBtn = document.getElementById("ep-back-home-btn");
