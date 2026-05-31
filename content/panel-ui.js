@@ -9,7 +9,7 @@ var em = window.eminus;
 em.getPanelUiState = function () {
   return {
     isCollapsed: !!em.state.isCollapsed,
-    activeTab: em.state.activeTab || "pending",
+    activeTab: em.state.activeTab || "summary",
     filters: { ...(em.state.filters || {}) },
     contentFilters: { ...(em.state.contentFilters || {}) }
   };
@@ -64,7 +64,8 @@ em.applyStoredPanelUiState = function (storedState) {
     module: String(contentFilters.module || "all"),
     sort: ["newest", "oldest", "course", "module", "title"].includes(contentFilters.sort) ? contentFilters.sort : "newest"
   };
-  em.state.activeTab = "pending";
+  const allowedTabs = ["summary", "pending", "today", "overdue", "agenda", "content", "log", "config"];
+  em.state.activeTab = allowedTabs.includes(storedState?.activeTab) ? storedState.activeTab : "summary";
 
   if (em.panelEls) {
     if (em.panelEls.filterQuery) em.panelEls.filterQuery.value = em.state.filters.query;
@@ -417,7 +418,7 @@ em.setLogTabVisible = async function (isVisible) {
     em.panelEls.logVisibilitySelect.value = em.state.isLogTabVisible ? "visible" : "removed";
   }
   if (!em.state.isLogTabVisible && em.state.activeTab === "log") {
-    em.state.activeTab = "pending";
+    em.state.activeTab = "summary";
   }
   const payload = {};
   payload[em.STORAGE_KEYS.LOG_TAB_VISIBLE] = em.state.isLogTabVisible;
@@ -491,7 +492,7 @@ em.updateBulkActionButtons = function () {
 
 em.updateTabVisibility = function () {
   if (!em.state.isLogTabVisible && em.state.activeTab === "log") {
-    em.state.activeTab = "pending";
+    em.state.activeTab = "summary";
   }
 
   em.panelEls.tabButtons.forEach((btn) => {
@@ -502,6 +503,7 @@ em.updateTabVisibility = function () {
 
   if (em.state.isArchiveView) {
     em.panelEls.filtersWrap.classList.add("ep-hidden");
+    em.panelEls.summaryBody.classList.add("ep-hidden");
     em.panelEls.todayBody.classList.add("ep-hidden");
     em.panelEls.pendingBody.classList.remove("ep-hidden");
     em.panelEls.overdueBody.classList.add("ep-hidden");
@@ -522,6 +524,7 @@ em.updateTabVisibility = function () {
     em.panelEls.contentFilters.forEach((el) => el.classList.toggle("ep-hidden", !isContentTab));
   }
 
+  em.panelEls.summaryBody.classList.toggle("ep-hidden", em.state.activeTab !== "summary");
   em.panelEls.todayBody.classList.toggle("ep-hidden", em.state.activeTab !== "today");
   em.panelEls.pendingBody.classList.toggle("ep-hidden", em.state.activeTab !== "pending");
   em.panelEls.overdueBody.classList.toggle("ep-hidden", em.state.activeTab !== "overdue");
@@ -555,7 +558,7 @@ em.toggleArchiveView = function () {
 
 em.setTab = function (tab) {
   if (tab === "log" && !em.state.isLogTabVisible) {
-    tab = "pending";
+    tab = "summary";
   }
   em.state.activeTab = tab;
   em.updateTabVisibility();
@@ -582,10 +585,11 @@ em.clearLocalData = async function () {
   em.state.pinnedIds = new Set();
   em.state.contentExpandedIds = new Set();
   em.state.contentFileLocationCache = new Map();
+  em.state.readContentIds = new Set();
   em.state.notifiedUpcomingIds = new Set();
   em.state.lastUpdatedAt = null;
   em.state.isArchiveView = false;
-  em.state.activeTab = "pending";
+  em.state.activeTab = "summary";
   em.state.filters = {
     query: "",
     course: "all",

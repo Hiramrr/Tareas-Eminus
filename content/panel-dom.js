@@ -60,7 +60,8 @@ em.createPanel = function () {
       </header>
 
       <div class="ep-tabs">
-        <button class="ep-tab ep-tab-active" data-tab="pending">Pendientes</button>
+        <button class="ep-tab ep-tab-active" data-tab="summary">Resumen</button>
+        <button class="ep-tab" data-tab="pending">Pendientes</button>
         <button class="ep-tab" data-tab="today">Hoy</button>
         <button class="ep-tab" data-tab="overdue">Vencidas</button>
         <button class="ep-tab" data-tab="agenda">Agenda</button>
@@ -123,8 +124,9 @@ em.createPanel = function () {
         </div>
       </section>
 
+      <section class="ep-body" id="ep-body-summary"></section>
       <section class="ep-body ep-hidden" id="ep-body-today"></section>
-      <section class="ep-body" id="ep-body-pending"></section>
+      <section class="ep-body ep-hidden" id="ep-body-pending"></section>
       <section class="ep-body ep-hidden" id="ep-body-overdue"></section>
       <section class="ep-body ep-hidden" id="ep-body-agenda"></section>
       <section class="ep-body ep-hidden" id="ep-body-content"></section>
@@ -458,6 +460,7 @@ em.createPanel = function () {
     filterContentType: root.querySelector("#ep-filter-content-type"),
     filterContentModule: root.querySelector("#ep-filter-content-module"),
     filterContentSort: root.querySelector("#ep-filter-content-sort"),
+    summaryBody: root.querySelector("#ep-body-summary"),
     todayBody: root.querySelector("#ep-body-today"),
     pendingBody: root.querySelector("#ep-body-pending"),
     overdueBody: root.querySelector("#ep-body-overdue"),

@@ -19,6 +19,7 @@ em.hydrateFromStorage = async function () {
     em.STORAGE_KEYS.REMINDER_MODE,
     em.STORAGE_KEYS.QUIET_HOURS,
     em.STORAGE_KEYS.NOTIFIED_UPCOMING,
+    em.STORAGE_KEYS.READ_CONTENT_IDS,
     em.STORAGE_KEYS.LAST_URGENCY_BY_ID,
     em.STORAGE_KEYS.FONT,
     em.STORAGE_KEYS.LANG,
@@ -50,6 +51,7 @@ em.hydrateFromStorage = async function () {
     clearPayload[em.STORAGE_KEYS.ARCHIVED] = [];
     clearPayload[em.STORAGE_KEYS.PINNED] = [];
     clearPayload[em.STORAGE_KEYS.NOTIFIED_UPCOMING] = [];
+    clearPayload[em.STORAGE_KEYS.READ_CONTENT_IDS] = [];
     clearPayload[em.STORAGE_KEYS.LAST_URGENCY_BY_ID] = {};
     clearPayload[em.STORAGE_KEYS.ACCOUNT_ID] = currentAccountId;
     await em.storageSet(clearPayload);
@@ -58,6 +60,7 @@ em.hydrateFromStorage = async function () {
     data[em.STORAGE_KEYS.ARCHIVED] = [];
     data[em.STORAGE_KEYS.PINNED] = [];
     data[em.STORAGE_KEYS.NOTIFIED_UPCOMING] = [];
+    data[em.STORAGE_KEYS.READ_CONTENT_IDS] = [];
     data[em.STORAGE_KEYS.LAST_URGENCY_BY_ID] = {};
     await em.syncBadge(0);
   } else if (currentAccountId && !storedAccountId) {
@@ -72,6 +75,7 @@ em.hydrateFromStorage = async function () {
   em.state.archivedIds = em.normalizeArchivedIds(data[em.STORAGE_KEYS.ARCHIVED]);
   em.state.pinnedIds = em.normalizePinnedIds(data[em.STORAGE_KEYS.PINNED]);
   em.state.notifiedUpcomingIds = em.normalizeNotifiedUpcomingIds(data[em.STORAGE_KEYS.NOTIFIED_UPCOMING]);
+  em.state.readContentIds = em.normalizeReadContentIds(data[em.STORAGE_KEYS.READ_CONTENT_IDS]);
   if (em.applyStoredPanelUiState) {
     em.applyStoredPanelUiState(data[em.STORAGE_KEYS.PANEL_UI_STATE]);
   }
@@ -108,11 +112,13 @@ em.hydrateFromStorage = async function () {
     em.state.archivedIds = em.pruneArchivedIds(em.state.pending, em.state.archivedIds);
     em.state.pinnedIds = em.prunePinnedIds(em.state.pending, em.state.pinnedIds);
     em.state.notifiedUpcomingIds = em.pruneNotifiedUpcomingIds(em.state.pending, em.state.notifiedUpcomingIds);
+    em.state.readContentIds = em.pruneReadContentIds(em.state.pending, em.state.readContentIds);
 
     const prunePayload = {};
     prunePayload[em.STORAGE_KEYS.ARCHIVED] = Array.from(em.state.archivedIds);
     prunePayload[em.STORAGE_KEYS.PINNED] = Array.from(em.state.pinnedIds);
     prunePayload[em.STORAGE_KEYS.NOTIFIED_UPCOMING] = Array.from(em.state.notifiedUpcomingIds);
+    prunePayload[em.STORAGE_KEYS.READ_CONTENT_IDS] = Array.from(em.state.readContentIds);
     await em.storageSet(prunePayload);
 
     em.state.pending.sort((a, b) => {
@@ -273,6 +279,7 @@ em.scanPending = async function () {
       em.STORAGE_KEYS.ARCHIVED,
       em.STORAGE_KEYS.PINNED,
       em.STORAGE_KEYS.NOTIFIED_UPCOMING,
+      em.STORAGE_KEYS.READ_CONTENT_IDS,
       em.STORAGE_KEYS.LAST_URGENCY_BY_ID
     ]);
 
@@ -281,6 +288,7 @@ em.scanPending = async function () {
       knownData[em.STORAGE_KEYS.ARCHIVED] = [];
       knownData[em.STORAGE_KEYS.PINNED] = [];
       knownData[em.STORAGE_KEYS.NOTIFIED_UPCOMING] = [];
+      knownData[em.STORAGE_KEYS.READ_CONTENT_IDS] = [];
       knownData[em.STORAGE_KEYS.LAST_URGENCY_BY_ID] = {};
       em.state.logs = [];
       const clearPayload = {};
@@ -290,6 +298,7 @@ em.scanPending = async function () {
       clearPayload[em.STORAGE_KEYS.ARCHIVED] = [];
       clearPayload[em.STORAGE_KEYS.PINNED] = [];
       clearPayload[em.STORAGE_KEYS.NOTIFIED_UPCOMING] = [];
+      clearPayload[em.STORAGE_KEYS.READ_CONTENT_IDS] = [];
       clearPayload[em.STORAGE_KEYS.LAST_URGENCY_BY_ID] = {};
       clearPayload[em.STORAGE_KEYS.ACCOUNT_ID] = currentAccountId;
       await em.storageSet(clearPayload);
@@ -303,6 +312,7 @@ em.scanPending = async function () {
     em.state.archivedIds = em.normalizeArchivedIds(knownData[em.STORAGE_KEYS.ARCHIVED]);
     em.state.pinnedIds = em.normalizePinnedIds(knownData[em.STORAGE_KEYS.PINNED]);
     em.state.notifiedUpcomingIds = em.normalizeNotifiedUpcomingIds(knownData[em.STORAGE_KEYS.NOTIFIED_UPCOMING]);
+    em.state.readContentIds = em.normalizeReadContentIds(knownData[em.STORAGE_KEYS.READ_CONTENT_IDS]);
     em.state.contentExpandedIds = new Set();
     em.state.contentFileLocationCache = new Map();
     const lastUrgencyById = em.normalizeUrgencyMap(knownData[em.STORAGE_KEYS.LAST_URGENCY_BY_ID]);
@@ -326,6 +336,7 @@ em.scanPending = async function () {
     });
     em.applyArchivedState(pending, em.state.archivedIds);
     em.applyPinnedState(pending, em.state.pinnedIds);
+    em.state.readContentIds = em.pruneReadContentIds(pending, em.state.readContentIds);
 
     const prunedArchived = em.pruneArchivedIds(pending, em.state.archivedIds);
     if (!em.setsEqual(prunedArchived, em.state.archivedIds)) {
@@ -344,6 +355,7 @@ em.scanPending = async function () {
     }
 
     const visiblePending = em.getVisiblePending(pending);
+    await em.persistReadContentIds();
 
     const previousPending = em.state.pending || [];
     const previousOverdueIds = new Set(previousPending.filter((item) => item.urgency === "overdue" && !item.archived).map((item) => item.id));

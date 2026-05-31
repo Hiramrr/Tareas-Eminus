@@ -8,13 +8,14 @@ var em = window.eminus;
 
 em.state = {
   isCollapsed: true,
-  activeTab: "pending",
+  activeTab: "summary",
   pending: [],
   logs: [],
   archivedIds: new Set(),
   pinnedIds: new Set(),
   contentExpandedIds: new Set(),
   contentFileLocationCache: new Map(),
+  readContentIds: new Set(),
   notifiedUpcomingIds: new Set(),
   lastUpdatedAt: null,
   isArchiveView: false,

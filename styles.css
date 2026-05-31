@@ -668,6 +668,137 @@
 }
 
 /* ══════════════════════════════════════════
+   SUMMARY
+   ══════════════════════════════════════════ */
+
+.ep-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.ep-summary-stat,
+.ep-summary-next {
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+
+.ep-summary-stat {
+  min-width: 0;
+  padding: 10px;
+}
+
+.ep-summary-stat:hover,
+.ep-summary-next:hover {
+  background: #000;
+  color: #fff;
+}
+
+.ep-summary-stat strong {
+  display: block;
+  font-size: 22px;
+}
+
+.ep-summary-stat span,
+.ep-summary-next span,
+.ep-summary-next small {
+  display: block;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.ep-summary-section {
+  border: 1px dashed currentColor;
+  margin-bottom: 12px;
+  padding: 10px;
+}
+
+.ep-summary-label {
+  font-size: 10px;
+  margin-bottom: 5px;
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+
+.ep-summary-next {
+  display: block;
+  padding: 9px;
+  width: 100%;
+}
+
+.ep-summary-next strong {
+  display: block;
+  font-size: 13px;
+  margin: 3px 0;
+}
+
+.ep-summary-empty {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.ep-summary-row {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.ep-summary-row strong {
+  font-size: 12px;
+}
+
+.ep-summary-course {
+  max-width: 52%;
+  text-align: right;
+}
+
+.ep-summary-progress {
+  border: 1px solid currentColor;
+  height: 8px;
+  margin-top: 10px;
+  padding: 1px;
+}
+
+.ep-summary-progress span {
+  background: currentColor;
+  display: block;
+  height: 100%;
+}
+
+.ep-summary-actions,
+.ep-content-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.ep-content-toolbar {
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 11px;
+}
+
+.ep-content-unread {
+  border-left: 4px solid currentColor;
+}
+
+.ep-content-unread-dot {
+  background: currentColor;
+  border-radius: 50%;
+  display: inline-block;
+  height: 7px;
+  margin-right: 6px;
+  vertical-align: 1px;
+  width: 7px;
+}
+
+/* ══════════════════════════════════════════
    URGENCY STYLES (BASE)
    ══════════════════════════════════════════ */
 
@@ -1025,6 +1156,10 @@
   .ep-filters-grid,
   .ep-preference-checks {
     grid-template-columns: 1fr;
+  }
+
+  .ep-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

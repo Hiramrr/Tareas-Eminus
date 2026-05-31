@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Miyu --pendientes</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <img src="logo.png" alt="" />
+        <div>
+          <h1>Miyu --pendientes</h1>
+          <p id="last-sync">Sin lectura guardada</p>
+        </div>
+      </header>
+
+      <section class="metrics" aria-label="Resumen">
+        <div><strong id="pending-count">0</strong><span>pendientes</span></div>
+        <div><strong id="today-count">0</strong><span>para hoy</span></div>
+        <div><strong id="overdue-count">0</strong><span>vencidas</span></div>
+        <div><strong id="content-count">0</strong><span>contenido nuevo</span></div>
+      </section>
+
+      <section class="next">
+        <h2>Próximas entregas</h2>
+        <div id="task-list"></div>
+      </section>
+
+      <button id="open-eminus" type="button">Abrir panel en Eminus</button>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

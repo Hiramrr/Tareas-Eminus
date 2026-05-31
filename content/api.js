@@ -472,36 +472,50 @@ em.buildContentItemFromElement = function (element, unit, courseId, courseName, 
   };
 };
 
+em.mapWithConcurrency = async function (items, limit, mapper) {
+  const list = Array.isArray(items) ? items : [];
+  if (!list.length) return [];
+
+  const results = new Array(list.length);
+  const workerCount = Math.min(Math.max(1, Number(limit) || 1), list.length);
+  let nextIndex = 0;
+
+  const runWorker = async () => {
+    while (nextIndex < list.length) {
+      const index = nextIndex;
+      nextIndex += 1;
+      results[index] = await mapper(list[index], index);
+    }
+  };
+
+  await Promise.all(Array.from({ length: workerCount }, () => runWorker()));
+  return results;
+};
+
 em.buildPublishedContentData = async function (token, courses, pinnedSet) {
   pinnedSet = pinnedSet || new Set();
-  const items = [];
-  const seen = new Set();
-
-  for (const cEntry of courses) {
+  const itemsByCourse = await em.mapWithConcurrency(courses, 3, async (cEntry) => {
     const course = cEntry?.curso || {};
     const courseId = em.normalizePositiveId(course.idCurso ?? cEntry?.idCurso ?? course.courseId ?? cEntry?.courseId);
     const courseName = String(course.nombre || "").trim();
-    if (!courseId || !courseName) continue;
+    if (!courseId || !courseName) return [];
 
     let units = [];
     try {
       units = await em.fetchJson("/Contenido/getUnidades/" + courseId + "/0", token);
     } catch (_) {
       console.warn("[Eminus Pending] No se pudo cargar contenido del curso " + courseId + " (" + courseName + ")");
-      continue;
+      return [];
     }
 
     const publishedUnits = units.filter(em.isPublishedContentEntry);
-
-    for (const unit of publishedUnits) {
+    const itemsByUnit = await em.mapWithConcurrency(publishedUnits, 4, async (unit) => {
+      const unitItems = [];
       const unitItem = em.buildContentItemFromUnit(unit, courseId, courseName, pinnedSet);
-      if (unitItem && !seen.has(unitItem.id)) {
-        seen.add(unitItem.id);
-        items.push(unitItem);
-      }
+      if (unitItem) unitItems.push(unitItem);
 
       const unitId = em.getContentUnitId(unit);
-      if (!unitId) continue;
+      if (!unitId) return unitItems;
 
       let elements = [];
       try {
@@ -512,15 +526,20 @@ em.buildPublishedContentData = async function (token, courses, pinnedSet) {
 
       for (const element of elements.filter(em.isPublishedContentEntry)) {
         const elementItem = em.buildContentItemFromElement(element, unit, courseId, courseName, pinnedSet);
-        if (elementItem && !seen.has(elementItem.id)) {
-          seen.add(elementItem.id);
-          items.push(elementItem);
-        }
+        if (elementItem) unitItems.push(elementItem);
       }
-    }
-  }
+      return unitItems;
+    });
 
-  return items;
+    return itemsByUnit.flat();
+  });
+
+  const seen = new Set();
+  return itemsByCourse.flat().filter((item) => {
+    if (!item || seen.has(item.id)) return false;
+    seen.add(item.id);
+    return true;
+  });
 };
 
 em.sortPendingItems = function (items) {
@@ -553,20 +572,21 @@ em.buildPendingData = async function (token, pinnedSet, options) {
   const courses = em.filterActiveCourses(coursesRaw);
   const pending = [];
 
-  for (const cEntry of courses) {
+  const activitiesByCourse = await em.mapWithConcurrency(courses, 4, async (cEntry) => {
     const course = cEntry?.curso || {};
     const courseId = em.normalizePositiveId(course.idCurso ?? cEntry?.idCurso ?? course.courseId ?? cEntry?.courseId);
     const courseName = String(course.nombre || "").trim();
-    if (!courseId || !courseName) continue;
+    if (!courseId || !courseName) return [];
 
     let activities = [];
     try {
       activities = await em.fetchJson("/Activity/getActividadesEstudiante/" + courseId, token);
     } catch (_) {
       console.warn("[Eminus Pending] " + em.t("error_load_activities") + " " + courseId + " (" + courseName + ")");
-      continue;
+      return [];
     }
 
+    const coursePending = [];
     for (const act of activities) {
       if (!em.isActivityPending(act)) continue;
 
@@ -577,7 +597,7 @@ em.buildPendingData = async function (token, pinnedSet, options) {
 
       const id = courseId + ":" + (act.idActividad || act.titulo || Math.random());
 
-      pending.push({
+      coursePending.push({
         id,
         courseId,
         activityId: String(act.idActividad || ""),
@@ -595,7 +615,9 @@ em.buildPendingData = async function (token, pinnedSet, options) {
         fechaEntrega: String(act.fechaEntrega || "").trim()
       });
     }
-  }
+    return coursePending;
+  });
+  pending.push(...activitiesByCourse.flat());
 
   em.sortPendingItems(pending);
   if (typeof options.onActivitiesReady === "function") {

@@ -1,0 +1,141 @@
+:root {
+  color-scheme: light;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #fff;
+  color: #111;
+  margin: 0;
+  min-width: 360px;
+}
+
+main {
+  padding: 14px;
+}
+
+header {
+  align-items: center;
+  border-bottom: 1px solid #111;
+  display: flex;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+header img {
+  height: 38px;
+  width: 38px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 14px;
+}
+
+h1::before {
+  content: "$ ";
+}
+
+p {
+  color: #666;
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+.metrics {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 12px 0;
+}
+
+.metrics div {
+  border: 1px solid #111;
+  min-width: 0;
+  padding: 7px;
+}
+
+.metrics strong,
+.metrics span {
+  display: block;
+}
+
+.metrics strong {
+  font-size: 19px;
+}
+
+.metrics span {
+  font-size: 9px;
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: 11px;
+  margin-bottom: 7px;
+  text-transform: uppercase;
+}
+
+.task,
+.empty {
+  border: 1px dashed #111;
+  display: block;
+  margin-bottom: 6px;
+  padding: 8px;
+  width: 100%;
+}
+
+.task {
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.task:hover,
+#open-eminus:hover {
+  background: #111;
+  color: #fff;
+}
+
+.task strong,
+.task span,
+.task small {
+  display: block;
+}
+
+.task strong {
+  font-size: 11px;
+  margin: 2px 0 4px;
+}
+
+.task span,
+.task small,
+.empty {
+  font-size: 10px;
+}
+
+.task small {
+  opacity: 0.75;
+}
+
+#open-eminus {
+  background: #fff;
+  border: 1px solid #111;
+  color: #111;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  margin-top: 6px;
+  padding: 9px;
+  width: 100%;
+}

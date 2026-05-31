@@ -865,6 +865,156 @@ em.i18n = {
   }
 };
 
+Object.assign(em.i18n.es, {
+  tab_summary: "Resumen",
+  summary_pending: "pendientes",
+  summary_overdue: "vencidas",
+  summary_today: "para hoy",
+  summary_unread_content: "contenido nuevo",
+  summary_next_task: "Próxima entrega",
+  summary_no_next: "No hay entregas próximas con fecha.",
+  summary_week_load: "Carga de los próximos 7 días",
+  summary_deliveries: "entregas",
+  summary_busiest_course: "Materia con más carga",
+  summary_none: "sin pendientes",
+  summary_open_today: "[ abrir hoy ]",
+  summary_open_agenda: "[ abrir agenda ]",
+  summary_open_content: "[ abrir contenido ]",
+  content_unread: "Contenido no leído",
+  content_unread_count: "sin leer",
+  content_mark_read: "[ marcar leído ]",
+  content_mark_unread: "[ marcar no leído ]",
+  content_mark_all_read: "[ marcar todo leído ]",
+  status_content_read: "Contenido marcado como leído",
+  status_content_unread: "Contenido marcado como no leído",
+  status_content_all_read: "{n} publicaciones marcadas como leídas"
+});
+
+Object.assign(em.i18n.en, {
+  tab_summary: "Summary",
+  summary_pending: "pending",
+  summary_overdue: "overdue",
+  summary_today: "due today",
+  summary_unread_content: "new content",
+  summary_next_task: "Next due task",
+  summary_no_next: "No upcoming dated tasks.",
+  summary_week_load: "Next 7 days workload",
+  summary_deliveries: "tasks",
+  summary_busiest_course: "Busiest course",
+  summary_none: "no pending tasks",
+  summary_open_today: "[ open today ]",
+  summary_open_agenda: "[ open agenda ]",
+  summary_open_content: "[ open content ]",
+  content_unread: "Unread content",
+  content_unread_count: "unread",
+  content_mark_read: "[ mark read ]",
+  content_mark_unread: "[ mark unread ]",
+  content_mark_all_read: "[ mark all read ]",
+  status_content_read: "Content marked as read",
+  status_content_unread: "Content marked as unread",
+  status_content_all_read: "{n} posts marked as read"
+});
+
+Object.assign(em.i18n.fr, {
+  tab_summary: "Résumé",
+  summary_pending: "en attente",
+  summary_overdue: "en retard",
+  summary_today: "pour aujourd'hui",
+  summary_unread_content: "nouveau contenu",
+  summary_next_task: "Prochaine échéance",
+  summary_no_next: "Aucune échéance à venir.",
+  summary_week_load: "Charge des 7 prochains jours",
+  summary_deliveries: "travaux",
+  summary_busiest_course: "Cours le plus chargé",
+  summary_none: "aucun travail",
+  summary_open_today: "[ ouvrir aujourd'hui ]",
+  summary_open_agenda: "[ ouvrir agenda ]",
+  summary_open_content: "[ ouvrir contenu ]",
+  content_unread: "Contenu non lu",
+  content_unread_count: "non lus",
+  content_mark_read: "[ marquer lu ]",
+  content_mark_unread: "[ marquer non lu ]",
+  content_mark_all_read: "[ tout marquer lu ]",
+  status_content_read: "Contenu marqué comme lu",
+  status_content_unread: "Contenu marqué comme non lu",
+  status_content_all_read: "{n} publications marquées comme lues"
+});
+
+Object.assign(em.i18n.ja, {
+  tab_summary: "概要",
+  summary_pending: "未提出",
+  summary_overdue: "期限切れ",
+  summary_today: "本日締切",
+  summary_unread_content: "新着コンテンツ",
+  summary_next_task: "次の締切",
+  summary_no_next: "日付付きの予定はありません。",
+  summary_week_load: "今後7日間の課題",
+  summary_deliveries: "件",
+  summary_busiest_course: "課題が多い科目",
+  summary_none: "課題なし",
+  summary_open_today: "[ 今日を開く ]",
+  summary_open_agenda: "[ 予定を開く ]",
+  summary_open_content: "[ コンテンツを開く ]",
+  content_unread: "未読コンテンツ",
+  content_unread_count: "未読",
+  content_mark_read: "[ 既読にする ]",
+  content_mark_unread: "[ 未読にする ]",
+  content_mark_all_read: "[ すべて既読 ]",
+  status_content_read: "既読にしました",
+  status_content_unread: "未読にしました",
+  status_content_all_read: "{n}件を既読にしました"
+});
+
+Object.assign(em.i18n.ko, {
+  tab_summary: "요약",
+  summary_pending: "할 일",
+  summary_overdue: "기한 초과",
+  summary_today: "오늘 마감",
+  summary_unread_content: "새 콘텐츠",
+  summary_next_task: "다음 마감",
+  summary_no_next: "예정된 마감이 없습니다.",
+  summary_week_load: "향후 7일 일정",
+  summary_deliveries: "개",
+  summary_busiest_course: "과제가 많은 강의",
+  summary_none: "할 일 없음",
+  summary_open_today: "[ 오늘 열기 ]",
+  summary_open_agenda: "[ 일정 열기 ]",
+  summary_open_content: "[ 콘텐츠 열기 ]",
+  content_unread: "읽지 않은 콘텐츠",
+  content_unread_count: "읽지 않음",
+  content_mark_read: "[ 읽음 표시 ]",
+  content_mark_unread: "[ 읽지 않음 표시 ]",
+  content_mark_all_read: "[ 모두 읽음 ]",
+  status_content_read: "읽음으로 표시했습니다",
+  status_content_unread: "읽지 않음으로 표시했습니다",
+  status_content_all_read: "{n}개를 읽음으로 표시했습니다"
+});
+
+Object.assign(em.i18n.zh, {
+  tab_summary: "摘要",
+  summary_pending: "待办",
+  summary_overdue: "已逾期",
+  summary_today: "今日截止",
+  summary_unread_content: "新内容",
+  summary_next_task: "下一个截止日期",
+  summary_no_next: "没有即将截止的任务。",
+  summary_week_load: "未来7天任务量",
+  summary_deliveries: "项",
+  summary_busiest_course: "任务最多的课程",
+  summary_none: "无待办",
+  summary_open_today: "[ 打开今天 ]",
+  summary_open_agenda: "[ 打开日程 ]",
+  summary_open_content: "[ 打开内容 ]",
+  content_unread: "未读内容",
+  content_unread_count: "未读",
+  content_mark_read: "[ 标为已读 ]",
+  content_mark_unread: "[ 标为未读 ]",
+  content_mark_all_read: "[ 全部已读 ]",
+  status_content_read: "已标为已读",
+  status_content_unread: "已标为未读",
+  status_content_all_read: "已将{n}项标为已读"
+});
+
 em.t = function(key) {
   const lang = em.state?.lang || 'es';
   const dictionary = em.i18n[lang] || em.i18n['es'];
@@ -897,6 +1047,8 @@ em.applyTranslations = function() {
   em.updateArchiveToggleButton(); // uses em.t internally now
 
   // Tabs
+  const tabSummary = els.root.querySelector('[data-tab="summary"]');
+  if (tabSummary) tabSummary.textContent = em.t('tab_summary');
   const tabToday = els.root.querySelector('[data-tab="today"]');
   if (tabToday) tabToday.textContent = em.t('tab_today');
   const tabPending = els.root.querySelector('[data-tab="pending"]');

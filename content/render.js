@@ -6,6 +6,90 @@ window.eminus = window.eminus || {};
 
 var em = window.eminus;
 
+em.renderSummary = function (items) {
+  if (!em.panelEls || !em.panelEls.summaryBody) return;
+
+  const activities = em.getVisiblePending(items);
+  const now = new Date();
+  const weekEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const overdue = activities.filter((item) => item.urgency === "overdue");
+  const dueToday = activities.filter((item) => {
+    if (!item.deadlineRaw) return false;
+    const deadline = new Date(item.deadlineRaw);
+    return !Number.isNaN(deadline.getTime()) && em.isSameDay(deadline, now);
+  });
+  const weekItems = activities.filter((item) => {
+    if (!item.deadlineRaw) return false;
+    const deadline = new Date(item.deadlineRaw);
+    return !Number.isNaN(deadline.getTime()) && deadline >= now && deadline < weekEnd;
+  });
+  const next = activities
+    .filter((item) => item.deadlineRaw && new Date(item.deadlineRaw).getTime() >= now.getTime())
+    .sort(em.compareDeadlines)[0];
+  const unreadContent = em.getUnreadContentCount ? em.getUnreadContentCount(items) : 0;
+  const courseCounts = new Map();
+  activities.forEach((item) => courseCounts.set(item.course, (courseCounts.get(item.course) || 0) + 1));
+  const busiestCourse = Array.from(courseCounts.entries()).sort((a, b) => b[1] - a[1])[0];
+  const weekPercent = activities.length ? Math.min(100, Math.round((weekItems.length / activities.length) * 100)) : 0;
+  const nextIndex = next ? items.indexOf(next) : -1;
+
+  em.panelEls.summaryBody.innerHTML = `
+    <div class="ep-summary-grid">
+      <button class="ep-summary-stat" type="button" data-summary-tab="pending">
+        <strong>${activities.length}</strong><span>${em.escapeHtml(em.t("summary_pending"))}</span>
+      </button>
+      <button class="ep-summary-stat" type="button" data-summary-tab="overdue">
+        <strong>${overdue.length}</strong><span>${em.escapeHtml(em.t("summary_overdue"))}</span>
+      </button>
+      <button class="ep-summary-stat" type="button" data-summary-tab="today">
+        <strong>${dueToday.length}</strong><span>${em.escapeHtml(em.t("summary_today"))}</span>
+      </button>
+      <button class="ep-summary-stat" type="button" data-summary-tab="content">
+        <strong>${unreadContent}</strong><span>${em.escapeHtml(em.t("summary_unread_content"))}</span>
+      </button>
+    </div>
+    <section class="ep-summary-section">
+      <div class="ep-summary-label">${em.escapeHtml(em.t("summary_next_task"))}</div>
+      ${next ? `
+        <button class="ep-summary-next" type="button" data-summary-item-index="${nextIndex}">
+          <span>${em.renderCourseLabel ? em.renderCourseLabel(next) : em.escapeHtml(next.course)}</span>
+          <strong>${em.escapeHtml(next.title)}</strong>
+          <small>${em.escapeHtml(em.t("due") + " " + (next.deadlineStr || em.t("due_nodate")) + " · " + em.getTimeRemaining(new Date(next.deadlineRaw)))}</small>
+        </button>
+      ` : `<div class="ep-summary-empty">${em.escapeHtml(em.t("summary_no_next"))}</div>`}
+    </section>
+    <section class="ep-summary-section">
+      <div class="ep-summary-row">
+        <div>
+          <div class="ep-summary-label">${em.escapeHtml(em.t("summary_week_load"))}</div>
+          <strong>${weekItems.length} ${em.escapeHtml(em.t("summary_deliveries"))}</strong>
+        </div>
+        <div class="ep-summary-course">
+          <div class="ep-summary-label">${em.escapeHtml(em.t("summary_busiest_course"))}</div>
+          <strong>${busiestCourse ? em.escapeHtml(busiestCourse[0]) + " · " + busiestCourse[1] : em.escapeHtml(em.t("summary_none"))}</strong>
+        </div>
+      </div>
+      <div class="ep-summary-progress"><span style="width:${weekPercent}%"></span></div>
+    </section>
+    <div class="ep-summary-actions">
+      <button class="ep-mini-btn" type="button" data-summary-tab="today">${em.escapeHtml(em.t("summary_open_today"))}</button>
+      <button class="ep-mini-btn" type="button" data-summary-tab="agenda">${em.escapeHtml(em.t("summary_open_agenda"))}</button>
+      <button class="ep-mini-btn" type="button" data-summary-tab="content">${em.escapeHtml(em.t("summary_open_content"))}</button>
+    </div>
+  `;
+
+  em.panelEls.summaryBody.querySelectorAll("[data-summary-tab]").forEach((button) => {
+    button.addEventListener("click", () => em.setTab(button.getAttribute("data-summary-tab")));
+  });
+  const nextButton = em.panelEls.summaryBody.querySelector("[data-summary-item-index]");
+  if (nextButton) {
+    nextButton.addEventListener("click", () => {
+      const item = em.state.pending[Number(nextButton.getAttribute("data-summary-item-index"))];
+      if (item) em.navigateToActivity(item);
+    });
+  }
+};
+
 em.renderAgenda = function (items) {
   if (!em.panelEls || !em.panelEls.agendaBody) return;
 
@@ -224,11 +308,18 @@ em.renderPending = function (items) {
   };
 
   const buildContentHtml = (list) => {
+    const unreadCount = em.getUnreadContentCount ? em.getUnreadContentCount(nonArchivedItems) : 0;
+    const toolbar = `
+      <div class="ep-content-toolbar">
+        <span>${unreadCount} ${em.escapeHtml(em.t("content_unread_count"))}</span>
+        <button class="ep-mini-btn" type="button" data-action="mark-all-content-read"${unreadCount ? "" : " disabled"}>${em.escapeHtml(em.t("content_mark_all_read"))}</button>
+      </div>
+    `;
     if (!list.length) {
-      return `<div class="ep-empty">${em.escapeHtml(em.t("empty_content"))}</div>`;
+      return toolbar + `<div class="ep-empty">${em.escapeHtml(em.t("empty_content"))}</div>`;
     }
 
-    return list
+    return toolbar + list
       .map((item) => {
         const originalIndex = items.indexOf(item);
         const published = item.publishedLabel ? em.t("content_published") + " " + item.publishedLabel : item.contentTypeLabel || em.t("content_label");
@@ -238,6 +329,7 @@ em.renderPending = function (items) {
           : "";
         const attachments = Array.isArray(item.attachments) ? item.attachments : [];
         const isOpen = !!(em.state.contentExpandedIds && em.state.contentExpandedIds.has(item.id));
+        const isRead = em.isContentRead ? em.isContentRead(item) : false;
         const emptyFilesText = item.fileLocationLoading
           ? em.t("content_files_loading")
           : item.fileLocationError || (item.fileLocationLoaded ? em.t("content_files_empty") : em.t("content_files_expand"));
@@ -253,15 +345,16 @@ em.renderPending = function (items) {
         return `
             <details class="ep-content-detail" data-item-index="${originalIndex}"${isOpen ? " open" : ""}>
               <summary class="ep-content-summary">
-                <article class="ep-item ep-normal${em.getCourseCardClass ? em.getCourseCardClass(item) : ""}"${em.getCourseCardStyle ? em.getCourseCardStyle(item) : ""}>
+                <article class="ep-item ep-normal${isRead ? "" : " ep-content-unread"}${em.getCourseCardClass ? em.getCourseCardClass(item) : ""}"${em.getCourseCardStyle ? em.getCourseCardStyle(item) : ""}>
                   <div class="ep-course">${em.renderCourseLabel ? em.renderCourseLabel(item) : em.escapeHtml(item.course)}</div>
-                  <div class="ep-title-task"><span class="ep-wave-text">${em.wrapTextSpans(item.title)}</span></div>
+                  <div class="ep-title-task">${isRead ? "" : `<span class="ep-content-unread-dot" title="${em.escapeHtml(em.t("content_unread"))}"></span>`}<span class="ep-wave-text">${em.wrapTextSpans(item.title)}</span></div>
                   <div class="ep-meta">${em.escapeHtml(metaParts.join(" · "))}</div>
                 </article>
               </summary>
               <div class="ep-content-panel">
                 ${descriptionHtml}
                 ${attachmentsHtml}
+                <button class="ep-mini-btn" type="button" data-action="${isRead ? "mark-content-unread" : "mark-content-read"}" data-item-index="${originalIndex}">${em.escapeHtml(em.t(isRead ? "content_mark_unread" : "content_mark_read"))}</button>
                 <button class="ep-mini-btn" type="button" data-action="open-content" data-item-index="${originalIndex}">${em.escapeHtml(em.t("content_open"))}</button>
               </div>
             </details>
@@ -277,6 +370,7 @@ em.renderPending = function (items) {
     em.panelEls.agendaBody.innerHTML = "";
     if (em.panelEls.contentBody) em.panelEls.contentBody.innerHTML = "";
   } else {
+    em.renderSummary(items);
     em.panelEls.todayBody.innerHTML = buildListHtml(todayItems, em.t("empty_today"), null, true);
     em.panelEls.pendingBody.innerHTML = buildListHtml(pendingItems, pendingEmptyMessage, null, true);
     em.panelEls.overdueBody.innerHTML = buildListHtml(overdueItems, em.t("empty_overdue"), { label: em.t("action_archive"), action: "archive" }, true);
@@ -319,7 +413,9 @@ em.renderPending = function (items) {
         event.stopPropagation();
         const index = Number(btn.getAttribute("data-item-index"));
         const action = btn.getAttribute("data-action");
-        if (action === "archive") {
+        if (action === "mark-all-content-read") {
+          await em.markAllContentRead();
+        } else if (action === "archive") {
           await em.archiveItemByIndex(index);
         } else if (action === "unarchive") {
           await em.unarchiveItemByIndex(index);
@@ -334,7 +430,15 @@ em.renderPending = function (items) {
           await em.downloadContentAttachment(item, attachment);
         } else if (action === "open-content") {
           const item = em.state.pending[index];
+          if (item?.id && em.state.readContentIds) {
+            em.state.readContentIds.add(item.id);
+            await em.persistReadContentIds();
+          }
           await em.navigateToContent(item);
+        } else if (action === "mark-content-read") {
+          await em.markContentReadByIndex(index, true);
+        } else if (action === "mark-content-unread") {
+          await em.markContentReadByIndex(index, false);
         }
       });
     });

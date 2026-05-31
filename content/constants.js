@@ -32,7 +32,8 @@ window.eminus.STORAGE_KEYS = {
   PROFILE: "eminusPersonalProfile",
   COURSE_PREFERENCES: "eminusCoursePreferences",
   TODAY_ORDER: "eminusTodayOrder",
-  NOTIFICATION_PREFERENCES: "eminusNotificationPreferences"
+  NOTIFICATION_PREFERENCES: "eminusNotificationPreferences",
+  READ_CONTENT_IDS: "eminusReadContentIds"
 };
 
 window.eminus.PREFERENCE_STORAGE_KEYS = [
