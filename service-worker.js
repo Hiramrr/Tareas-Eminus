@@ -23,6 +23,11 @@ const EMINUS_CONTENT_URLS = [
   "https://eminus.uv.mx/eminus4/",
   "https://eminus.uv.mx/aplicativoEminus/actividad-detalle/"
 ];
+const NOTIFICATION_TARGETS_KEY = "eminusNotificationTargets";
+const AUTO_REFRESH_ALARM = "eminus-auto-refresh";
+const AUTO_REFRESH_KEY = "eminusAutoRefreshMinutes";
+const SNOOZE_ALARM_PREFIX = "eminus-snooze-";
+const SNOOZE_TARGETS_KEY = "eminusSnoozeTargets";
 
 function isAllowedSender(sender) {
   const rawUrl = sender?.url || sender?.tab?.url || "";
@@ -39,6 +44,150 @@ function normalizePositiveId(value) {
   const id = String(value || "").trim();
   return /^[1-9]\d{0,18}$/.test(id) ? id : "";
 }
+
+function normalizeNotificationTarget(target) {
+  if (!target || target.kind !== "activity") return null;
+  const activityId = normalizePositiveId(target.activityId);
+  const courseId = normalizePositiveId(target.courseId);
+  if (!activityId) return null;
+  return { kind: "activity", activityId, courseId };
+}
+
+function buildNotificationTargetUrl(target) {
+  const normalized = normalizeNotificationTarget(target);
+  if (!normalized) return "";
+  const url = new URL("https://eminus.uv.mx/aplicativoEminus/actividad-detalle/" + encodeURIComponent(normalized.activityId));
+  if (normalized.courseId) {
+    url.searchParams.set("courseId", normalized.courseId);
+  }
+  return url.toString();
+}
+
+async function storeNotificationTarget(notificationId, target, options) {
+  const normalized = normalizeNotificationTarget(target);
+  if (!normalized) return;
+  const data = await chrome.storage.local.get(NOTIFICATION_TARGETS_KEY);
+  const stored = data[NOTIFICATION_TARGETS_KEY];
+  const targets = stored && typeof stored === "object" && !Array.isArray(stored) ? stored : {};
+  const entries = Object.entries(targets).slice(-49);
+  const snoozeMinutes = Number(options?.snoozeMinutes || 0);
+  await chrome.storage.local.set({
+    [NOTIFICATION_TARGETS_KEY]: Object.fromEntries([...entries, [notificationId, {
+      target: normalized,
+      title: String(options?.title || "Eminus"),
+      body: String(options?.body || ""),
+      snoozeMinutes: snoozeMinutes > 0 ? snoozeMinutes : 0,
+      snoozeLabel: String(options?.snoozeLabel || "Posponer")
+    }]])
+  });
+}
+
+async function removeNotificationTarget(notificationId) {
+  const data = await chrome.storage.local.get(NOTIFICATION_TARGETS_KEY);
+  const stored = data[NOTIFICATION_TARGETS_KEY];
+  if (!stored || typeof stored !== "object" || Array.isArray(stored) || !stored[notificationId]) return;
+  const targets = { ...stored };
+  delete targets[notificationId];
+  await chrome.storage.local.set({ [NOTIFICATION_TARGETS_KEY]: targets });
+}
+
+chrome.notifications.onClicked.addListener(async (notificationId) => {
+  try {
+    const data = await chrome.storage.local.get(NOTIFICATION_TARGETS_KEY);
+    const metadata = data[NOTIFICATION_TARGETS_KEY]?.[notificationId];
+    const url = buildNotificationTargetUrl(metadata?.target || metadata);
+    if (url) {
+      await chrome.tabs.create({ url });
+    }
+    await chrome.notifications.clear(notificationId);
+  } catch (_) {
+    // Notification clicks are best effort.
+  } finally {
+    await removeNotificationTarget(notificationId).catch(() => {});
+  }
+});
+
+chrome.notifications.onClosed.addListener((notificationId) => {
+  removeNotificationTarget(notificationId).catch(() => {});
+});
+
+chrome.notifications.onButtonClicked.addListener(async (notificationId, buttonIndex) => {
+  if (buttonIndex !== 0) return;
+  try {
+    const data = await chrome.storage.local.get([NOTIFICATION_TARGETS_KEY, SNOOZE_TARGETS_KEY]);
+    const metadata = data[NOTIFICATION_TARGETS_KEY]?.[notificationId];
+    const minutes = Number(metadata?.snoozeMinutes || 0);
+    if (!metadata?.target || minutes <= 0) return;
+    const alarmName = SNOOZE_ALARM_PREFIX + Date.now() + "-" + Math.random().toString(36).slice(2, 8);
+    const snoozed = data[SNOOZE_TARGETS_KEY] && typeof data[SNOOZE_TARGETS_KEY] === "object"
+      ? data[SNOOZE_TARGETS_KEY]
+      : {};
+    await chrome.storage.local.set({ [SNOOZE_TARGETS_KEY]: { ...snoozed, [alarmName]: metadata } });
+    chrome.alarms.create(alarmName, { delayInMinutes: minutes });
+    await chrome.notifications.clear(notificationId);
+  } catch (_) {
+    // Snoozing notifications is best effort.
+  } finally {
+    await removeNotificationTarget(notificationId).catch(() => {});
+  }
+});
+
+async function configureAutoRefreshAlarm(minutes) {
+  await chrome.alarms.clear(AUTO_REFRESH_ALARM);
+  const value = Number(minutes || 0);
+  if (value > 0) {
+    chrome.alarms.create(AUTO_REFRESH_ALARM, { periodInMinutes: Math.max(1, value) });
+  }
+}
+
+async function restoreAutoRefreshAlarm() {
+  const data = await chrome.storage.local.get(AUTO_REFRESH_KEY);
+  await configureAutoRefreshAlarm(data[AUTO_REFRESH_KEY]);
+}
+
+async function refreshOneEminusTab() {
+  const tabs = await chrome.tabs.query({ url: ["https://eminus.uv.mx/eminus4/*"] });
+  const tab = tabs.find((entry) => entry.id);
+  if (tab?.id) {
+    await chrome.tabs.sendMessage(tab.id, { type: "BACKGROUND_REFRESH_PANEL" }).catch(() => {});
+  }
+}
+
+chrome.runtime.onInstalled.addListener(() => {
+  restoreAutoRefreshAlarm().catch(() => {});
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  restoreAutoRefreshAlarm().catch(() => {});
+});
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === AUTO_REFRESH_ALARM) {
+    refreshOneEminusTab().catch(() => {});
+    return;
+  }
+  if (alarm.name.startsWith(SNOOZE_ALARM_PREFIX)) {
+    (async () => {
+      const data = await chrome.storage.local.get(SNOOZE_TARGETS_KEY);
+      const snoozed = data[SNOOZE_TARGETS_KEY] || {};
+      const metadata = snoozed[alarm.name];
+      if (!metadata) return;
+      const next = { ...snoozed };
+      delete next[alarm.name];
+      await chrome.storage.local.set({ [SNOOZE_TARGETS_KEY]: next });
+      const notificationId = "eminus-" + Date.now() + "-" + Math.random().toString(36).slice(2, 9);
+      await storeNotificationTarget(notificationId, metadata.target, metadata);
+      await chrome.notifications.create(notificationId, {
+        type: "basic",
+        iconUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Crect width='128' height='128' fill='%23e74c3c'/%3E%3Ctext x='64' y='92' font-size='80' text-anchor='middle' fill='white'%3E!%3C/text%3E%3C/svg%3E",
+        title: metadata.title,
+        message: metadata.body,
+        priority: 1,
+        buttons: [{ title: metadata.snoozeLabel || "Posponer" }]
+      });
+    })().catch(() => {});
+  }
+});
 
 function buildEminusApi8Url(path) {
   const normalizedPath = String(path || "").trim();
@@ -91,6 +240,17 @@ chrome.action.onClicked.addListener((tab) => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message?.type === "CONFIGURE_AUTO_REFRESH") {
+    if (!isAllowedSender(sender)) {
+      sendResponse({ ok: false, error: "Origen no autorizado" });
+      return;
+    }
+    configureAutoRefreshAlarm(message.minutes)
+      .then(() => sendResponse({ ok: true }))
+      .catch(() => sendResponse({ ok: false, error: "No se pudo configurar auto-refresh" }));
+    return true;
+  }
+
   if (message?.type === "UPDATE_BADGE") {
     if (!isAllowedSender(sender)) {
       sendResponse({ ok: false, error: "Origen no autorizado" });
@@ -125,16 +285,36 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     const title = String(message.title || "Eminus");
     const body = String(message.body || "");
+    const target = normalizeNotificationTarget(message.target);
+    const notificationId = "eminus-" + Date.now() + "-" + Math.random().toString(36).slice(2, 9);
     const iconUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Crect width='128' height='128' fill='%23e74c3c'/%3E%3Ctext x='64' y='92' font-size='80' text-anchor='middle' fill='white'%3E!%3C/text%3E%3C/svg%3E";
-    chrome.notifications.create({
-      type: "basic",
-      iconUrl,
-      title,
-      message: body,
-      priority: 1
-    });
-    sendResponse({ ok: true });
-    return;
+    (async () => {
+      try {
+        if (target) {
+          await storeNotificationTarget(notificationId, target, {
+            title,
+            body,
+            snoozeMinutes: message.snoozeMinutes,
+            snoozeLabel: message.snoozeLabel
+          });
+        }
+        const notificationOptions = {
+          type: "basic",
+          iconUrl,
+          title,
+          message: body,
+          priority: 1
+        };
+        if (target && Number(message.snoozeMinutes || 0) > 0) {
+          notificationOptions.buttons = [{ title: String(message.snoozeLabel || "Posponer") }];
+        }
+        await chrome.notifications.create(notificationId, notificationOptions);
+        sendResponse({ ok: true, actionable: !!target });
+      } catch (_) {
+        sendResponse({ ok: false, error: "No se pudo mostrar la notificación" });
+      }
+    })();
+    return true;
   }
 
   if (message?.type === "FETCH_EMINUS_JSON") {
@@ -236,3 +416,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 });
+
+restoreAutoRefreshAlarm().catch(() => {});

@@ -6,10 +6,147 @@ window.eminus = window.eminus || {};
 
 var em = window.eminus;
 
+em.getPanelUiState = function () {
+  return {
+    isCollapsed: !!em.state.isCollapsed,
+    activeTab: em.state.activeTab || "pending",
+    filters: { ...(em.state.filters || {}) },
+    contentFilters: { ...(em.state.contentFilters || {}) }
+  };
+};
+
+em.persistPanelUiState = async function () {
+  const payload = {};
+  payload[em.STORAGE_KEYS.PANEL_UI_STATE] = em.getPanelUiState();
+  await em.storageSet(payload);
+};
+
+em.schedulePanelUiStatePersist = function () {
+  if (em.panelUiStatePersistTimer) {
+    window.clearTimeout(em.panelUiStatePersistTimer);
+  }
+  em.panelUiStatePersistTimer = window.setTimeout(() => {
+    em.panelUiStatePersistTimer = null;
+    em.persistPanelUiState();
+  }, 200);
+};
+
+em.setPanelCollapsed = function (isCollapsed, shouldPersist = true) {
+  em.state.isCollapsed = !!isCollapsed;
+  if (em.panelEls && em.panelEls.root) {
+    em.panelEls.root.classList.toggle("ep-collapsed", em.state.isCollapsed);
+  }
+  if (em.panelEls && em.panelEls.collapseBtn) {
+    em.panelEls.collapseBtn.textContent = em.state.isCollapsed ? "[ + ]" : "[ - ]";
+    em.panelEls.collapseBtn.title = em.state.isCollapsed ? em.t("expand_tooltip") : em.t("collapse_tooltip");
+  }
+  if (em.updateCollapsedSummary) em.updateCollapsedSummary();
+  if (shouldPersist) em.schedulePanelUiStatePersist();
+};
+
 em.toggleCollapse = function () {
-  em.state.isCollapsed = !em.state.isCollapsed;
-  em.panelEls.root.classList.toggle("ep-collapsed", em.state.isCollapsed);
-  em.panelEls.collapseBtn.textContent = em.state.isCollapsed ? "[ + ]" : "[ - ]";
+  em.setPanelCollapsed(!em.state.isCollapsed);
+};
+
+em.applyStoredPanelUiState = function (storedState) {
+  const allowedTabs = new Set(["today", "pending", "overdue", "agenda", "content", "log", "config"]);
+  const filters = storedState && typeof storedState.filters === "object" ? storedState.filters : {};
+  const contentFilters = storedState && typeof storedState.contentFilters === "object" ? storedState.contentFilters : {};
+
+  em.state.filters = {
+    query: String(filters.query || ""),
+    course: String(filters.course || "all"),
+    urgency: ["all", "overdue", "imminent", "urgent", "normal"].includes(filters.urgency) ? filters.urgency : "all",
+    dateRange: ["all", "today", "3d", "7d", "30d", "nodate", "overdue"].includes(filters.dateRange) ? filters.dateRange : "all",
+    sort: ["deadline", "urgency", "course", "title"].includes(filters.sort) ? filters.sort : "deadline"
+  };
+  em.state.contentFilters = {
+    type: ["all", "unit", "element", "files"].includes(contentFilters.type) ? contentFilters.type : "all",
+    module: String(contentFilters.module || "all"),
+    sort: ["newest", "oldest", "course", "module", "title"].includes(contentFilters.sort) ? contentFilters.sort : "newest"
+  };
+  em.state.activeTab = allowedTabs.has(storedState?.activeTab) ? storedState.activeTab : "today";
+
+  if (em.panelEls) {
+    if (em.panelEls.filterQuery) em.panelEls.filterQuery.value = em.state.filters.query;
+    if (em.panelEls.filterUrgency) em.panelEls.filterUrgency.value = em.state.filters.urgency;
+    if (em.panelEls.filterDate) em.panelEls.filterDate.value = em.state.filters.dateRange;
+    if (em.panelEls.filterTaskSort) em.panelEls.filterTaskSort.value = em.state.filters.sort;
+    if (em.panelEls.filterContentType) em.panelEls.filterContentType.value = em.state.contentFilters.type;
+    if (em.panelEls.filterContentSort) em.panelEls.filterContentSort.value = em.state.contentFilters.sort;
+  }
+
+  em.setPanelCollapsed(storedState?.isCollapsed !== false, false);
+  if (em.updateTabVisibility) em.updateTabVisibility();
+  if (em.updateFilterClearButton) em.updateFilterClearButton();
+};
+
+em.updateCollapsedSummary = function () {
+  if (!em.panelEls || !em.panelEls.collapsedSummary) return;
+  const visible = em.getVisiblePending(em.state.pending);
+  const overdueCount = visible.filter((item) => item.urgency === "overdue").length;
+  const next = visible
+    .filter((item) => item.deadlineRaw && item.urgency !== "overdue")
+    .sort((a, b) => new Date(a.deadlineRaw).getTime() - new Date(b.deadlineRaw).getTime())[0];
+  const parts = [visible.length + " " + em.t("status_pending")];
+  if (overdueCount > 0) {
+    parts.push(overdueCount + " " + em.t("filter_urgency_overdue"));
+  }
+  if (next) {
+    parts.push(em.t("summary_next") + " " + em.getTimeRemaining(new Date(next.deadlineRaw)));
+  }
+  em.panelEls.collapsedSummary.textContent = parts.join(" · ");
+};
+
+em.getActiveFilterCount = function () {
+  const filters = em.state.filters || {};
+  const contentFilters = em.state.contentFilters || {};
+  return [
+    String(filters.query || "").trim(),
+    filters.course !== "all",
+    filters.urgency !== "all",
+    filters.dateRange !== "all",
+    filters.sort !== "deadline",
+    contentFilters.type !== "all",
+    contentFilters.module !== "all",
+    contentFilters.sort !== "newest"
+  ].filter(Boolean).length;
+};
+
+em.updateFilterClearButton = function () {
+  if (!em.panelEls || !em.panelEls.filterClearBtn) return;
+  const count = em.getActiveFilterCount();
+  em.panelEls.filterClearBtn.textContent = em.t("filter_clear") + (count ? " (" + count + ")" : "");
+  em.panelEls.filterClearBtn.disabled = count === 0;
+};
+
+em.clearFilters = function () {
+  em.state.filters = {
+    query: "",
+    course: "all",
+    urgency: "all",
+    dateRange: "all",
+    sort: "deadline"
+  };
+  em.state.contentFilters = {
+    type: "all",
+    module: "all",
+    sort: "newest"
+  };
+  if (em.panelEls) {
+    if (em.panelEls.filterQuery) em.panelEls.filterQuery.value = "";
+    if (em.panelEls.filterCourse) em.panelEls.filterCourse.value = "all";
+    if (em.panelEls.filterUrgency) em.panelEls.filterUrgency.value = "all";
+    if (em.panelEls.filterDate) em.panelEls.filterDate.value = "all";
+    if (em.panelEls.filterTaskSort) em.panelEls.filterTaskSort.value = "deadline";
+    if (em.panelEls.filterContentType) em.panelEls.filterContentType.value = "all";
+    if (em.panelEls.filterContentModule) em.panelEls.filterContentModule.value = "all";
+    if (em.panelEls.filterContentSort) em.panelEls.filterContentSort.value = "newest";
+  }
+  em.updateFilterClearButton();
+  em.persistPanelUiState();
+  em.renderPending(em.state.pending);
+  em.setStatus(em.t("status_filters_cleared"));
 };
 
 em.updateFiltersCompactButton = function () {
@@ -336,6 +473,23 @@ em.updateArchiveToggleButton = function () {
   em.panelEls.archiveBtn.innerHTML = em.state.isArchiveView ? em.ARCHIVE_BACK_HTML : em.ARCHIVE_BUTTON_HTML;
 };
 
+em.updateBulkActionButtons = function () {
+  if (!em.panelEls) return;
+  const overdueCount = em.getVisiblePending(em.state.pending).filter((item) => item.urgency === "overdue").length;
+  const pinnedCount = em.state.pending.filter((item) => item.pinned).length;
+  if (em.panelEls.archiveAllOverdueBtn) {
+    em.panelEls.archiveAllOverdueBtn.disabled = overdueCount === 0;
+    em.panelEls.archiveAllOverdueBtn.textContent = em.t("action_archive_all") + (overdueCount ? " (" + overdueCount + ")" : "");
+  }
+  if (em.panelEls.unpinAllBtn) {
+    em.panelEls.unpinAllBtn.disabled = pinnedCount === 0;
+    em.panelEls.unpinAllBtn.textContent = em.t("action_unpin_all") + (pinnedCount ? " (" + pinnedCount + ")" : "");
+  }
+  if (em.panelEls.exportWeekBtn) {
+    em.panelEls.exportWeekBtn.textContent = em.t("action_export_week");
+  }
+};
+
 em.updateTabVisibility = function () {
   if (!em.state.isLogTabVisible && em.state.activeTab === "log") {
     em.state.activeTab = "pending";
@@ -349,6 +503,7 @@ em.updateTabVisibility = function () {
 
   if (em.state.isArchiveView) {
     em.panelEls.filtersWrap.classList.add("ep-hidden");
+    em.panelEls.todayBody.classList.add("ep-hidden");
     em.panelEls.pendingBody.classList.remove("ep-hidden");
     em.panelEls.overdueBody.classList.add("ep-hidden");
     em.panelEls.agendaBody.classList.add("ep-hidden");
@@ -358,15 +513,17 @@ em.updateTabVisibility = function () {
     return;
   }
 
-  const showFilters = em.state.activeTab === "pending" || em.state.activeTab === "overdue" || em.state.activeTab === "agenda" || em.state.activeTab === "content";
+  const showFilters = em.state.activeTab === "today" || em.state.activeTab === "pending" || em.state.activeTab === "overdue" || em.state.activeTab === "agenda" || em.state.activeTab === "content";
   em.panelEls.filtersWrap.classList.toggle("ep-hidden", !showFilters);
   const isContentTab = em.state.activeTab === "content";
   if (em.panelEls.filterUrgency) em.panelEls.filterUrgency.classList.toggle("ep-hidden", isContentTab);
   if (em.panelEls.filterDate) em.panelEls.filterDate.classList.toggle("ep-hidden", isContentTab);
+  if (em.panelEls.filterTaskSort) em.panelEls.filterTaskSort.classList.toggle("ep-hidden", isContentTab);
   if (em.panelEls.contentFilters) {
     em.panelEls.contentFilters.forEach((el) => el.classList.toggle("ep-hidden", !isContentTab));
   }
 
+  em.panelEls.todayBody.classList.toggle("ep-hidden", em.state.activeTab !== "today");
   em.panelEls.pendingBody.classList.toggle("ep-hidden", em.state.activeTab !== "pending");
   em.panelEls.overdueBody.classList.toggle("ep-hidden", em.state.activeTab !== "overdue");
   em.panelEls.agendaBody.classList.toggle("ep-hidden", em.state.activeTab !== "agenda");
@@ -403,6 +560,7 @@ em.setTab = function (tab) {
   }
   em.state.activeTab = tab;
   em.updateTabVisibility();
+  em.schedulePanelUiStatePersist();
 };
 
 em.setStatus = function (text) {
@@ -412,6 +570,10 @@ em.setStatus = function (text) {
 };
 
 em.clearLocalData = async function () {
+  if (em.panelUiStatePersistTimer) {
+    window.clearTimeout(em.panelUiStatePersistTimer);
+    em.panelUiStatePersistTimer = null;
+  }
   await em.storageClear();
 
   em.state.pending = [];
@@ -423,12 +585,13 @@ em.clearLocalData = async function () {
   em.state.notifiedUpcomingIds = new Set();
   em.state.lastUpdatedAt = null;
   em.state.isArchiveView = false;
-  em.state.activeTab = "pending";
+  em.state.activeTab = "today";
   em.state.filters = {
     query: "",
     course: "all",
     urgency: "all",
-    dateRange: "all"
+    dateRange: "all",
+    sort: "deadline"
   };
   em.state.contentFilters = {
     type: "all",
@@ -437,22 +600,31 @@ em.clearLocalData = async function () {
   };
 
   em.stopAutoRefresh();
-  em.state.reminderHours = 24;
+  em.state.reminderMode = "staggered";
+  em.state.quietHours = { start: "", end: "" };
   em.state.isLogTabVisible = true;
   em.state.isFiltersCompact = false;
   em.state.customTheme = { ...em.DEFAULT_CUSTOM_THEME };
   em.state.panelSize = "normal";
   em.state.deliveryAnimation = "cycle";
+  em.setPanelCollapsed(true, false);
 
   if (em.panelEls) {
     em.panelEls.root.classList.remove(...em.PANEL_THEME_CLASSES);
     em.panelEls.root.classList.remove("ep-filters-compact");
+    em.panelEls.root.classList.remove("ep-archive-view");
     if (em.panelEls.filterQuery) em.panelEls.filterQuery.value = "";
     if (em.panelEls.filterCourse) em.panelEls.filterCourse.value = "all";
     if (em.panelEls.filterUrgency) em.panelEls.filterUrgency.value = "all";
     if (em.panelEls.filterDate) em.panelEls.filterDate.value = "all";
+    if (em.panelEls.filterTaskSort) em.panelEls.filterTaskSort.value = "deadline";
+    if (em.panelEls.filterContentType) em.panelEls.filterContentType.value = "all";
+    if (em.panelEls.filterContentModule) em.panelEls.filterContentModule.value = "all";
+    if (em.panelEls.filterContentSort) em.panelEls.filterContentSort.value = "newest";
     if (em.panelEls.customBaseThemeSelect) em.panelEls.customBaseThemeSelect.value = "";
-    if (em.panelEls.reminderSelect) em.panelEls.reminderSelect.value = "24";
+    if (em.panelEls.reminderSelect) em.panelEls.reminderSelect.value = "staggered";
+    if (em.panelEls.quietStartSelect) em.panelEls.quietStartSelect.value = "";
+    if (em.panelEls.quietEndSelect) em.panelEls.quietEndSelect.value = "";
     if (em.panelEls.deliveryAnimationSelect) em.panelEls.deliveryAnimationSelect.value = "cycle";
     if (em.panelEls.panelSizeSelect) em.panelEls.panelSizeSelect.value = "normal";
     if (em.panelEls.logVisibilitySelect) em.panelEls.logVisibilitySelect.value = "visible";

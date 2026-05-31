@@ -134,12 +134,13 @@ em.renderPending = function (items) {
   const activityItems = em.getActivityItems(nonArchivedItems);
   const contentItems = em.applyContentFilters(em.getContentItems(nonArchivedItems));
   const filteredItems = em.applyAdvancedFilters(activityItems);
+  const todayItems = em.getTodayItems(filteredItems);
   const pendingItems = filteredItems.filter((item) => item.urgency !== "overdue");
   const overdueItems = filteredItems.filter((item) => item.urgency === "overdue");
   const archivedItems = items.filter((item) => item.archived);
 
   if (em.panelEls && em.panelEls.filterCourse) {
-    const previousValue = em.panelEls.filterCourse.value || "all";
+    const previousValue = em.state.filters.course || em.panelEls.filterCourse.value || "all";
     const courses = Array.from(new Set(nonArchivedItems.map((item) => item.course).filter(Boolean))).sort((a, b) => a.localeCompare(b));
     const options = [`<option value="all">${em.escapeHtml(em.t("filter_courses_all"))}</option>`]
       .concat(courses.map((course) => `<option value="${em.escapeHtml(course)}">${em.escapeHtml(course)}</option>`));
@@ -149,7 +150,7 @@ em.renderPending = function (items) {
   }
 
   if (em.panelEls && em.panelEls.filterContentModule) {
-    const previousModule = em.panelEls.filterContentModule.value || "all";
+    const previousModule = em.state.contentFilters.module || em.panelEls.filterContentModule.value || "all";
     const modules = em.getContentItems(nonArchivedItems)
       .filter((item) => item.unitId && item.unitName)
       .map((item) => ({ id: String(item.unitId), key: String(item.courseId || "") + ":" + String(item.unitId), name: item.unitName, course: item.course }));
@@ -161,7 +162,7 @@ em.renderPending = function (items) {
         return true;
       })
       .sort((a, b) => a.course.localeCompare(b.course) || a.name.localeCompare(b.name));
-    const moduleOptions = [`<option value="all">todos los módulos</option>`]
+    const moduleOptions = [`<option value="all">${em.escapeHtml(em.t("filter_modules_all"))}</option>`]
       .concat(uniqueModules.map((module) => `<option value="${em.escapeHtml(module.key)}">${em.escapeHtml(module.course + " · " + module.name)}</option>`));
     em.panelEls.filterContentModule.innerHTML = moduleOptions.join("");
     em.panelEls.filterContentModule.value = uniqueModules.some((module) => module.key === previousModule) || previousModule === "all" ? previousModule : "all";
@@ -196,9 +197,9 @@ em.renderPending = function (items) {
         const buttonsHtml = [pinHtml, actionHtml].filter(Boolean).join("");
         const contentParts = [];
         if (item.kind === "content") {
-          contentParts.push(item.contentTypeLabel || "Contenido");
+          contentParts.push(item.contentTypeLabel || em.t("content_label"));
           if (item.unitName) contentParts.push(item.unitName);
-          if (item.publishedLabel) contentParts.push("Publicado " + item.publishedLabel);
+          if (item.publishedLabel) contentParts.push(em.t("content_published") + " " + item.publishedLabel);
         }
         const metaText = item.kind === "content"
           ? contentParts.filter(Boolean).join(" · ")
@@ -227,21 +228,21 @@ em.renderPending = function (items) {
     return list
       .map((item) => {
         const originalIndex = items.indexOf(item);
-        const published = item.publishedLabel ? "Publicado " + item.publishedLabel : item.contentTypeLabel || "Contenido";
-        const metaParts = [item.contentTypeLabel || "Contenido", item.unitName, published].filter(Boolean);
+        const published = item.publishedLabel ? em.t("content_published") + " " + item.publishedLabel : item.contentTypeLabel || em.t("content_label");
+        const metaParts = [item.contentTypeLabel || em.t("content_label"), item.unitName, published].filter(Boolean);
         const descriptionHtml = item.description
           ? `<div class="ep-content-description">${em.escapeHtml(item.description)}</div>`
           : "";
         const attachments = Array.isArray(item.attachments) ? item.attachments : [];
         const isOpen = !!(em.state.contentExpandedIds && em.state.contentExpandedIds.has(item.id));
         const emptyFilesText = item.fileLocationLoading
-          ? "Cargando archivos..."
-          : item.fileLocationError || (item.fileLocationLoaded ? "Sin archivos adjuntos detectados." : "Despliega para cargar archivos.");
+          ? em.t("content_files_loading")
+          : item.fileLocationError || (item.fileLocationLoaded ? em.t("content_files_empty") : em.t("content_files_expand"));
         const attachmentsHtml = attachments.length
           ? `<div class="ep-content-files">
               ${attachments.map((file, fileIndex) => `
                 <button class="ep-mini-btn ep-content-download" type="button" data-action="download-content-file" data-item-index="${originalIndex}" data-file-index="${fileIndex}">
-                  ${em.escapeHtml(file.name)}${file.sizeLabel ? " · " + em.escapeHtml(file.sizeLabel) : ""}${file.modifiedLabel ? " · " + em.escapeHtml(file.modifiedLabel) : ""}${file.downloads !== "" && file.downloads !== undefined ? " · " + em.escapeHtml(file.downloads) + " desc." : ""}
+                  ${em.escapeHtml(file.name)}${file.sizeLabel ? " · " + em.escapeHtml(file.sizeLabel) : ""}${file.modifiedLabel ? " · " + em.escapeHtml(file.modifiedLabel) : ""}${file.downloads !== "" && file.downloads !== undefined ? " · " + em.escapeHtml(file.downloads) + " " + em.escapeHtml(em.t("content_downloads")) : ""}
                 </button>
               `).join("")}
             </div>`
@@ -258,7 +259,7 @@ em.renderPending = function (items) {
               <div class="ep-content-panel">
                 ${descriptionHtml}
                 ${attachmentsHtml}
-                <button class="ep-mini-btn" type="button" data-action="open-content" data-item-index="${originalIndex}">Abrir en Eminus</button>
+                <button class="ep-mini-btn" type="button" data-action="open-content" data-item-index="${originalIndex}">${em.escapeHtml(em.t("content_open"))}</button>
               </div>
             </details>
           `;
@@ -268,10 +269,12 @@ em.renderPending = function (items) {
 
   if (em.state.isArchiveView) {
     em.panelEls.pendingBody.innerHTML = buildListHtml(archivedItems, em.t("empty_archived"), { label: em.t("action_restore"), action: "unarchive" }, false);
+    em.panelEls.todayBody.innerHTML = "";
     em.panelEls.overdueBody.innerHTML = "";
     em.panelEls.agendaBody.innerHTML = "";
     if (em.panelEls.contentBody) em.panelEls.contentBody.innerHTML = "";
   } else {
+    em.panelEls.todayBody.innerHTML = buildListHtml(todayItems, em.t("empty_today"), null, true);
     em.panelEls.pendingBody.innerHTML = buildListHtml(pendingItems, em.t("empty_pending"), null, true);
     em.panelEls.overdueBody.innerHTML = buildListHtml(overdueItems, em.t("empty_overdue"), { label: em.t("action_archive"), action: "archive" }, true);
     if (em.panelEls.contentBody) em.panelEls.contentBody.innerHTML = buildContentHtml(contentItems);
@@ -356,13 +359,16 @@ em.renderPending = function (items) {
 
   const containers = em.state.isArchiveView
     ? [em.panelEls.pendingBody]
-    : [em.panelEls.pendingBody, em.panelEls.overdueBody, em.panelEls.agendaBody, em.panelEls.contentBody];
+    : [em.panelEls.todayBody, em.panelEls.pendingBody, em.panelEls.overdueBody, em.panelEls.agendaBody, em.panelEls.contentBody];
 
   containers.forEach((container) => {
     addItemListeners(container);
     addActionListeners(container);
     addContentDetailListeners(container);
   });
+  if (em.updateCollapsedSummary) em.updateCollapsedSummary();
+  if (em.updateFilterClearButton) em.updateFilterClearButton();
+  if (em.updateBulkActionButtons) em.updateBulkActionButtons();
 };
 
 em.renderLogs = function (logs) {

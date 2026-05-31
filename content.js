@@ -20,6 +20,9 @@ window.eminus = window.eminus || {};
         if (em.state.isCollapsed) em.toggleCollapse();
         em.scanPendingWhenTokenReady();
         sendResponse({ ok: true });
+      } else if (message?.type === "BACKGROUND_REFRESH_PANEL") {
+        em.scanPendingWhenTokenReady();
+        sendResponse({ ok: true });
       }
     });
   }
@@ -42,6 +45,24 @@ window.eminus = window.eminus || {};
     if (e.altKey && !e.ctrlKey && !e.metaKey && (e.key === "e" || e.code === "KeyE")) {
       e.preventDefault();
       em.toggleCollapse();
+      return;
+    }
+
+    const target = e.target;
+    const isTyping = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target?.isContentEditable;
+    if (isTyping || e.ctrlKey || e.metaKey || e.altKey) return;
+
+    if (e.key === "/") {
+      e.preventDefault();
+      if (em.state.isCollapsed) em.toggleCollapse();
+      em.panelEls?.filterQuery?.focus();
+    } else if (e.key.toLowerCase() === "r") {
+      e.preventDefault();
+      em.scanPendingWhenTokenReady();
+    } else if (e.key.toLowerCase() === "t") {
+      e.preventDefault();
+      if (em.state.isCollapsed) em.toggleCollapse();
+      em.setTab("today");
     }
   });
 

@@ -3,7 +3,7 @@
   "name": "Miyu --pendientes",
   "description": "Inyecta un panel en Eminus para ver tareas pendientes y su log.",
   "version": "1.0.0",
-  "permissions": ["storage", "notifications"],
+  "permissions": ["storage", "notifications", "alarms"],
   "host_permissions": ["https://eminus.uv.mx/*"],
   "icons": {
     "16": "logo.png",
@@ -21,6 +21,7 @@
         "content/storage.js",
         "content/i18n.js",
         "content/state.js",
+        "content/qol.js",
         "content/toast.js",
         "content/drag.js",
         "content/render.js",

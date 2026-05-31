@@ -7,13 +7,13 @@ window.eminus = window.eminus || {};
 var em = window.eminus;
 
 em.startAutoRefresh = function (minutes) {
-  em.stopAutoRefresh();
+  if (em.autoRefreshTimer) {
+    window.clearInterval(em.autoRefreshTimer);
+    em.autoRefreshTimer = null;
+  }
   if (!minutes || minutes <= 0) return;
   em.autoRefreshMinutes = minutes;
-  const ms = minutes * 60 * 1000;
-  em.autoRefreshTimer = window.setInterval(() => {
-    em.scanPending();
-  }, ms);
+  em.syncAutoRefreshAlarm(minutes);
 
   if (em.panelEls && em.panelEls.autoRefreshSelect) {
     em.panelEls.autoRefreshSelect.value = String(minutes);
@@ -27,10 +27,19 @@ em.stopAutoRefresh = function () {
     em.autoRefreshTimer = null;
   }
   em.autoRefreshMinutes = 0;
+  em.syncAutoRefreshAlarm(0);
   if (em.panelEls && em.panelEls.autoRefreshSelect) {
     em.panelEls.autoRefreshSelect.value = "0";
   }
   em.updateAutoRefreshLabel(0);
+};
+
+em.syncAutoRefreshAlarm = function (minutes) {
+  if (!em.hasRuntimeApi) return;
+  chrome.runtime.sendMessage({
+    type: "CONFIGURE_AUTO_REFRESH",
+    minutes: Number(minutes || 0)
+  }).catch(() => {});
 };
 
 em.setAutoRefresh = async function (minutes) {

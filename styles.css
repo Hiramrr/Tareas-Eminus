@@ -11,6 +11,7 @@
   top: 96px;
   right: 16px;
   width: 620px;
+  max-width: calc(100vw - 32px);
   max-height: calc(100vh - 120px);
   z-index: 2147483647;
   display: flex;
@@ -79,6 +80,19 @@
 #eminus-pending-panel.ep-collapsed .ep-title-wrap,
 #eminus-pending-panel.ep-collapsed .ep-actions {
   display: none;
+}
+
+.ep-collapsed-summary {
+  display: none;
+  max-width: min(420px, calc(100vw - 120px));
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+#eminus-pending-panel.ep-collapsed .ep-collapsed-summary {
+  display: block;
 }
 
 #eminus-pending-panel.ep-collapsed .ep-jazmin-bg {
@@ -185,12 +199,61 @@
   color: #fff;
 }
 
+.ep-btn:disabled:hover {
+  background: transparent;
+  color: inherit;
+}
+
 /* ══════════════════════════════════════════
    CONFIG TAB STYLES
    ══════════════════════════════════════════ */
 
 .ep-config-group {
   margin-bottom: 20px;
+}
+
+.ep-config-section {
+  border: 1px dashed currentColor;
+  margin-bottom: 10px;
+  padding: 0 10px;
+}
+
+.ep-config-section > summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 0;
+  text-transform: uppercase;
+}
+
+.ep-config-section[open] > summary {
+  border-bottom: 1px dashed currentColor;
+  margin-bottom: 12px;
+}
+
+#ep-body-config {
+  display: flex;
+  flex-direction: column;
+}
+
+#ep-body-config.ep-hidden {
+  display: none;
+}
+
+.ep-config-daily {
+  order: 1;
+}
+
+.ep-config-appearance {
+  order: 2;
+}
+
+.ep-config-interface {
+  order: 3;
+}
+
+.ep-config-danger {
+  order: 4;
 }
 
 .ep-config-label {
@@ -365,13 +428,23 @@
 
 .ep-filters-head {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
+  gap: 6px;
   margin-bottom: 6px;
 }
 
-.ep-filter-compact-btn {
+.ep-filter-compact-btn,
+.ep-filter-clear-btn,
+.ep-filter-action-btn {
   font-size: 11px;
   padding: 2px 6px;
+}
+
+.ep-filter-clear-btn:disabled,
+.ep-filter-action-btn:disabled {
+  cursor: default;
+  opacity: 0.45;
 }
 
 .ep-filters-grid {
@@ -871,3 +944,13 @@
 }
 
 /* Theme styles → content/themes.css */
+
+@media (prefers-reduced-motion: reduce) {
+  #eminus-pending-panel *,
+  #eminus-pending-panel *::before,
+  #eminus-pending-panel *::after {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}

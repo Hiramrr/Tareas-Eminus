@@ -43,6 +43,7 @@ em.createPanel = function () {
           <div class="ep-title">pendientes eminus</div>
           <div class="ep-subtitle" id="ep-subtitle">Sin lectura</div>
         </div>
+        <div class="ep-collapsed-summary" id="ep-collapsed-summary"></div>
         <div class="ep-actions" style="position: relative;">
           <button class="ep-btn" id="ep-refresh" title="Actualizar">[ ref ]</button>
           <div class="ep-archive-stack">
@@ -55,7 +56,8 @@ em.createPanel = function () {
       </header>
 
       <div class="ep-tabs">
-        <button class="ep-tab ep-tab-active" data-tab="pending">Pendientes</button>
+        <button class="ep-tab ep-tab-active" data-tab="today">Hoy</button>
+        <button class="ep-tab" data-tab="pending">Pendientes</button>
         <button class="ep-tab" data-tab="overdue">Vencidas</button>
         <button class="ep-tab" data-tab="agenda">Agenda</button>
         <button class="ep-tab" data-tab="content">Contenido</button>
@@ -65,6 +67,10 @@ em.createPanel = function () {
 
       <section class="ep-filters" id="ep-filters">
         <div class="ep-filters-head">
+          <button class="ep-btn ep-filter-action-btn" id="ep-export-week" type="button">[ calendario ]</button>
+          <button class="ep-btn ep-filter-action-btn" id="ep-unpin-all" type="button">[ desfijar ]</button>
+          <button class="ep-btn ep-filter-action-btn" id="ep-archive-all-overdue" type="button">[ archivar vencidas ]</button>
+          <button class="ep-btn ep-filter-clear-btn" id="ep-filter-clear" type="button">[ limpiar ]</button>
           <button class="ep-btn ep-filter-compact-btn" id="ep-filter-compact" type="button">[ compactar ]</button>
         </div>
         <div class="ep-filters-grid">
@@ -88,6 +94,12 @@ em.createPanel = function () {
             <option value="nodate">sin fecha</option>
             <option value="overdue">ya vencidas</option>
           </select>
+          <select id="ep-filter-task-sort" class="ep-config-select ep-task-filter">
+            <option value="deadline">ordenar por fecha</option>
+            <option value="urgency">ordenar por urgencia</option>
+            <option value="course">ordenar por curso</option>
+            <option value="title">ordenar por título</option>
+          </select>
           <select id="ep-filter-content-type" class="ep-config-select ep-content-filter">
             <option value="all">todo contenido</option>
             <option value="unit">módulos</option>
@@ -107,14 +119,17 @@ em.createPanel = function () {
         </div>
       </section>
 
-      <section class="ep-body" id="ep-body-pending"></section>
+      <section class="ep-body" id="ep-body-today"></section>
+      <section class="ep-body ep-hidden" id="ep-body-pending"></section>
       <section class="ep-body ep-hidden" id="ep-body-overdue"></section>
       <section class="ep-body ep-hidden" id="ep-body-agenda"></section>
       <section class="ep-body ep-hidden" id="ep-body-content"></section>
       <section class="ep-body ep-hidden" id="ep-body-log"></section>
       <section class="ep-body ep-hidden" id="ep-body-config">
+        <details class="ep-config-section ep-config-appearance">
+          <summary id="ep-config-appearance-summary">Apariencia</summary>
         <div class="ep-config-group">
-          <label class="ep-config-label">Tema del panel</label>
+          <label class="ep-config-label" id="ep-theme-label">Tema del panel</label>
           <div class="ep-theme-grid">
              <button class="ep-theme-chip" data-theme="light">Light</button>
              <button class="ep-theme-chip" data-theme="jazmin">Jazmín</button>
@@ -186,7 +201,10 @@ em.createPanel = function () {
             <label class="ep-color-field">Urgente <input type="color" id="ep-custom-urgent" value="#e67e22" /></label>
           </div>
         </div>
+        </details>
 
+        <details class="ep-config-section ep-config-daily" open>
+        <summary id="ep-config-daily-summary">Uso diario</summary>
         <div class="ep-config-row">
           <div class="ep-config-group">
             <label class="ep-config-label">Auto-refresh</label>
@@ -204,6 +222,7 @@ em.createPanel = function () {
             <label class="ep-config-label">Avisos preventivos</label>
             <select class="ep-config-select ep-autorefresh-select" id="ep-reminder">
               <option value="0">desactivado</option>
+              <option value="staggered">escalonados: 48h, 24h, 6h y 1h</option>
               <option value="1">1 hora antes</option>
               <option value="3">3 horas antes</option>
               <option value="6">6 horas antes</option>
@@ -214,6 +233,21 @@ em.createPanel = function () {
           </div>
         </div>
 
+        <div class="ep-config-group">
+          <label class="ep-config-label" id="ep-quiet-hours-label">Horas silenciosas</label>
+          <div class="ep-config-row">
+            <select class="ep-config-select" id="ep-quiet-start">
+              <option value="">inicio: sin horario</option>
+            </select>
+            <select class="ep-config-select" id="ep-quiet-end">
+              <option value="">fin: sin horario</option>
+            </select>
+          </div>
+        </div>
+        </details>
+
+        <details class="ep-config-section ep-config-interface">
+        <summary id="ep-config-interface-summary">Interfaz</summary>
         <div class="ep-config-group">
           <label class="ep-config-label">Animación de entrega</label>
           <select class="ep-config-select" id="ep-delivery-animation">
@@ -279,10 +313,14 @@ em.createPanel = function () {
             <option value="zh">中文</option>
           </select>
         </div>
+        </details>
 
+        <details class="ep-config-section ep-config-danger">
+          <summary id="ep-config-danger-summary">Datos locales</summary>
         <div class="ep-config-group">
           <button class="ep-btn ep-clear-local-data" id="ep-clear-local-data" type="button">Borrar datos locales</button>
         </div>
+        </details>
       </section>
 
       <footer class="ep-footer" id="ep-footer-status">Listo</footer>
@@ -299,11 +337,14 @@ em.createPanel = function () {
   em.panelEls = {
     root,
     subtitle: root.querySelector("#ep-subtitle"),
+    collapsedSummary: root.querySelector("#ep-collapsed-summary"),
     sealArt: root.querySelector("#ep-seal-art"),
     header: root.querySelector(".ep-header"),
     refreshBtn: root.querySelector("#ep-refresh"),
     autoRefreshSelect: root.querySelector("#ep-autorefresh"),
     reminderSelect: root.querySelector("#ep-reminder"),
+    quietStartSelect: root.querySelector("#ep-quiet-start"),
+    quietEndSelect: root.querySelector("#ep-quiet-end"),
     deliveryAnimationSelect: root.querySelector("#ep-delivery-animation"),
     fontSelect: root.querySelector("#ep-font"),
     panelSizeSelect: root.querySelector("#ep-panel-size"),
@@ -325,14 +366,17 @@ em.createPanel = function () {
     tabButtons: root.querySelectorAll(".ep-tab"),
     filtersWrap: root.querySelector("#ep-filters"),
     filterCompactBtn: root.querySelector("#ep-filter-compact"),
+    filterClearBtn: root.querySelector("#ep-filter-clear"),
     filterQuery: root.querySelector("#ep-filter-query"),
     filterCourse: root.querySelector("#ep-filter-course"),
     filterUrgency: root.querySelector("#ep-filter-urgency"),
     filterDate: root.querySelector("#ep-filter-date"),
+    filterTaskSort: root.querySelector("#ep-filter-task-sort"),
     contentFilters: root.querySelectorAll(".ep-content-filter"),
     filterContentType: root.querySelector("#ep-filter-content-type"),
     filterContentModule: root.querySelector("#ep-filter-content-module"),
     filterContentSort: root.querySelector("#ep-filter-content-sort"),
+    todayBody: root.querySelector("#ep-body-today"),
     pendingBody: root.querySelector("#ep-body-pending"),
     overdueBody: root.querySelector("#ep-body-overdue"),
     agendaBody: root.querySelector("#ep-body-agenda"),
@@ -340,14 +384,18 @@ em.createPanel = function () {
     logBody: root.querySelector("#ep-body-log"),
     configBody: root.querySelector("#ep-body-config"),
     clearLocalDataBtn: root.querySelector("#ep-clear-local-data"),
+    archiveAllOverdueBtn: root.querySelector("#ep-archive-all-overdue"),
+    unpinAllBtn: root.querySelector("#ep-unpin-all"),
+    exportWeekBtn: root.querySelector("#ep-export-week"),
     themeChips: root.querySelectorAll(".ep-theme-chip"),
     footer: root.querySelector("#ep-footer-status"),
     jazminBg: root.querySelector("#ep-jazmin-bg"),
     
     // Labels for i18n
-    themeLabel: root.querySelector(".ep-config-group:nth-child(1) .ep-config-label"),
+    themeLabel: root.querySelector("#ep-theme-label"),
     autorefreshLabel: root.querySelector("#ep-autorefresh").previousElementSibling,
     reminderLabel: root.querySelector("#ep-reminder").previousElementSibling,
+    quietHoursLabel: root.querySelector("#ep-quiet-hours-label"),
     deliveryAnimationLabel: root.querySelector("#ep-delivery-animation").previousElementSibling,
     fontLabel: root.querySelector("#ep-font").previousElementSibling,
     panelSizeLabel: root.querySelector("#ep-panel-size").previousElementSibling,
@@ -356,8 +404,21 @@ em.createPanel = function () {
     filterQueryPlaceholder: root.querySelector("#ep-filter-query"),
     filterCourseSelect: root.querySelector("#ep-filter-course"),
     filterUrgencySelect: root.querySelector("#ep-filter-urgency"),
-    filterDateSelect: root.querySelector("#ep-filter-date")
+    filterDateSelect: root.querySelector("#ep-filter-date"),
+    filterTaskSortSelect: root.querySelector("#ep-filter-task-sort")
   };
+  em.panelEls.configDailySummary = root.querySelector("#ep-config-daily-summary");
+  em.panelEls.configAppearanceSummary = root.querySelector("#ep-config-appearance-summary");
+  em.panelEls.configInterfaceSummary = root.querySelector("#ep-config-interface-summary");
+  em.panelEls.configDangerSummary = root.querySelector("#ep-config-danger-summary");
+
+  const hourOptions = Array.from({ length: 24 }, (_, hour) => {
+    const value = String(hour);
+    const label = String(hour).padStart(2, "0") + ":00";
+    return `<option value="${value}">${label}</option>`;
+  }).join("");
+  em.panelEls.quietStartSelect.insertAdjacentHTML("beforeend", hourOptions);
+  em.panelEls.quietEndSelect.insertAdjacentHTML("beforeend", hourOptions);
 
   em.panelEls.refreshBtn.addEventListener("click", () => em.scanPendingWhenTokenReady());
   em.panelEls.autoRefreshSelect.addEventListener("change", (e) => {
@@ -365,8 +426,13 @@ em.createPanel = function () {
     em.setAutoRefresh(minutes);
   });
   em.panelEls.reminderSelect.addEventListener("change", (e) => {
-    const hours = parseInt(e.target.value, 10);
-    em.setReminderHours(hours);
+    em.setReminderMode(e.target.value);
+  });
+  em.panelEls.quietStartSelect.addEventListener("change", () => {
+    em.setQuietHours(em.panelEls.quietStartSelect.value, em.panelEls.quietEndSelect.value);
+  });
+  em.panelEls.quietEndSelect.addEventListener("change", () => {
+    em.setQuietHours(em.panelEls.quietStartSelect.value, em.panelEls.quietEndSelect.value);
   });
   em.panelEls.deliveryAnimationSelect.addEventListener("change", (e) => {
     if (em.setDeliveryAnimation) em.setDeliveryAnimation(e.target.value);
@@ -394,7 +460,9 @@ em.createPanel = function () {
     if (em.setLanguage) em.setLanguage(e.target.value);
   });
   em.panelEls.clearLocalDataBtn.addEventListener("click", () => {
-    if (em.clearLocalData) em.clearLocalData();
+    if (em.clearLocalData && window.confirm(em.t("config_clear_data_confirm"))) {
+      em.clearLocalData();
+    }
   });
   em.panelEls.themeChips.forEach((chip) => {
     chip.addEventListener("click", () => em.setTheme(chip.dataset.theme));
@@ -406,31 +474,63 @@ em.createPanel = function () {
   });
   em.panelEls.filterQuery.addEventListener("input", (e) => {
     em.state.filters.query = String(e.target.value || "");
+    em.updateFilterClearButton();
+    em.schedulePanelUiStatePersist();
     em.renderPending(em.state.pending);
   });
   em.panelEls.filterCourse.addEventListener("change", (e) => {
     em.state.filters.course = String(e.target.value || "all");
+    em.updateFilterClearButton();
+    em.schedulePanelUiStatePersist();
     em.renderPending(em.state.pending);
   });
   em.panelEls.filterUrgency.addEventListener("change", (e) => {
     em.state.filters.urgency = String(e.target.value || "all");
+    em.updateFilterClearButton();
+    em.schedulePanelUiStatePersist();
     em.renderPending(em.state.pending);
   });
   em.panelEls.filterDate.addEventListener("change", (e) => {
     em.state.filters.dateRange = String(e.target.value || "all");
+    em.updateFilterClearButton();
+    em.schedulePanelUiStatePersist();
+    em.renderPending(em.state.pending);
+  });
+  em.panelEls.filterTaskSort.addEventListener("change", (e) => {
+    em.state.filters.sort = String(e.target.value || "deadline");
+    em.updateFilterClearButton();
+    em.schedulePanelUiStatePersist();
     em.renderPending(em.state.pending);
   });
   em.panelEls.filterContentType.addEventListener("change", (e) => {
     em.state.contentFilters.type = String(e.target.value || "all");
+    em.updateFilterClearButton();
+    em.schedulePanelUiStatePersist();
     em.renderPending(em.state.pending);
   });
   em.panelEls.filterContentModule.addEventListener("change", (e) => {
     em.state.contentFilters.module = String(e.target.value || "all");
+    em.updateFilterClearButton();
+    em.schedulePanelUiStatePersist();
     em.renderPending(em.state.pending);
   });
   em.panelEls.filterContentSort.addEventListener("change", (e) => {
     em.state.contentFilters.sort = String(e.target.value || "newest");
+    em.updateFilterClearButton();
+    em.schedulePanelUiStatePersist();
     em.renderPending(em.state.pending);
+  });
+  em.panelEls.filterClearBtn.addEventListener("click", () => {
+    em.clearFilters();
+  });
+  em.panelEls.archiveAllOverdueBtn.addEventListener("click", () => {
+    em.archiveAllOverdue();
+  });
+  em.panelEls.unpinAllBtn.addEventListener("click", () => {
+    em.unpinAllItems();
+  });
+  em.panelEls.exportWeekBtn.addEventListener("click", () => {
+    em.exportWeekCalendar();
   });
   em.panelEls.filterCompactBtn.addEventListener("click", () => {
     em.toggleFiltersCompact();
@@ -444,4 +544,5 @@ em.createPanel = function () {
   if (em.applyTranslations) em.applyTranslations();
   em.setupPanelDrag();
   em.filterAvailableFonts();
+  em.updateFilterClearButton();
 };

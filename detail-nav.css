@@ -15,6 +15,17 @@
   text-transform: lowercase;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  #ep-back-home-btn,
+  #ep-celebration-overlay *,
+  #ep-abduction-overlay *,
+  #ep-teams-overlay *,
+  #ep-pinata-overlay * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 #ep-back-home-btn::before {
   content: "[ ";
 }
@@ -574,4 +585,3 @@
 @keyframes ep-pinata-expandRing { 
     to { transform: translate(-50%, -50%) scale(35); opacity: 0; } 
 }
-

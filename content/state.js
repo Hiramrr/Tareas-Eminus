@@ -8,7 +8,7 @@ var em = window.eminus;
 
 em.state = {
   isCollapsed: true,
-  activeTab: "pending",
+  activeTab: "today",
   pending: [],
   logs: [],
   archivedIds: new Set(),
@@ -19,14 +19,16 @@ em.state = {
   lastUpdatedAt: null,
   isArchiveView: false,
   lastTabBeforeArchive: "pending",
-  reminderHours: 24,
+  reminderMode: "staggered",
+  quietHours: { start: "", end: "" },
   lang: "es",
   isLogTabVisible: true,
   filters: {
     query: "",
     course: "all",
     urgency: "all",
-    dateRange: "all"
+    dateRange: "all",
+    sort: "deadline"
   },
   contentFilters: {
     type: "all",
@@ -54,6 +56,7 @@ em.dragState = null;
 em.autoRefreshTimer = null;
 em.autoRefreshMinutes = 0;
 em.panelEls = null;
+em.panelUiStatePersistTimer = null;
 
 em.normalizeNotifiedUpcomingIds = function (raw) {
   if (!Array.isArray(raw)) return new Set();
@@ -157,7 +160,7 @@ em.applyAdvancedFilters = function (items, options) {
   const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   const dayMs = 24 * 60 * 60 * 1000;
 
-  return items.filter((item) => {
+  const filtered = items.filter((item) => {
     if (!item) return false;
 
     if (selectedCourse !== "all" && item.course !== selectedCourse) return false;
@@ -198,6 +201,8 @@ em.applyAdvancedFilters = function (items, options) {
 
     return true;
   });
+
+  return em.sortActivityItems ? em.sortActivityItems(filtered, filters.sort) : filtered;
 };
 
 em.applyContentFilters = function (items, options) {

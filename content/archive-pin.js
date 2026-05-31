@@ -54,6 +54,18 @@ em.unarchiveItemByIndex = async function (index) {
   em.setStatus(em.t("status_restored") + ": " + item.title);
 };
 
+em.archiveAllOverdue = async function () {
+  const items = em.getVisiblePending(em.state.pending).filter((item) => item.urgency === "overdue");
+  if (!items.length) return;
+  items.forEach((item) => {
+    em.state.archivedIds.add(item.id);
+    item.archived = true;
+  });
+  em.renderPending(em.state.pending);
+  await em.persistArchiveState();
+  em.setStatus(em.t("status_archived_many").replace("{n}", items.length));
+};
+
 em.persistPinnedState = async function () {
   const pinnedList = Array.from(em.state.pinnedIds);
   const payload = {};
@@ -103,4 +115,21 @@ em.unpinItemByIndex = async function (index) {
   em.renderPending(em.state.pending);
   await em.persistPinnedState();
   em.setStatus(em.t("status_unpinned") + ": " + item.title);
+};
+
+em.unpinAllItems = async function () {
+  const items = em.state.pending.filter((item) => item.pinned);
+  if (!items.length) return;
+  items.forEach((item) => {
+    em.state.pinnedIds.delete(item.id);
+    item.pinned = false;
+  });
+  if (em.sortPendingItems) {
+    em.sortPendingItems(em.state.pending);
+  } else {
+    em.state.pending = em.sortActivityItems(em.state.pending, "deadline");
+  }
+  em.renderPending(em.state.pending);
+  await em.persistPinnedState();
+  em.setStatus(em.t("status_unpinned_many").replace("{n}", items.length));
 };

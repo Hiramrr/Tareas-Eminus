@@ -15,6 +15,7 @@ em.i18n = {
     expand_tooltip: "Desplegar",
     archive_view: "Archivadas",
     archive_back: "Volver",
+    tab_today: "Hoy",
     tab_pending: "Pendientes",
     tab_overdue: "Vencidas",
     tab_agenda: "Agenda",
@@ -37,7 +38,26 @@ em.i18n = {
     filter_date_overdue: "ya vencidas",
     filter_compact: "[ compactar ]",
     filter_expand: "[ expandir ]",
+    filter_clear: "[ limpiar ]",
+    filter_sort_deadline: "ordenar por fecha",
+    filter_sort_urgency: "ordenar por urgencia",
+    filter_sort_course: "ordenar por curso",
+    filter_sort_title: "ordenar por título",
+    filter_content_all: "todo contenido",
+    filter_content_units: "módulos",
+    filter_content_elements: "mensajes",
+    filter_content_files: "archivos",
+    filter_modules_all: "todos los módulos",
+    filter_content_sort_newest: "más reciente",
+    filter_content_sort_oldest: "más antiguo",
+    filter_content_sort_course: "por curso",
+    filter_content_sort_module: "por módulo",
+    filter_content_sort_title: "por título",
     theme_label: "Tema del panel",
+    config_daily: "Uso diario",
+    config_appearance: "Apariencia",
+    config_interface: "Interfaz",
+    config_danger: "Datos locales",
     autorefresh_label: "Auto-refresh",
     ar_off: "desactivado",
     ar_1m: "cada 1 min",
@@ -47,17 +67,22 @@ em.i18n = {
     ar_30m: "cada 30 min",
     reminder_label: "Avisos preventivos",
     rem_off: "desactivado",
+    rem_staggered: "escalonados: 48h, 24h, 6h y 1h",
     rem_1h: "1 hora antes",
     rem_3h: "3 horas antes",
     rem_6h: "6 horas antes",
     rem_12h: "12 horas antes",
     rem_24h: "24 horas antes",
     rem_48h: "48 horas antes",
+    quiet_hours_label: "Horas silenciosas",
+    quiet_start_off: "inicio: sin horario",
+    quiet_end_off: "fin: sin horario",
     font_label: "Fuente de la interfaz",
     log_visibility_label: "Apartado de log",
     log_visibility_visible: "visible",
     log_visibility_removed: "oculto",
     config_clear_data: "Borrar datos locales",
+    config_clear_data_confirm: "¿Borrar tareas guardadas, historial y preferencias locales?",
     lang_label: "Idioma",
     lang_es: "Español",
     lang_en: "English",
@@ -68,6 +93,7 @@ em.i18n = {
     ready: "Listo",
     empty_archived: "Sin tareas archivadas.",
     empty_pending: "Sin tareas pendientes detectadas.",
+    empty_today: "Sin vencidas, fijadas ni entregas próximas en 48h.",
     empty_overdue: "Sin tareas vencidas detectadas.",
     empty_content: "Sin publicaciones de contenido detectadas.",
     empty_log: "Aún no hay historial.",
@@ -75,6 +101,10 @@ em.i18n = {
     action_archive: "Archivar",
     action_pin: "Fijar",
     action_unpin: "Desfijar",
+    action_archive_all: "[ archivar vencidas ]",
+    action_unpin_all: "[ desfijar todas ]",
+    action_export_week: "[ calendario ]",
+    action_snooze: "Posponer 1h",
     log_clear: "[ borrar_log ]",
     log_changed_date: "cambió de fecha",
     log_changed_state: "cambió de estado",
@@ -97,6 +127,8 @@ em.i18n = {
     status_pending: "pendientes",
     status_content: "publicaciones",
     status_new: "nuevas",
+    status_loading: "cargando...",
+    summary_next: "próxima",
     status_cache: "(caché)",
     status_waiting_token: "Esperando sesión de Eminus...",
     status_waiting_token_refresh: "Esperando renovación de sesión de Eminus...",
@@ -130,10 +162,22 @@ em.i18n = {
     error_no_channel: "No hay canal de extensión disponible.",
     error_load_activities: "No se pudieron cargar actividades del curso",
     no_title: "Actividad sin título",
+    content_label: "Contenido",
+    content_published: "Publicado",
+    content_files_loading: "Cargando archivos...",
+    content_files_empty: "Sin archivos adjuntos detectados.",
+    content_files_expand: "Despliega para cargar archivos.",
+    content_downloads: "desc.",
+    content_open: "Abrir en Eminus",
     status_archived: "Archivada",
     status_restored: "Restaurada",
     status_pinned: "Fijada",
     status_unpinned: "Desfijada",
+    status_filters_cleared: "Filtros limpiados",
+    status_archived_many: "{n} tareas vencidas archivadas",
+    status_unpinned_many: "{n} tareas desfijadas",
+    status_calendar_empty: "No hay entregas con fecha en los próximos 7 días.",
+    status_calendar_exported: "{n} entregas exportadas al calendario.",
     status_delivered: "Entregada",
     status_completed: "Completada",
     status_pending_label: "Pendiente",
@@ -148,6 +192,7 @@ em.i18n = {
     expand_tooltip: "Expand",
     archive_view: "Archived",
     archive_back: "Back",
+    tab_today: "Today",
     tab_pending: "Pending",
     tab_overdue: "Overdue",
     tab_agenda: "Agenda",
@@ -170,7 +215,26 @@ em.i18n = {
     filter_date_overdue: "already overdue",
     filter_compact: "[ compact ]",
     filter_expand: "[ expand ]",
+    filter_clear: "[ clear ]",
+    filter_sort_deadline: "sort by due date",
+    filter_sort_urgency: "sort by urgency",
+    filter_sort_course: "sort by course",
+    filter_sort_title: "sort by title",
+    filter_content_all: "all content",
+    filter_content_units: "modules",
+    filter_content_elements: "posts",
+    filter_content_files: "files",
+    filter_modules_all: "all modules",
+    filter_content_sort_newest: "newest",
+    filter_content_sort_oldest: "oldest",
+    filter_content_sort_course: "by course",
+    filter_content_sort_module: "by module",
+    filter_content_sort_title: "by title",
     theme_label: "Panel Theme",
+    config_daily: "Daily use",
+    config_appearance: "Appearance",
+    config_interface: "Interface",
+    config_danger: "Local data",
     autorefresh_label: "Auto-refresh",
     ar_off: "disabled",
     ar_1m: "every 1 min",
@@ -180,17 +244,22 @@ em.i18n = {
     ar_30m: "every 30 min",
     reminder_label: "Reminders",
     rem_off: "disabled",
+    rem_staggered: "staggered: 48h, 24h, 6h, and 1h",
     rem_1h: "1 hour before",
     rem_3h: "3 hours before",
     rem_6h: "6 hours before",
     rem_12h: "12 hours before",
     rem_24h: "24 hours before",
     rem_48h: "48 hours before",
+    quiet_hours_label: "Quiet hours",
+    quiet_start_off: "start: no schedule",
+    quiet_end_off: "end: no schedule",
     font_label: "Interface Font",
     log_visibility_label: "Log section",
     log_visibility_visible: "visible",
     log_visibility_removed: "hidden",
     config_clear_data: "Clear local data",
+    config_clear_data_confirm: "Clear saved tasks, history, and local preferences?",
     lang_label: "Language",
     lang_es: "Español",
     lang_en: "English",
@@ -201,6 +270,7 @@ em.i18n = {
     ready: "Ready",
     empty_archived: "No archived tasks.",
     empty_pending: "No pending tasks detected.",
+    empty_today: "No overdue, pinned, or upcoming tasks in the next 48h.",
     empty_overdue: "No overdue tasks detected.",
     empty_content: "No content posts detected.",
     empty_log: "No history yet.",
@@ -208,6 +278,10 @@ em.i18n = {
     action_archive: "Archive",
     action_pin: "Pin",
     action_unpin: "Unpin",
+    action_archive_all: "[ archive overdue ]",
+    action_unpin_all: "[ unpin all ]",
+    action_export_week: "[ calendar ]",
+    action_snooze: "Snooze 1h",
     log_clear: "[ clear_log ]",
     log_changed_date: "changed date",
     log_changed_state: "changed state",
@@ -230,6 +304,8 @@ em.i18n = {
     status_pending: "pending",
     status_content: "content posts",
     status_new: "new",
+    status_loading: "loading...",
+    summary_next: "next",
     status_cache: "(cached)",
     status_waiting_token: "Waiting for Eminus session...",
     status_waiting_token_refresh: "Waiting for Eminus session refresh...",
@@ -263,10 +339,22 @@ em.i18n = {
     error_no_channel: "No extension channel available.",
     error_load_activities: "Could not load course activities",
     no_title: "Activity without title",
+    content_label: "Content",
+    content_published: "Published",
+    content_files_loading: "Loading files...",
+    content_files_empty: "No attachments detected.",
+    content_files_expand: "Expand to load files.",
+    content_downloads: "downloads",
+    content_open: "Open in Eminus",
     status_archived: "Archived",
     status_restored: "Restored",
     status_pinned: "Pinned",
     status_unpinned: "Unpinned",
+    status_filters_cleared: "Filters cleared",
+    status_archived_many: "{n} overdue tasks archived",
+    status_unpinned_many: "{n} tasks unpinned",
+    status_calendar_empty: "No dated tasks in the next 7 days.",
+    status_calendar_exported: "{n} tasks exported to calendar.",
     status_delivered: "Delivered",
     status_completed: "Completed",
     status_pending_label: "Pending",
@@ -286,6 +374,7 @@ em.i18n = {
     tab_agenda: "Agenda",
     tab_log: "Journal",
     tab_config: "Config",
+    filter_clear: "[ effacer ]",
     theme_label: "Thème du panneau",
     autorefresh_label: "Auto-actualisation",
     ar_off: "désactivé",
@@ -307,6 +396,7 @@ em.i18n = {
     log_visibility_visible: "visible",
     log_visibility_removed: "cachée",
     config_clear_data: "Effacer les données locales",
+    config_clear_data_confirm: "Effacer les tâches enregistrées, l'historique et les préférences locales ?",
     lang_label: "Langue",
     lang_es: "Español",
     lang_en: "English",
@@ -344,6 +434,7 @@ em.i18n = {
     never: "Jamais",
     status_pending: "en attente",
     status_new: "nouvelles",
+    summary_next: "prochaine",
     status_cache: "(en cache)",
     status_waiting_token: "En attente de la session Eminus...",
     status_waiting_token_refresh: "En attente du renouvellement de la session Eminus...",
@@ -378,6 +469,7 @@ em.i18n = {
     status_restored: "Restaurée",
     status_pinned: "Épinglée",
     status_unpinned: "Désépinglée",
+    status_filters_cleared: "Filtres effacés",
     status_delivered: "Livrée",
     status_completed: "Terminée",
     status_pending_label: "En attente",
@@ -397,6 +489,7 @@ em.i18n = {
     tab_agenda: "予定",
     tab_log: "ログ",
     tab_config: "設定",
+    filter_clear: "[ クリア ]",
     theme_label: "パネルテーマ",
     autorefresh_label: "自動更新",
     ar_off: "無効",
@@ -418,6 +511,7 @@ em.i18n = {
     log_visibility_visible: "表示",
     log_visibility_removed: "非表示",
     config_clear_data: "ローカルデータを消去",
+    config_clear_data_confirm: "保存したタスク、履歴、ローカル設定を消去しますか？",
     lang_label: "言語",
     lang_es: "Español",
     lang_en: "English",
@@ -455,6 +549,7 @@ em.i18n = {
     never: "未",
     status_pending: "保留中",
     status_new: "新着",
+    summary_next: "次",
     status_cache: "(キャッシュ)",
     status_waiting_token: "Eminusのセッションを待機中...",
     status_waiting_token_refresh: "Eminusのセッション更新を待機中...",
@@ -489,6 +584,7 @@ em.i18n = {
     status_restored: "復元済み",
     status_pinned: "固定済み",
     status_unpinned: "固定解除済み",
+    status_filters_cleared: "フィルターをクリアしました",
     status_delivered: "配信済み",
     status_completed: "完了済み",
     status_pending_label: "保留中",
@@ -508,6 +604,7 @@ em.i18n = {
     tab_agenda: "일정",
     tab_log: "로그",
     tab_config: "설정",
+    filter_clear: "[ 지우기 ]",
     theme_label: "패널 테마",
     autorefresh_label: "자동 새로고침",
     ar_off: "비활성화",
@@ -529,6 +626,7 @@ em.i18n = {
     log_visibility_visible: "표시",
     log_visibility_removed: "숨김",
     config_clear_data: "로컬 데이터 지우기",
+    config_clear_data_confirm: "저장된 작업, 기록 및 로컬 환경설정을 지우시겠습니까?",
     lang_label: "언어",
     lang_es: "Español",
     lang_en: "English",
@@ -566,6 +664,7 @@ em.i18n = {
     never: "절대",
     status_pending: "대기 중",
     status_new: "신규",
+    summary_next: "다음",
     status_cache: "(캐시됨)",
     status_waiting_token: "Eminus 세션 대기 중...",
     status_waiting_token_refresh: "Eminus 세션 갱신 대기 중...",
@@ -600,6 +699,7 @@ em.i18n = {
     status_restored: "복원됨",
     status_pinned: "고정됨",
     status_unpinned: "고정 해제됨",
+    status_filters_cleared: "필터가 지워졌습니다",
     status_delivered: "전달됨",
     status_completed: "완료됨",
     status_pending_label: "대기 중",
@@ -619,6 +719,7 @@ em.i18n = {
     tab_agenda: "日程",
     tab_log: "日志",
     tab_config: "设置",
+    filter_clear: "[ 清除 ]",
     theme_label: "面板主题",
     autorefresh_label: "自动刷新",
     ar_off: "已禁用",
@@ -640,6 +741,7 @@ em.i18n = {
     log_visibility_visible: "显示",
     log_visibility_removed: "隐藏",
     config_clear_data: "清除本地数据",
+    config_clear_data_confirm: "清除已保存的任务、历史记录和本地偏好吗？",
     lang_label: "语言",
     lang_es: "Español",
     lang_en: "English",
@@ -677,6 +779,7 @@ em.i18n = {
     never: "从未",
     status_pending: "待办",
     status_new: "新",
+    summary_next: "下一个",
     status_cache: "(已缓存)",
     status_waiting_token: "正在等待 Eminus 会话...",
     status_waiting_token_refresh: "正在等待 Eminus 会话刷新...",
@@ -712,6 +815,7 @@ em.i18n = {
     status_restored: "已恢复",
     status_pinned: "已固定",
     status_unpinned: "已取消固定",
+    status_filters_cleared: "筛选条件已清除",
     status_delivered: "已交付",
     status_completed: "已完成",
     status_pending_label: "待办",
@@ -751,6 +855,8 @@ em.applyTranslations = function() {
   em.updateArchiveToggleButton(); // uses em.t internally now
 
   // Tabs
+  const tabToday = els.root.querySelector('[data-tab="today"]');
+  if (tabToday) tabToday.textContent = em.t('tab_today');
   const tabPending = els.root.querySelector('[data-tab="pending"]');
   if (tabPending) tabPending.textContent = em.t('tab_pending');
   const tabOverdue = els.root.querySelector('[data-tab="overdue"]');
@@ -766,8 +872,13 @@ em.applyTranslations = function() {
 
   // Config labels
   if (els.themeLabel) els.themeLabel.textContent = em.t('theme_label');
+  if (els.configDailySummary) els.configDailySummary.textContent = em.t("config_daily");
+  if (els.configAppearanceSummary) els.configAppearanceSummary.textContent = em.t("config_appearance");
+  if (els.configInterfaceSummary) els.configInterfaceSummary.textContent = em.t("config_interface");
+  if (els.configDangerSummary) els.configDangerSummary.textContent = em.t("config_danger");
   if (els.autorefreshLabel) els.autorefreshLabel.textContent = em.t('autorefresh_label');
   if (els.reminderLabel) els.reminderLabel.textContent = em.t('reminder_label');
+  if (els.quietHoursLabel) els.quietHoursLabel.textContent = em.t("quiet_hours_label");
   if (els.fontLabel) els.fontLabel.textContent = em.t('font_label');
   if (els.logVisibilityLabel) els.logVisibilityLabel.textContent = em.t('log_visibility_label');
   if (els.langLabel) els.langLabel.textContent = em.t('lang_label');
@@ -785,12 +896,19 @@ em.applyTranslations = function() {
   // Config Reminder options
   if (els.reminderSelect) {
     els.reminderSelect.options[0].textContent = em.t('rem_off');
-    els.reminderSelect.options[1].textContent = em.t('rem_1h');
-    els.reminderSelect.options[2].textContent = em.t('rem_3h');
-    els.reminderSelect.options[3].textContent = em.t('rem_6h');
-    els.reminderSelect.options[4].textContent = em.t('rem_12h');
-    els.reminderSelect.options[5].textContent = em.t('rem_24h');
-    els.reminderSelect.options[6].textContent = em.t('rem_48h');
+    els.reminderSelect.options[1].textContent = em.t('rem_staggered');
+    els.reminderSelect.options[2].textContent = em.t('rem_1h');
+    els.reminderSelect.options[3].textContent = em.t('rem_3h');
+    els.reminderSelect.options[4].textContent = em.t('rem_6h');
+    els.reminderSelect.options[5].textContent = em.t('rem_12h');
+    els.reminderSelect.options[6].textContent = em.t('rem_24h');
+    els.reminderSelect.options[7].textContent = em.t('rem_48h');
+  }
+  if (els.quietStartSelect && els.quietStartSelect.options.length) {
+    els.quietStartSelect.options[0].textContent = em.t("quiet_start_off");
+  }
+  if (els.quietEndSelect && els.quietEndSelect.options.length) {
+    els.quietEndSelect.options[0].textContent = em.t("quiet_end_off");
   }
 
   if (els.logVisibilitySelect) {
@@ -831,7 +949,32 @@ em.applyTranslations = function() {
     els.filterDateSelect.options[5].textContent = em.t("filter_date_nodate");
     els.filterDateSelect.options[6].textContent = em.t("filter_date_overdue");
   }
+  if (els.filterTaskSortSelect && els.filterTaskSortSelect.options.length >= 4) {
+    els.filterTaskSortSelect.options[0].textContent = em.t("filter_sort_deadline");
+    els.filterTaskSortSelect.options[1].textContent = em.t("filter_sort_urgency");
+    els.filterTaskSortSelect.options[2].textContent = em.t("filter_sort_course");
+    els.filterTaskSortSelect.options[3].textContent = em.t("filter_sort_title");
+  }
+  if (els.filterContentType && els.filterContentType.options.length >= 4) {
+    els.filterContentType.options[0].textContent = em.t("filter_content_all");
+    els.filterContentType.options[1].textContent = em.t("filter_content_units");
+    els.filterContentType.options[2].textContent = em.t("filter_content_elements");
+    els.filterContentType.options[3].textContent = em.t("filter_content_files");
+  }
+  if (els.filterContentModule && els.filterContentModule.options.length) {
+    els.filterContentModule.options[0].textContent = em.t("filter_modules_all");
+  }
+  if (els.filterContentSort && els.filterContentSort.options.length >= 5) {
+    els.filterContentSort.options[0].textContent = em.t("filter_content_sort_newest");
+    els.filterContentSort.options[1].textContent = em.t("filter_content_sort_oldest");
+    els.filterContentSort.options[2].textContent = em.t("filter_content_sort_course");
+    els.filterContentSort.options[3].textContent = em.t("filter_content_sort_module");
+    els.filterContentSort.options[4].textContent = em.t("filter_content_sort_title");
+  }
   if (em.updateFiltersCompactButton) em.updateFiltersCompactButton();
+  if (em.updateFilterClearButton) em.updateFilterClearButton();
+  if (em.updateBulkActionButtons) em.updateBulkActionButtons();
+  if (em.updateCollapsedSummary) em.updateCollapsedSummary();
 
   // Footer
   if (els.footer && (els.footer.textContent === "Listo" || els.footer.textContent === "Ready" || els.footer.textContent === "Prêt" || els.footer.textContent === "準備完了" || els.footer.textContent === "준비됨" || els.footer.textContent === "就绪" || els.footer.textContent === em.t('ready'))) {

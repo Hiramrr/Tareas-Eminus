@@ -16,6 +16,8 @@ em.hydrateFromStorage = async function () {
     em.STORAGE_KEYS.PINNED,
     em.STORAGE_KEYS.AUTO_REFRESH,
     em.STORAGE_KEYS.REMINDER_HOURS,
+    em.STORAGE_KEYS.REMINDER_MODE,
+    em.STORAGE_KEYS.QUIET_HOURS,
     em.STORAGE_KEYS.NOTIFIED_UPCOMING,
     em.STORAGE_KEYS.LAST_URGENCY_BY_ID,
     em.STORAGE_KEYS.FONT,
@@ -24,7 +26,8 @@ em.hydrateFromStorage = async function () {
     em.STORAGE_KEYS.FILTERS_COMPACT,
     em.STORAGE_KEYS.CUSTOM_THEME,
     em.STORAGE_KEYS.PANEL_SIZE,
-    em.STORAGE_KEYS.DELIVERY_ANIMATION
+    em.STORAGE_KEYS.DELIVERY_ANIMATION,
+    em.STORAGE_KEYS.PANEL_UI_STATE
   ]);
 
   const storedAccountId = data[em.STORAGE_KEYS.ACCOUNT_ID];
@@ -61,6 +64,9 @@ em.hydrateFromStorage = async function () {
   em.state.archivedIds = em.normalizeArchivedIds(data[em.STORAGE_KEYS.ARCHIVED]);
   em.state.pinnedIds = em.normalizePinnedIds(data[em.STORAGE_KEYS.PINNED]);
   em.state.notifiedUpcomingIds = em.normalizeNotifiedUpcomingIds(data[em.STORAGE_KEYS.NOTIFIED_UPCOMING]);
+  if (em.applyStoredPanelUiState) {
+    em.applyStoredPanelUiState(data[em.STORAGE_KEYS.PANEL_UI_STATE]);
+  }
 
   em.applyCustomTheme(data[em.STORAGE_KEYS.CUSTOM_THEME]);
 
@@ -134,11 +140,22 @@ em.hydrateFromStorage = async function () {
     em.startAutoRefresh(storedAutoRefresh);
   }
 
-  const storedReminderHours = data[em.STORAGE_KEYS.REMINDER_HOURS] !== undefined ? Number(data[em.STORAGE_KEYS.REMINDER_HOURS]) : 24;
-  em.state.reminderHours = storedReminderHours;
+  const storedReminderMode = data[em.STORAGE_KEYS.REMINDER_MODE] ?? data[em.STORAGE_KEYS.REMINDER_HOURS] ?? "staggered";
+  em.state.reminderMode = em.normalizeReminderMode(storedReminderMode);
   if (em.panelEls && em.panelEls.reminderSelect) {
-    em.panelEls.reminderSelect.value = String(storedReminderHours);
+    em.panelEls.reminderSelect.value = em.state.reminderMode === "off"
+      ? "0"
+      : em.state.reminderMode === "staggered"
+        ? "staggered"
+        : em.state.reminderMode.replace("single-", "");
   }
+  const storedQuietHours = data[em.STORAGE_KEYS.QUIET_HOURS];
+  em.state.quietHours = {
+    start: em.normalizeQuietHour(storedQuietHours?.start),
+    end: em.normalizeQuietHour(storedQuietHours?.end)
+  };
+  if (em.panelEls && em.panelEls.quietStartSelect) em.panelEls.quietStartSelect.value = em.state.quietHours.start;
+  if (em.panelEls && em.panelEls.quietEndSelect) em.panelEls.quietEndSelect.value = em.state.quietHours.end;
 
   const storedFont = data[em.STORAGE_KEYS.FONT] || "mono";
   em.setFont(storedFont);
@@ -161,24 +178,6 @@ em.hydrateFromStorage = async function () {
     em.panelEls.langSelect.value = storedLang;
   }
   if (em.applyTranslations) em.applyTranslations();
-};
-
-em.setReminderHours = async function (hours) {
-  em.state.reminderHours = hours;
-  const payload = {};
-  payload[em.STORAGE_KEYS.REMINDER_HOURS] = hours;
-  await em.storageSet(payload);
-};
-
-em.pruneNotifiedUpcomingIds = function (items, notifiedSet) {
-  const next = new Set();
-  if (!Array.isArray(items)) return next;
-  items.forEach((item) => {
-    if (item && item.id && notifiedSet.has(item.id)) {
-      next.add(item.id);
-    }
-  });
-  return next;
 };
 
 em.normalizeUrgencyMap = function (raw) {
@@ -307,12 +306,12 @@ em.scanPending = async function () {
         em.state.pending = activityPending;
         em.renderPending(activityPending);
         if (em.panelEls && em.panelEls.contentBody) {
-          em.panelEls.contentBody.innerHTML = `<div class="ep-empty">${em.escapeHtml(em.t("status_content"))}: cargando...</div>`;
+          em.panelEls.contentBody.innerHTML = `<div class="ep-empty">${em.escapeHtml(em.t("status_content"))}: ${em.escapeHtml(em.t("status_loading"))}</div>`;
         }
 
         const visibleActivities = em.getVisiblePending(activityPending);
         const overdueCount = visibleActivities.filter((item) => item.urgency === "overdue").length;
-        const status = visibleActivities.length + " " + em.t("status_pending") + " | " + em.t("status_content") + ": cargando...";
+        const status = visibleActivities.length + " " + em.t("status_pending") + " | " + em.t("status_content") + ": " + em.t("status_loading");
         em.setStatus(status);
         await em.syncBadge(visibleActivities.length, 0, overdueCount);
       }
@@ -349,18 +348,20 @@ em.scanPending = async function () {
 
     // Upcoming reminders logic
     const upcomingNotifications = [];
-    if (em.state.reminderHours > 0) {
-      const thresholdMs = em.state.reminderHours * 60 * 60 * 1000;
+    const reminderThresholds = em.getReminderThresholds().slice().sort((a, b) => a - b);
+    if (reminderThresholds.length && !em.isQuietHoursNow()) {
       const now = Date.now();
       for (const item of visiblePending) {
         if (!item.deadlineRaw || item.urgency === "overdue") continue;
         const deadline = new Date(item.deadlineRaw).getTime();
         const diff = deadline - now;
-        if (diff > 0 && diff <= thresholdMs) {
-          if (!em.state.notifiedUpcomingIds.has(item.id)) {
-            upcomingNotifications.push(item);
-            em.state.notifiedUpcomingIds.add(item.id);
-          }
+        if (diff <= 0) continue;
+        const threshold = reminderThresholds.find((hours) => diff <= hours * 60 * 60 * 1000);
+        if (!threshold) continue;
+        const reminderKey = em.getReminderNotificationKey(item.id, threshold);
+        if (!em.state.notifiedUpcomingIds.has(reminderKey)) {
+          upcomingNotifications.push({ item, threshold });
+          em.state.notifiedUpcomingIds.add(reminderKey);
         }
       }
     }
@@ -391,31 +392,48 @@ em.scanPending = async function () {
     const visibleContentCount = em.getVisibleContent(pending).length;
     const newTaskCount = Number(logMeta.newTaskCount ?? logMeta.newCount ?? 0);
     const newContentCount = Number(logMeta.newContentCount || 0);
+    const newTaskItems = em.getActivityItems(pending).filter((item) => item && item.id && !knownIds.has(item.id));
+    const newContentItems = em.getContentItems(pending).filter((item) => item && item.id && !knownIds.has(item.id));
+    const notificationsAllowed = !em.isQuietHoursNow();
     const status = visiblePending.length + " " + em.t("status_pending") + " | " + visibleContentCount + " " + em.t("status_content") + " | " + newTaskCount + " " + em.t("status_new");
     em.setStatus(status);
 
     if (newTaskCount > 0) {
       const msg = newTaskCount === 1 ? em.t("new_task_toast_1") : newTaskCount + " " + em.t("new_task_toast_n");
       em.showToast(msg, "new");
-      await em.notifyUser(em.t("new_task_notif"), msg);
+      const target = newTaskItems.length === 1 ? em.getActivityNotificationTarget(newTaskItems[0]) : null;
+      if (notificationsAllowed) await em.notifyUser(em.t("new_task_notif"), msg, target);
     }
 
     if (newContentCount > 0) {
       const msg = newContentCount === 1 ? em.t("new_content_toast_1") : newContentCount + " " + em.t("new_content_toast_n");
       em.showToast(msg, "info");
-      await em.notifyUser(em.t("new_content_notif"), msg);
+      if (notificationsAllowed) {
+        const byCourse = new Map();
+        newContentItems.forEach((item) => {
+          const course = item.course || em.t("status_content");
+          byCourse.set(course, (byCourse.get(course) || 0) + 1);
+        });
+        for (const [course, count] of byCourse) {
+          await em.notifyUser(em.t("new_content_notif"), course + ": " + count + " " + em.t("status_content"));
+        }
+      }
     }
 
     if (newlyOverdue.length > 0) {
       const msg = newlyOverdue.length === 1 ? em.t("overdue_toast_1") : newlyOverdue.length + " " + em.t("overdue_toast_n");
       em.showToast(msg, "overdue");
-      await em.notifyUser(em.t("overdue_notif"), msg);
+      const target = newlyOverdue.length === 1 ? em.getActivityNotificationTarget(newlyOverdue[0]) : null;
+      if (notificationsAllowed) await em.notifyUser(em.t("overdue_notif"), msg, target);
     }
 
-    for (const item of upcomingNotifications) {
-      const msg = em.t("reminder_toast").replace("{h}", em.state.reminderHours) + ": " + item.title;
+    for (const reminder of upcomingNotifications) {
+      const msg = em.t("reminder_toast").replace("{h}", reminder.threshold) + ": " + reminder.item.title;
       em.showToast(msg, "urgent");
-      await em.notifyUser(em.t("reminder_title"), msg);
+      await em.notifyUser(em.t("reminder_title"), msg, em.getActivityNotificationTarget(reminder.item), {
+        snoozeMinutes: 60,
+        snoozeLabel: em.t("action_snooze")
+      });
     }
 
     await em.syncBadge(visiblePending.length, newTaskCount, currentOverdue.length);

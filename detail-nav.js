@@ -499,6 +499,7 @@
 
   function scheduleCelebration() {
     if (deliveryAnimation === "off") return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
     if (celebrationTimeout) return;
     celebrationTimeout = setTimeout(async () => {
       celebrationTimeout = null;

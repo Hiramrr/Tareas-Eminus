@@ -17,6 +17,8 @@ window.eminus.STORAGE_KEYS = {
   PINNED: "eminusPinnedPendingIds",
   AUTO_REFRESH: "eminusAutoRefreshMinutes",
   REMINDER_HOURS: "eminusReminderHours",
+  REMINDER_MODE: "eminusReminderMode",
+  QUIET_HOURS: "eminusQuietHours",
   NOTIFIED_UPCOMING: "eminusNotifiedUpcomingIds",
   LAST_URGENCY_BY_ID: "eminusLastUrgencyById",
   FONT: "eminusPanelFont",
@@ -25,7 +27,8 @@ window.eminus.STORAGE_KEYS = {
   FILTERS_COMPACT: "eminusFiltersCompact",
   CUSTOM_THEME: "eminusCustomTheme",
   PANEL_SIZE: "eminusPanelSize",
-  DELIVERY_ANIMATION: "eminusDeliveryAnimation"
+  DELIVERY_ANIMATION: "eminusDeliveryAnimation",
+  PANEL_UI_STATE: "eminusPanelUiState"
 };
 
 window.eminus.NAV_KEYS = {

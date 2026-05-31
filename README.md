@@ -6,6 +6,9 @@ Extensión de Chrome (Manifest V3) para inyectar un panel en `eminus.uv.mx` y mo
 - Estado de urgencia (vencida, inminente, urgente, normal)
 - Log histórico de revisiones
 - Animación de celebración al entregar tareas
+- Resumen compacto, filtros persistentes y notificaciones que abren la tarea
+- Vista Hoy, orden configurable, acciones masivas y exportación semanal `.ics`
+- Recordatorios escalonados con horas silenciosas y opción de posponer 1 hora
 
 ## Archivos
 
@@ -34,6 +37,7 @@ Extensión de Chrome (Manifest V3) para inyectar un panel en `eminus.uv.mx` y mo
 4. Usa el botón `[ ref ]` para refrescar pendientes
 5. En la pestaña `Log` verás el historial de lecturas
 6. `Alt+E` colapsa/expande el panel
+7. `/` enfoca la búsqueda, `R` actualiza y `T` abre la vista `Hoy`
 
 ## Notas técnicas
 
@@ -51,3 +55,6 @@ Extensión de Chrome (Manifest V3) para inyectar un panel en `eminus.uv.mx` y mo
   - `eminusPanelPosition`
   - `eminusAccountId`
   - `eminusAutoRefreshMinutes`
+  - `eminusPanelUiState`
+
+El auto-refresh usa `chrome.alarms` y puede actualizar con el panel plegado mientras exista una pestaña de Eminus abierta.

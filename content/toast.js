@@ -34,13 +34,24 @@ em.showToast = function (message, type) {
   }, 4000);
 };
 
-em.notifyUser = async function (title, body) {
+em.getActivityNotificationTarget = function (item) {
+  if (!item || item.kind === "content") return null;
+  const activityId = em.normalizePositiveId(item.activityId);
+  const courseId = em.normalizePositiveId(item.courseId);
+  if (!activityId) return null;
+  return { kind: "activity", activityId, courseId };
+};
+
+em.notifyUser = async function (title, body, target, options) {
   if (!em.hasRuntimeApi) return;
   try {
     await chrome.runtime.sendMessage({
       type: "SHOW_NOTIFICATION",
       title,
-      body
+      body,
+      target: target || null,
+      snoozeMinutes: Number(options?.snoozeMinutes || 0),
+      snoozeLabel: String(options?.snoozeLabel || "")
     });
   } catch (_) {
     console.debug("No se pudo enviar notificación");
