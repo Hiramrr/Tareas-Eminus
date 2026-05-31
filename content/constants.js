@@ -28,8 +28,30 @@ window.eminus.STORAGE_KEYS = {
   CUSTOM_THEME: "eminusCustomTheme",
   PANEL_SIZE: "eminusPanelSize",
   DELIVERY_ANIMATION: "eminusDeliveryAnimation",
-  PANEL_UI_STATE: "eminusPanelUiState"
+  PANEL_UI_STATE: "eminusPanelUiState",
+  PROFILE: "eminusPersonalProfile",
+  COURSE_PREFERENCES: "eminusCoursePreferences",
+  TODAY_ORDER: "eminusTodayOrder",
+  NOTIFICATION_PREFERENCES: "eminusNotificationPreferences"
 };
+
+window.eminus.PREFERENCE_STORAGE_KEYS = [
+  window.eminus.STORAGE_KEYS.THEME,
+  window.eminus.STORAGE_KEYS.AUTO_REFRESH,
+  window.eminus.STORAGE_KEYS.REMINDER_MODE,
+  window.eminus.STORAGE_KEYS.QUIET_HOURS,
+  window.eminus.STORAGE_KEYS.FONT,
+  window.eminus.STORAGE_KEYS.LANG,
+  window.eminus.STORAGE_KEYS.LOG_TAB_VISIBLE,
+  window.eminus.STORAGE_KEYS.FILTERS_COMPACT,
+  window.eminus.STORAGE_KEYS.CUSTOM_THEME,
+  window.eminus.STORAGE_KEYS.PANEL_SIZE,
+  window.eminus.STORAGE_KEYS.DELIVERY_ANIMATION,
+  window.eminus.STORAGE_KEYS.PROFILE,
+  window.eminus.STORAGE_KEYS.COURSE_PREFERENCES,
+  window.eminus.STORAGE_KEYS.TODAY_ORDER,
+  window.eminus.STORAGE_KEYS.NOTIFICATION_PREFERENCES
+];
 
 window.eminus.NAV_KEYS = {
   ACTIVITY_ID: "ep_target_activity_id",

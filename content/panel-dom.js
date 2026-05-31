@@ -40,7 +40,11 @@ em.createPanel = function () {
           </div>
         </div>
         <div class="ep-title-wrap">
-          <div class="ep-title">pendientes eminus</div>
+          <div class="ep-personal-greeting ep-hidden" id="ep-personal-greeting"></div>
+          <div class="ep-personal-title-row">
+            <span class="ep-personal-symbol ep-hidden" id="ep-personal-symbol"></span>
+            <div class="ep-title">pendientes eminus</div>
+          </div>
           <div class="ep-subtitle" id="ep-subtitle">Sin lectura</div>
         </div>
         <div class="ep-collapsed-summary" id="ep-collapsed-summary"></div>
@@ -56,8 +60,8 @@ em.createPanel = function () {
       </header>
 
       <div class="ep-tabs">
-        <button class="ep-tab ep-tab-active" data-tab="today">Hoy</button>
-        <button class="ep-tab" data-tab="pending">Pendientes</button>
+        <button class="ep-tab ep-tab-active" data-tab="pending">Pendientes</button>
+        <button class="ep-tab" data-tab="today">Hoy</button>
         <button class="ep-tab" data-tab="overdue">Vencidas</button>
         <button class="ep-tab" data-tab="agenda">Agenda</button>
         <button class="ep-tab" data-tab="content">Contenido</button>
@@ -119,13 +123,54 @@ em.createPanel = function () {
         </div>
       </section>
 
-      <section class="ep-body" id="ep-body-today"></section>
-      <section class="ep-body ep-hidden" id="ep-body-pending"></section>
+      <section class="ep-body ep-hidden" id="ep-body-today"></section>
+      <section class="ep-body" id="ep-body-pending"></section>
       <section class="ep-body ep-hidden" id="ep-body-overdue"></section>
       <section class="ep-body ep-hidden" id="ep-body-agenda"></section>
       <section class="ep-body ep-hidden" id="ep-body-content"></section>
       <section class="ep-body ep-hidden" id="ep-body-log"></section>
       <section class="ep-body ep-hidden" id="ep-body-config">
+        <details class="ep-config-section ep-config-personal" open>
+          <summary id="ep-config-personal-summary">Personalización</summary>
+          <div class="ep-config-group">
+            <label class="ep-config-label" id="ep-nickname-label" for="ep-nickname">Cómo quieres que te salude Miyu</label>
+            <input class="ep-config-select" id="ep-nickname" type="text" maxlength="32" placeholder="Tu apodo" />
+          </div>
+          <div class="ep-config-row">
+            <div class="ep-config-group">
+              <label class="ep-config-label" id="ep-panel-name-label" for="ep-panel-name">Nombre del panel</label>
+              <input class="ep-config-select" id="ep-panel-name" type="text" maxlength="32" placeholder="pendientes eminus" />
+            </div>
+            <div class="ep-config-group">
+              <label class="ep-config-label" id="ep-personal-symbol-label" for="ep-personal-symbol-select">Símbolo personal</label>
+              <select class="ep-config-select" id="ep-personal-symbol-select">
+                <option value="">sin símbolo</option>
+                <option value="★">★</option>
+                <option value="✦">✦</option>
+                <option value="☕">☕</option>
+                <option value="♡">♡</option>
+                <option value="✓">✓</option>
+              </select>
+            </div>
+          </div>
+          <div class="ep-config-group">
+            <label class="ep-config-label" id="ep-empty-message-label" for="ep-empty-message">Mensaje cuando terminas todo</label>
+            <input class="ep-config-select" id="ep-empty-message" type="text" maxlength="100" placeholder="Hoy ya está resuelto." />
+          </div>
+          <div class="ep-config-group">
+            <label class="ep-config-label" id="ep-today-order-label" for="ep-today-order">Orden de la vista Hoy</label>
+            <select class="ep-config-select" id="ep-today-order">
+              <option value="smart">prioridad inteligente</option>
+              <option value="deadline">fecha de entrega</option>
+              <option value="course">materia</option>
+            </select>
+          </div>
+          <div class="ep-config-group">
+            <label class="ep-config-label" id="ep-course-preferences-label">Tus materias</label>
+            <div class="ep-course-preferences" id="ep-course-preferences"></div>
+          </div>
+        </details>
+
         <details class="ep-config-section ep-config-appearance">
           <summary id="ep-config-appearance-summary">Apariencia</summary>
         <div class="ep-config-group">
@@ -244,6 +289,15 @@ em.createPanel = function () {
             </select>
           </div>
         </div>
+        <div class="ep-config-group">
+          <label class="ep-config-label" id="ep-notification-preferences-label">Qué quieres recibir</label>
+          <div class="ep-preference-checks">
+            <label><input type="checkbox" id="ep-notify-new-tasks" checked /> <span id="ep-notify-new-tasks-text">tareas nuevas</span></label>
+            <label><input type="checkbox" id="ep-notify-new-content" checked /> <span id="ep-notify-new-content-text">contenido nuevo</span></label>
+            <label><input type="checkbox" id="ep-notify-overdue" checked /> <span id="ep-notify-overdue-text">tareas vencidas</span></label>
+            <label><input type="checkbox" id="ep-notify-reminders" checked /> <span id="ep-notify-reminders-text">recordatorios próximos</span></label>
+          </div>
+        </div>
         </details>
 
         <details class="ep-config-section ep-config-interface">
@@ -316,7 +370,7 @@ em.createPanel = function () {
         </details>
 
         <details class="ep-config-section ep-config-danger">
-          <summary id="ep-config-danger-summary">Datos locales</summary>
+          <summary id="ep-config-danger-summary">Datos y preferencias</summary>
         <div class="ep-config-group">
           <button class="ep-btn ep-clear-local-data" id="ep-clear-local-data" type="button">Borrar datos locales</button>
         </div>
@@ -337,6 +391,9 @@ em.createPanel = function () {
   em.panelEls = {
     root,
     subtitle: root.querySelector("#ep-subtitle"),
+    title: root.querySelector(".ep-title"),
+    personalGreeting: root.querySelector("#ep-personal-greeting"),
+    personalSymbol: root.querySelector("#ep-personal-symbol"),
     collapsedSummary: root.querySelector("#ep-collapsed-summary"),
     sealArt: root.querySelector("#ep-seal-art"),
     header: root.querySelector(".ep-header"),
@@ -350,6 +407,31 @@ em.createPanel = function () {
     panelSizeSelect: root.querySelector("#ep-panel-size"),
     logVisibilitySelect: root.querySelector("#ep-log-visibility"),
     langSelect: root.querySelector("#ep-lang"),
+    nicknameInput: root.querySelector("#ep-nickname"),
+    panelNameInput: root.querySelector("#ep-panel-name"),
+    personalSymbolSelect: root.querySelector("#ep-personal-symbol-select"),
+    emptyMessageInput: root.querySelector("#ep-empty-message"),
+    todayOrderSelect: root.querySelector("#ep-today-order"),
+    coursePreferencesList: root.querySelector("#ep-course-preferences"),
+    nicknameLabel: root.querySelector("#ep-nickname-label"),
+    panelNameLabel: root.querySelector("#ep-panel-name-label"),
+    personalSymbolLabel: root.querySelector("#ep-personal-symbol-label"),
+    emptyMessageLabel: root.querySelector("#ep-empty-message-label"),
+    todayOrderLabel: root.querySelector("#ep-today-order-label"),
+    coursePreferencesLabel: root.querySelector("#ep-course-preferences-label"),
+    notificationPreferencesLabel: root.querySelector("#ep-notification-preferences-label"),
+    notificationPreferenceTexts: {
+      newTasks: root.querySelector("#ep-notify-new-tasks-text"),
+      newContent: root.querySelector("#ep-notify-new-content-text"),
+      overdue: root.querySelector("#ep-notify-overdue-text"),
+      reminders: root.querySelector("#ep-notify-reminders-text")
+    },
+    notificationPreferenceInputs: {
+      newTasks: root.querySelector("#ep-notify-new-tasks"),
+      newContent: root.querySelector("#ep-notify-new-content"),
+      overdue: root.querySelector("#ep-notify-overdue"),
+      reminders: root.querySelector("#ep-notify-reminders")
+    },
     customThemeControls: root.querySelector("#ep-custom-theme-controls"),
     customBaseThemeSelect: root.querySelector("#ep-custom-base-theme"),
     customColorInputs: {
@@ -408,6 +490,7 @@ em.createPanel = function () {
     filterTaskSortSelect: root.querySelector("#ep-filter-task-sort")
   };
   em.panelEls.configDailySummary = root.querySelector("#ep-config-daily-summary");
+  em.panelEls.configPersonalSummary = root.querySelector("#ep-config-personal-summary");
   em.panelEls.configAppearanceSummary = root.querySelector("#ep-config-appearance-summary");
   em.panelEls.configInterfaceSummary = root.querySelector("#ep-config-interface-summary");
   em.panelEls.configDangerSummary = root.querySelector("#ep-config-danger-summary");
@@ -458,6 +541,26 @@ em.createPanel = function () {
   });
   em.panelEls.langSelect.addEventListener("change", (e) => {
     if (em.setLanguage) em.setLanguage(e.target.value);
+  });
+  em.panelEls.nicknameInput.addEventListener("change", (e) => {
+    if (em.setNickname) em.setNickname(e.target.value);
+  });
+  em.panelEls.panelNameInput.addEventListener("change", (e) => {
+    if (em.setPanelName) em.setPanelName(e.target.value);
+  });
+  em.panelEls.personalSymbolSelect.addEventListener("change", (e) => {
+    if (em.setPersonalSymbol) em.setPersonalSymbol(e.target.value);
+  });
+  em.panelEls.emptyMessageInput.addEventListener("change", (e) => {
+    if (em.setEmptyMessage) em.setEmptyMessage(e.target.value);
+  });
+  em.panelEls.todayOrderSelect.addEventListener("change", (e) => {
+    if (em.setTodayOrder) em.setTodayOrder(e.target.value);
+  });
+  Object.entries(em.panelEls.notificationPreferenceInputs).forEach(([key, input]) => {
+    input.addEventListener("change", () => {
+      if (em.setNotificationPreference) em.setNotificationPreference(key, input.checked);
+    });
   });
   em.panelEls.clearLocalDataBtn.addEventListener("click", () => {
     if (em.clearLocalData && window.confirm(em.t("config_clear_data_confirm"))) {

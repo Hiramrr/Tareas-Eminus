@@ -173,6 +173,25 @@
   margin-top: 4px;
 }
 
+.ep-personal-greeting {
+  color: currentColor;
+  font-size: 11px;
+  margin-bottom: 3px;
+  opacity: 0.75;
+}
+
+.ep-personal-title-row {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ep-personal-symbol {
+  flex: 0 0 auto;
+  font-size: 15px;
+}
+
 .ep-actions {
   display: flex;
   gap: 12px;
@@ -240,20 +259,24 @@
   display: none;
 }
 
-.ep-config-daily {
+.ep-config-personal {
   order: 1;
 }
 
-.ep-config-appearance {
+.ep-config-daily {
   order: 2;
 }
 
-.ep-config-interface {
+.ep-config-appearance {
   order: 3;
 }
 
-.ep-config-danger {
+.ep-config-interface {
   order: 4;
+}
+
+.ep-config-danger {
+  order: 5;
 }
 
 .ep-config-label {
@@ -381,6 +404,66 @@
   border: 1px solid currentColor;
   background: transparent;
   cursor: pointer;
+}
+
+.ep-course-preferences {
+  display: grid;
+  gap: 6px;
+}
+
+.ep-preference-checks {
+  display: grid;
+  gap: 7px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ep-preference-checks label {
+  align-items: center;
+  border: 1px dashed currentColor;
+  display: flex;
+  font-size: 11px;
+  gap: 7px;
+  padding: 8px;
+}
+
+.ep-personal-empty {
+  border: 1px dashed currentColor;
+  font-size: 11px;
+  opacity: 0.7;
+  padding: 10px;
+}
+
+.ep-course-preference {
+  align-items: center;
+  border: 1px dashed currentColor;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 7px 8px;
+}
+
+.ep-course-preference-name {
+  align-items: center;
+  display: flex;
+  font-size: 11px;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ep-course-preference-name span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ep-course-preference input[type="color"] {
+  background: transparent;
+  border: 1px solid currentColor;
+  cursor: pointer;
+  flex: 0 0 auto;
+  height: 24px;
+  padding: 0;
+  width: 32px;
 }
 
 /* ══════════════════════════════════════════
@@ -522,6 +605,23 @@
 
 .ep-course::before {
   content: "> ";
+}
+
+.ep-course-color-dot {
+  background: var(--ep-course-color);
+  border: 1px solid currentColor;
+  display: inline-block;
+  height: 9px;
+  margin-right: 5px;
+  width: 9px;
+}
+
+.ep-course-favorite {
+  margin-right: 5px;
+}
+
+.ep-item.ep-has-course-color {
+  border-right: 4px solid var(--ep-course-color);
 }
 
 .ep-title-task {
@@ -922,7 +1022,8 @@
 
   .ep-config-row,
   .ep-custom-base-row,
-  .ep-filters-grid {
+  .ep-filters-grid,
+  .ep-preference-checks {
     grid-template-columns: 1fr;
   }
 }

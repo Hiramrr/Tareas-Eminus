@@ -55,9 +55,10 @@ em.i18n = {
     filter_content_sort_title: "por título",
     theme_label: "Tema del panel",
     config_daily: "Uso diario",
+    config_personal: "Personalización",
     config_appearance: "Apariencia",
     config_interface: "Interfaz",
-    config_danger: "Datos locales",
+    config_danger: "Datos y preferencias",
     autorefresh_label: "Auto-refresh",
     ar_off: "desactivado",
     ar_1m: "cada 1 min",
@@ -77,12 +78,32 @@ em.i18n = {
     quiet_hours_label: "Horas silenciosas",
     quiet_start_off: "inicio: sin horario",
     quiet_end_off: "fin: sin horario",
+    profile_greeting: "Hola, {name}",
+    profile_nickname_label: "Cómo quieres que te salude Miyu",
+    profile_nickname_placeholder: "Tu apodo",
+    profile_panel_name_label: "Nombre del panel",
+    profile_panel_name_placeholder: "pendientes eminus",
+    profile_symbol_label: "Símbolo personal",
+    profile_symbol_none: "sin símbolo",
+    profile_empty_message_label: "Mensaje cuando terminas todo",
+    profile_empty_message_placeholder: "Hoy ya está resuelto.",
+    profile_today_order_label: "Orden de la vista Hoy",
+    profile_today_order_smart: "prioridad inteligente",
+    profile_today_order_deadline: "fecha de entrega",
+    profile_today_order_course: "materia",
+    profile_courses_label: "Tus materias",
+    profile_courses_empty: "Actualiza el panel para personalizar tus materias.",
+    notification_preferences_label: "Qué quieres recibir",
+    notification_new_tasks: "tareas nuevas",
+    notification_new_content: "contenido nuevo",
+    notification_overdue: "tareas vencidas",
+    notification_reminders: "recordatorios próximos",
     font_label: "Fuente de la interfaz",
     log_visibility_label: "Apartado de log",
     log_visibility_visible: "visible",
     log_visibility_removed: "oculto",
-    config_clear_data: "Borrar datos locales",
-    config_clear_data_confirm: "¿Borrar tareas guardadas, historial y preferencias locales?",
+    config_clear_data: "Borrar datos y preferencias",
+    config_clear_data_confirm: "¿Borrar tareas guardadas, historial y preferencias sincronizadas?",
     lang_label: "Idioma",
     lang_es: "Español",
     lang_en: "English",
@@ -232,9 +253,10 @@ em.i18n = {
     filter_content_sort_title: "by title",
     theme_label: "Panel Theme",
     config_daily: "Daily use",
+    config_personal: "Personalization",
     config_appearance: "Appearance",
     config_interface: "Interface",
-    config_danger: "Local data",
+    config_danger: "Data and preferences",
     autorefresh_label: "Auto-refresh",
     ar_off: "disabled",
     ar_1m: "every 1 min",
@@ -254,12 +276,32 @@ em.i18n = {
     quiet_hours_label: "Quiet hours",
     quiet_start_off: "start: no schedule",
     quiet_end_off: "end: no schedule",
+    profile_greeting: "Hello, {name}",
+    profile_nickname_label: "How Miyu should greet you",
+    profile_nickname_placeholder: "Your nickname",
+    profile_panel_name_label: "Panel name",
+    profile_panel_name_placeholder: "eminus pending",
+    profile_symbol_label: "Personal symbol",
+    profile_symbol_none: "no symbol",
+    profile_empty_message_label: "Message when everything is done",
+    profile_empty_message_placeholder: "Everything is sorted for today.",
+    profile_today_order_label: "Today view order",
+    profile_today_order_smart: "smart priority",
+    profile_today_order_deadline: "due date",
+    profile_today_order_course: "course",
+    profile_courses_label: "Your courses",
+    profile_courses_empty: "Refresh the panel to personalize your courses.",
+    notification_preferences_label: "What you want to receive",
+    notification_new_tasks: "new tasks",
+    notification_new_content: "new content",
+    notification_overdue: "overdue tasks",
+    notification_reminders: "upcoming reminders",
     font_label: "Interface Font",
     log_visibility_label: "Log section",
     log_visibility_visible: "visible",
     log_visibility_removed: "hidden",
-    config_clear_data: "Clear local data",
-    config_clear_data_confirm: "Clear saved tasks, history, and local preferences?",
+    config_clear_data: "Clear data and preferences",
+    config_clear_data_confirm: "Clear saved tasks, history, and synced preferences?",
     lang_label: "Language",
     lang_es: "Español",
     lang_en: "English",
@@ -873,6 +915,7 @@ em.applyTranslations = function() {
   // Config labels
   if (els.themeLabel) els.themeLabel.textContent = em.t('theme_label');
   if (els.configDailySummary) els.configDailySummary.textContent = em.t("config_daily");
+  if (els.configPersonalSummary) els.configPersonalSummary.textContent = em.t("config_personal");
   if (els.configAppearanceSummary) els.configAppearanceSummary.textContent = em.t("config_appearance");
   if (els.configInterfaceSummary) els.configInterfaceSummary.textContent = em.t("config_interface");
   if (els.configDangerSummary) els.configDangerSummary.textContent = em.t("config_danger");
@@ -882,6 +925,31 @@ em.applyTranslations = function() {
   if (els.fontLabel) els.fontLabel.textContent = em.t('font_label');
   if (els.logVisibilityLabel) els.logVisibilityLabel.textContent = em.t('log_visibility_label');
   if (els.langLabel) els.langLabel.textContent = em.t('lang_label');
+  if (els.nicknameLabel) els.nicknameLabel.textContent = em.t("profile_nickname_label");
+  if (els.nicknameInput) els.nicknameInput.placeholder = em.t("profile_nickname_placeholder");
+  if (els.panelNameLabel) els.panelNameLabel.textContent = em.t("profile_panel_name_label");
+  if (els.panelNameInput) els.panelNameInput.placeholder = em.t("profile_panel_name_placeholder");
+  if (els.personalSymbolLabel) els.personalSymbolLabel.textContent = em.t("profile_symbol_label");
+  if (els.personalSymbolSelect && els.personalSymbolSelect.options.length) {
+    els.personalSymbolSelect.options[0].textContent = em.t("profile_symbol_none");
+  }
+  if (els.emptyMessageLabel) els.emptyMessageLabel.textContent = em.t("profile_empty_message_label");
+  if (els.emptyMessageInput) els.emptyMessageInput.placeholder = em.t("profile_empty_message_placeholder");
+  if (els.todayOrderLabel) els.todayOrderLabel.textContent = em.t("profile_today_order_label");
+  if (els.coursePreferencesLabel) els.coursePreferencesLabel.textContent = em.t("profile_courses_label");
+  if (els.notificationPreferencesLabel) els.notificationPreferencesLabel.textContent = em.t("notification_preferences_label");
+  if (els.notificationPreferenceTexts) {
+    Object.entries(els.notificationPreferenceTexts).forEach(([key, element]) => {
+      if (element) element.textContent = em.t("notification_" + key.replace(/[A-Z]/g, (letter) => "_" + letter.toLowerCase()));
+    });
+  }
+  if (els.todayOrderSelect && els.todayOrderSelect.options.length >= 3) {
+    els.todayOrderSelect.options[0].textContent = em.t("profile_today_order_smart");
+    els.todayOrderSelect.options[1].textContent = em.t("profile_today_order_deadline");
+    els.todayOrderSelect.options[2].textContent = em.t("profile_today_order_course");
+  }
+  if (em.updatePersonalGreeting) em.updatePersonalGreeting();
+  if (em.renderCoursePreferences) em.renderCoursePreferences();
   
   // Config Autorefresh options
   if (els.autoRefreshSelect) {

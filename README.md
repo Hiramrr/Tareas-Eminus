@@ -9,6 +9,9 @@ Extensión de Chrome (Manifest V3) para inyectar un panel en `eminus.uv.mx` y mo
 - Resumen compacto, filtros persistentes y notificaciones que abren la tarea
 - Vista Hoy, orden configurable, acciones masivas y exportación semanal `.ics`
 - Recordatorios escalonados con horas silenciosas y opción de posponer 1 hora
+- Perfil con apodo, nombre del panel, símbolo, mensaje al terminar, materias favoritas y colores por materia
+- Avisos configurables por tipo: tareas, contenido, vencimientos y recordatorios
+- Preferencias personales sincronizadas entre navegadores con respaldo local
 
 ## Archivos
 
@@ -56,5 +59,6 @@ Extensión de Chrome (Manifest V3) para inyectar un panel en `eminus.uv.mx` y mo
   - `eminusAccountId`
   - `eminusAutoRefreshMinutes`
   - `eminusPanelUiState`
+- Sincroniza preferencias de apariencia, avisos y personalización con `chrome.storage.sync`
 
 El auto-refresh usa `chrome.alarms` y puede actualizar con el panel plegado mientras exista una pestaña de Eminus abierta.

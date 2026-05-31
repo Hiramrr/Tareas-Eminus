@@ -46,7 +46,7 @@ em.setAutoRefresh = async function (minutes) {
   em.autoRefreshMinutes = minutes;
   const payload = {};
   payload[em.STORAGE_KEYS.AUTO_REFRESH] = minutes;
-  await em.storageSet(payload);
+  await em.preferencesSet(payload);
   if (minutes > 0) {
     em.startAutoRefresh(minutes);
   } else {

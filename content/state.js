@@ -8,7 +8,7 @@ var em = window.eminus;
 
 em.state = {
   isCollapsed: true,
-  activeTab: "today",
+  activeTab: "pending",
   pending: [],
   logs: [],
   archivedIds: new Set(),
@@ -46,6 +46,15 @@ em.state = {
   },
   panelSize: "normal",
   deliveryAnimation: "cycle",
+  profile: { nickname: "", panelName: "", symbol: "", emptyMessage: "" },
+  coursePreferences: {},
+  todayOrder: "smart",
+  notificationPreferences: {
+    newTasks: true,
+    newContent: true,
+    overdue: true,
+    reminders: true
+  },
   isFiltersCompact: false,
   isScanning: false
 };

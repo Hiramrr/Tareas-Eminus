@@ -43,9 +43,9 @@ em.renderAgenda = function (items) {
     const pinIcon = item.pinned ? `<span style="margin-right:4px;opacity:0.9;">★</span>` : "";
     return `
         <div class="ep-item-btn" role="button" tabindex="0" data-item-index="${originalIndex}">
-          <article class="ep-item ${urgencyClass} ep-agenda-item">
+          <article class="ep-item ${urgencyClass} ep-agenda-item${em.getCourseCardClass ? em.getCourseCardClass(item) : ""}"${em.getCourseCardStyle ? em.getCourseCardStyle(item) : ""}>
             <div class="ep-meta-row" style="margin-bottom: 4px;">
-              <div class="ep-course">${em.escapeHtml(item.course)}</div>
+              <div class="ep-course">${em.renderCourseLabel ? em.renderCourseLabel(item) : em.escapeHtml(item.course)}</div>
               ${timeStr ? `<div class="ep-meta" style="font-weight: 700;">${em.escapeHtml(timeStr)}</div>` : ""}
             </div>
             <div class="ep-title-task" style="font-size: 12px; margin-bottom: 0;">${pinIcon}<span class="ep-wave-text">${em.wrapTextSpans(item.title)}</span></div>
@@ -103,8 +103,8 @@ em.renderAgenda = function (items) {
       const pinIcon = item.pinned ? `<span style="margin-right:4px;opacity:0.9;">★</span>` : "";
       html += `
           <div class="ep-item-btn" role="button" tabindex="0" data-item-index="${originalIndex}">
-            <article class="ep-item ${urgencyClass} ep-agenda-item">
-              <div class="ep-course">${em.escapeHtml(item.course)}</div>
+            <article class="ep-item ${urgencyClass} ep-agenda-item${em.getCourseCardClass ? em.getCourseCardClass(item) : ""}"${em.getCourseCardStyle ? em.getCourseCardStyle(item) : ""}>
+              <div class="ep-course">${em.renderCourseLabel ? em.renderCourseLabel(item) : em.escapeHtml(item.course)}</div>
               <div class="ep-title-task" style="font-size: 12px; margin-bottom: 4px;">${pinIcon}${em.escapeHtml(item.title)}</div>
               <div class="ep-meta">${em.escapeHtml(currentDeadlineLabel)}</div>
             </article>
@@ -138,6 +138,9 @@ em.renderPending = function (items) {
   const pendingItems = filteredItems.filter((item) => item.urgency !== "overdue");
   const overdueItems = filteredItems.filter((item) => item.urgency === "overdue");
   const archivedItems = items.filter((item) => item.archived);
+  const pendingEmptyMessage = activityItems.length === 0 && em.getPersonalEmptyMessage
+    ? em.getPersonalEmptyMessage(em.t("empty_pending"))
+    : em.t("empty_pending");
 
   if (em.panelEls && em.panelEls.filterCourse) {
     const previousValue = em.state.filters.course || em.panelEls.filterCourse.value || "all";
@@ -173,7 +176,7 @@ em.renderPending = function (items) {
     actionConfig = actionConfig || null;
     showPin = showPin || false;
     if (!list.length) {
-      return `<div class="ep-empty">${emptyMsg}</div>`;
+      return `<div class="ep-empty">${em.escapeHtml(emptyMsg)}</div>`;
     }
     return list
       .map((item) => {
@@ -209,8 +212,8 @@ em.renderPending = function (items) {
           : `<div class="ep-meta">${em.escapeHtml(metaText)}</div>`;
         return `
             <div class="ep-item-btn" role="button" tabindex="0" data-item-index="${originalIndex}">
-              <article class="ep-item ${urgencyClass} ${archivedClass}">
-                <div class="ep-course">${em.escapeHtml(item.course)}</div>
+              <article class="ep-item ${urgencyClass} ${archivedClass}${em.getCourseCardClass ? em.getCourseCardClass(item) : ""}"${em.getCourseCardStyle ? em.getCourseCardStyle(item) : ""}>
+                <div class="ep-course">${em.renderCourseLabel ? em.renderCourseLabel(item) : em.escapeHtml(item.course)}</div>
                 <div class="ep-title-task"><span class="ep-wave-text">${em.wrapTextSpans(item.title)}</span></div>
                 ${metaHtml}
               </article>
@@ -250,8 +253,8 @@ em.renderPending = function (items) {
         return `
             <details class="ep-content-detail" data-item-index="${originalIndex}"${isOpen ? " open" : ""}>
               <summary class="ep-content-summary">
-                <article class="ep-item ep-normal">
-                  <div class="ep-course">${em.escapeHtml(item.course)}</div>
+                <article class="ep-item ep-normal${em.getCourseCardClass ? em.getCourseCardClass(item) : ""}"${em.getCourseCardStyle ? em.getCourseCardStyle(item) : ""}>
+                  <div class="ep-course">${em.renderCourseLabel ? em.renderCourseLabel(item) : em.escapeHtml(item.course)}</div>
                   <div class="ep-title-task"><span class="ep-wave-text">${em.wrapTextSpans(item.title)}</span></div>
                   <div class="ep-meta">${em.escapeHtml(metaParts.join(" · "))}</div>
                 </article>
@@ -275,7 +278,7 @@ em.renderPending = function (items) {
     if (em.panelEls.contentBody) em.panelEls.contentBody.innerHTML = "";
   } else {
     em.panelEls.todayBody.innerHTML = buildListHtml(todayItems, em.t("empty_today"), null, true);
-    em.panelEls.pendingBody.innerHTML = buildListHtml(pendingItems, em.t("empty_pending"), null, true);
+    em.panelEls.pendingBody.innerHTML = buildListHtml(pendingItems, pendingEmptyMessage, null, true);
     em.panelEls.overdueBody.innerHTML = buildListHtml(overdueItems, em.t("empty_overdue"), { label: em.t("action_archive"), action: "archive" }, true);
     if (em.panelEls.contentBody) em.panelEls.contentBody.innerHTML = buildContentHtml(contentItems);
     em.renderAgenda(filteredItems);
@@ -369,6 +372,7 @@ em.renderPending = function (items) {
   if (em.updateCollapsedSummary) em.updateCollapsedSummary();
   if (em.updateFilterClearButton) em.updateFilterClearButton();
   if (em.updateBulkActionButtons) em.updateBulkActionButtons();
+  if (em.renderCoursePreferences) em.renderCoursePreferences();
 };
 
 em.renderLogs = function (logs) {

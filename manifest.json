@@ -26,6 +26,7 @@
         "content/drag.js",
         "content/render.js",
         "content/panel-ui.js",
+        "content/personalization.js",
         "content/archive-pin.js",
         "content/panel-dom.js",
         "content/navigation.js",

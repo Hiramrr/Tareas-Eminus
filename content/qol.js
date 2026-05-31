@@ -92,13 +92,14 @@ em.compareDeadlines = function (a, b) {
 em.getTodayItems = function (items) {
   const now = Date.now();
   const limit = now + 48 * 60 * 60 * 1000;
-  return em.sortActivityItems((Array.isArray(items) ? items : []).filter((item) => {
+  const todayItems = (Array.isArray(items) ? items : []).filter((item) => {
     if (!item || item.archived) return false;
     if (item.pinned || item.urgency === "overdue") return true;
     if (!item.deadlineRaw) return false;
     const deadline = new Date(item.deadlineRaw).getTime();
     return Number.isFinite(deadline) && deadline >= now && deadline <= limit;
-  }));
+  });
+  return em.sortTodayItems ? em.sortTodayItems(todayItems) : em.sortActivityItems(todayItems);
 };
 
 em.escapeCalendarText = function (value) {
@@ -166,7 +167,7 @@ em.setQuietHours = async function (start, end) {
   };
   const payload = {};
   payload[em.STORAGE_KEYS.QUIET_HOURS] = em.state.quietHours;
-  await em.storageSet(payload);
+  await em.preferencesSet(payload);
 };
 
 em.setReminderMode = async function (mode) {
@@ -180,5 +181,5 @@ em.setReminderMode = async function (mode) {
   }
   const payload = {};
   payload[em.STORAGE_KEYS.REMINDER_MODE] = em.state.reminderMode;
-  await em.storageSet(payload);
+  await em.preferencesSet(payload);
 };

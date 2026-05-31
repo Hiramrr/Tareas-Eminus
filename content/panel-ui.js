@@ -49,7 +49,6 @@ em.toggleCollapse = function () {
 };
 
 em.applyStoredPanelUiState = function (storedState) {
-  const allowedTabs = new Set(["today", "pending", "overdue", "agenda", "content", "log", "config"]);
   const filters = storedState && typeof storedState.filters === "object" ? storedState.filters : {};
   const contentFilters = storedState && typeof storedState.contentFilters === "object" ? storedState.contentFilters : {};
 
@@ -65,7 +64,7 @@ em.applyStoredPanelUiState = function (storedState) {
     module: String(contentFilters.module || "all"),
     sort: ["newest", "oldest", "course", "module", "title"].includes(contentFilters.sort) ? contentFilters.sort : "newest"
   };
-  em.state.activeTab = allowedTabs.has(storedState?.activeTab) ? storedState.activeTab : "today";
+  em.state.activeTab = "pending";
 
   if (em.panelEls) {
     if (em.panelEls.filterQuery) em.panelEls.filterQuery.value = em.state.filters.query;
@@ -162,7 +161,7 @@ em.setFiltersCompact = async function (isCompact) {
   em.updateFiltersCompactButton();
   const payload = {};
   payload[em.STORAGE_KEYS.FILTERS_COMPACT] = em.state.isFiltersCompact;
-  await em.storageSet(payload);
+  await em.preferencesSet(payload);
 };
 
 em.toggleFiltersCompact = function () {
@@ -242,7 +241,7 @@ em.setTheme = async function (themeName) {
   em.updateCustomThemeVisibility(themeName);
   const payload = {};
   payload[em.STORAGE_KEYS.THEME] = themeName;
-  await em.storageSet(payload);
+  await em.preferencesSet(payload);
   em.updateActiveThemeChip(themeName);
 };
 
@@ -302,7 +301,7 @@ em.updateCustomThemeFromInputs = async function (activateTheme) {
   em.applyCustomTheme(next);
   const payload = {};
   payload[em.STORAGE_KEYS.CUSTOM_THEME] = em.state.customTheme;
-  await em.storageSet(payload);
+  await em.preferencesSet(payload);
   if (activateTheme) {
     await em.setTheme("custom");
   }
@@ -314,7 +313,7 @@ em.setCustomThemeFromBase = async function (themeName) {
   em.applyCustomTheme(preset);
   const payload = {};
   payload[em.STORAGE_KEYS.CUSTOM_THEME] = em.state.customTheme;
-  await em.storageSet(payload);
+  await em.preferencesSet(payload);
   await em.setTheme("custom");
   if (em.panelEls && em.panelEls.customBaseThemeSelect) {
     em.panelEls.customBaseThemeSelect.value = "";
@@ -334,7 +333,7 @@ em.setPanelSize = async function (size, shouldPersist = true) {
   if (!shouldPersist) return;
   const payload = {};
   payload[em.STORAGE_KEYS.PANEL_SIZE] = nextSize;
-  await em.storageSet(payload);
+  await em.preferencesSet(payload);
 };
 
 em.setDeliveryAnimation = async function (animationKey, shouldPersist = true) {
@@ -347,7 +346,7 @@ em.setDeliveryAnimation = async function (animationKey, shouldPersist = true) {
   if (!shouldPersist) return;
   const payload = {};
   payload[em.STORAGE_KEYS.DELIVERY_ANIMATION] = nextAnimation;
-  await em.storageSet(payload);
+  await em.preferencesSet(payload);
 };
 
 em.setFont = async function (fontKey) {
@@ -384,7 +383,7 @@ em.setFont = async function (fontKey) {
 
   const payload = {};
   payload[em.STORAGE_KEYS.FONT] = fontKey;
-  await em.storageSet(payload);
+  await em.preferencesSet(payload);
 };
 
 em.setLanguage = async function (lang) {
@@ -394,7 +393,7 @@ em.setLanguage = async function (lang) {
   }
   const payload = {};
   payload[em.STORAGE_KEYS.LANG] = lang;
-  await em.storageSet(payload);
+  await em.preferencesSet(payload);
   
   if (em.applyTranslations) em.applyTranslations();
   
@@ -422,7 +421,7 @@ em.setLogTabVisible = async function (isVisible) {
   }
   const payload = {};
   payload[em.STORAGE_KEYS.LOG_TAB_VISIBLE] = em.state.isLogTabVisible;
-  await em.storageSet(payload);
+  await em.preferencesSet(payload);
   em.updateTabVisibility();
 };
 
@@ -575,6 +574,7 @@ em.clearLocalData = async function () {
     em.panelUiStatePersistTimer = null;
   }
   await em.storageClear();
+  await em.preferencesClear(em.PREFERENCE_STORAGE_KEYS);
 
   em.state.pending = [];
   em.state.logs = [];
@@ -585,7 +585,7 @@ em.clearLocalData = async function () {
   em.state.notifiedUpcomingIds = new Set();
   em.state.lastUpdatedAt = null;
   em.state.isArchiveView = false;
-  em.state.activeTab = "today";
+  em.state.activeTab = "pending";
   em.state.filters = {
     query: "",
     course: "all",
@@ -607,6 +607,7 @@ em.clearLocalData = async function () {
   em.state.customTheme = { ...em.DEFAULT_CUSTOM_THEME };
   em.state.panelSize = "normal";
   em.state.deliveryAnimation = "cycle";
+  if (em.resetPersonalization) em.resetPersonalization();
   em.setPanelCollapsed(true, false);
 
   if (em.panelEls) {
@@ -650,5 +651,5 @@ em.clearLocalData = async function () {
   em.renderPending([]);
   em.renderLogs([]);
   await em.syncBadge(0, 0, 0);
-  em.setStatus("Datos locales borrados");
+  em.setStatus("Datos y preferencias borrados");
 };

@@ -29,6 +29,14 @@ em.hydrateFromStorage = async function () {
     em.STORAGE_KEYS.DELIVERY_ANIMATION,
     em.STORAGE_KEYS.PANEL_UI_STATE
   ]);
+  const preferenceData = await em.preferencesGet(em.PREFERENCE_STORAGE_KEYS);
+  if (Object.keys(preferenceData).length) {
+    await em.preferencesSet(preferenceData);
+  }
+  data = { ...data, ...preferenceData };
+  if (em.hydratePersonalization) {
+    await em.hydratePersonalization(data);
+  }
 
   const storedAccountId = data[em.STORAGE_KEYS.ACCOUNT_ID];
   const currentToken = em.getToken();
@@ -349,7 +357,7 @@ em.scanPending = async function () {
     // Upcoming reminders logic
     const upcomingNotifications = [];
     const reminderThresholds = em.getReminderThresholds().slice().sort((a, b) => a - b);
-    if (reminderThresholds.length && !em.isQuietHoursNow()) {
+    if (reminderThresholds.length && !em.isQuietHoursNow() && (!em.isNotificationEnabled || em.isNotificationEnabled("reminders"))) {
       const now = Date.now();
       for (const item of visiblePending) {
         if (!item.deadlineRaw || item.urgency === "overdue") continue;
@@ -398,14 +406,14 @@ em.scanPending = async function () {
     const status = visiblePending.length + " " + em.t("status_pending") + " | " + visibleContentCount + " " + em.t("status_content") + " | " + newTaskCount + " " + em.t("status_new");
     em.setStatus(status);
 
-    if (newTaskCount > 0) {
+    if (newTaskCount > 0 && (!em.isNotificationEnabled || em.isNotificationEnabled("newTasks"))) {
       const msg = newTaskCount === 1 ? em.t("new_task_toast_1") : newTaskCount + " " + em.t("new_task_toast_n");
       em.showToast(msg, "new");
       const target = newTaskItems.length === 1 ? em.getActivityNotificationTarget(newTaskItems[0]) : null;
       if (notificationsAllowed) await em.notifyUser(em.t("new_task_notif"), msg, target);
     }
 
-    if (newContentCount > 0) {
+    if (newContentCount > 0 && (!em.isNotificationEnabled || em.isNotificationEnabled("newContent"))) {
       const msg = newContentCount === 1 ? em.t("new_content_toast_1") : newContentCount + " " + em.t("new_content_toast_n");
       em.showToast(msg, "info");
       if (notificationsAllowed) {
@@ -420,7 +428,7 @@ em.scanPending = async function () {
       }
     }
 
-    if (newlyOverdue.length > 0) {
+    if (newlyOverdue.length > 0 && (!em.isNotificationEnabled || em.isNotificationEnabled("overdue"))) {
       const msg = newlyOverdue.length === 1 ? em.t("overdue_toast_1") : newlyOverdue.length + " " + em.t("overdue_toast_n");
       em.showToast(msg, "overdue");
       const target = newlyOverdue.length === 1 ? em.getActivityNotificationTarget(newlyOverdue[0]) : null;
