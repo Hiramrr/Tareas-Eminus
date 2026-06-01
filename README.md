@@ -12,7 +12,7 @@ Extensión de Chrome (Manifest V3) para inyectar un panel en `eminus.uv.mx` y mo
 - Perfil con apodo, nombre del panel, símbolo, mensaje al terminar, materias favoritas y colores por materia
 - Avisos configurables por tipo: tareas, contenido, vencimientos y recordatorios
 - Preferencias personales sincronizadas entre navegadores con respaldo local
-- Popup del ícono con resumen, última sincronización y próximas entregas
+- Popup del ícono adaptado al tema activo con resumen, estado de sincronización, acciones rápidas y próximas entregas
 - Portada Resumen con carga semanal, siguiente tarea y accesos rápidos
 - Estado leído/no leído para publicaciones de contenido
 

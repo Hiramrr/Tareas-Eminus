@@ -132,7 +132,7 @@ em.createPanel = function () {
       <section class="ep-body ep-hidden" id="ep-body-content"></section>
       <section class="ep-body ep-hidden" id="ep-body-log"></section>
       <section class="ep-body ep-hidden" id="ep-body-config">
-        <details class="ep-config-section ep-config-personal" open>
+        <details class="ep-config-section ep-config-personal">
           <summary id="ep-config-personal-summary">Personalización</summary>
           <div class="ep-config-group">
             <label class="ep-config-label" id="ep-nickname-label" for="ep-nickname">Cómo quieres que te salude Miyu</label>
@@ -250,7 +250,7 @@ em.createPanel = function () {
         </div>
         </details>
 
-        <details class="ep-config-section ep-config-daily" open>
+        <details class="ep-config-section ep-config-daily">
         <summary id="ep-config-daily-summary">Uso diario</summary>
         <div class="ep-config-row">
           <div class="ep-config-group">

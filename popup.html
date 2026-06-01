@@ -10,17 +10,32 @@
     <main>
       <header>
         <img src="logo.png" alt="" />
-        <div>
+        <div class="brand">
           <h1>Miyu --pendientes</h1>
-          <p id="last-sync">Sin lectura guardada</p>
+          <div class="sync-row">
+            <p id="last-sync">Sin lectura guardada</p>
+            <span class="sync-state sync-empty" id="sync-state">sin datos</span>
+          </div>
         </div>
       </header>
 
       <section class="metrics" aria-label="Resumen">
-        <div><strong id="pending-count">0</strong><span>pendientes</span></div>
-        <div><strong id="today-count">0</strong><span>para hoy</span></div>
-        <div><strong id="overdue-count">0</strong><span>vencidas</span></div>
-        <div><strong id="content-count">0</strong><span>contenido nuevo</span></div>
+        <button type="button" data-view="pending"><strong id="pending-count">0</strong><span>pendientes</span></button>
+        <button type="button" data-view="today"><strong id="today-count">0</strong><span>para hoy</span></button>
+        <button type="button" data-view="overdue"><strong id="overdue-count">0</strong><span>vencidas</span></button>
+        <button type="button" data-view="content"><strong id="content-count">0</strong><span>contenido nuevo</span></button>
+      </section>
+
+      <section class="quick-actions">
+        <div class="section-heading">
+          <h2>Acciones rápidas</h2>
+          <button class="text-button" id="refresh-pending" type="button">[ actualizar ]</button>
+        </div>
+        <div class="action-grid">
+          <button type="button" data-view="today">Hoy</button>
+          <button type="button" data-view="agenda">Agenda</button>
+          <button type="button" data-view="content">Contenido</button>
+        </div>
       </section>
 
       <section class="next">
@@ -28,7 +43,13 @@
         <div id="task-list"></div>
       </section>
 
-      <button id="open-eminus" type="button">Abrir panel en Eminus</button>
+      <p class="notice" id="popup-notice" aria-live="polite"></p>
+
+      <footer>
+        <button class="secondary-button" id="mark-content-read" type="button">Marcar contenido como leído</button>
+        <button class="primary-button" id="open-eminus" type="button">Abrir resumen en Eminus</button>
+        <small>La actualización automática necesita una pestaña de Eminus abierta.</small>
+      </footer>
     </main>
     <script src="popup.js"></script>
   </body>

@@ -13,6 +13,27 @@ window.eminus = window.eminus || {};
   window.__eminusPendingPanelInjected = true;
 
   const em = window.eminus;
+  const popupTargetViewKey = "eminusPopupTargetView";
+  const allowedPanelViews = new Set(["summary", "pending", "today", "overdue", "agenda", "content"]);
+
+  const openPanelView = function (view, shouldRefresh) {
+    const selectedView = allowedPanelViews.has(view) ? view : "summary";
+    if (em.state.isArchiveView && em.setArchiveView) em.setArchiveView(false);
+    if (em.state.isCollapsed) em.toggleCollapse();
+    if (em.setTab) em.setTab(selectedView);
+    if (shouldRefresh) em.scanPendingWhenTokenReady();
+  };
+
+  const consumePopupTargetView = async function () {
+    const data = await em.storageGet([popupTargetViewKey]);
+    const target = data[popupTargetViewKey];
+    if (!target) return;
+    await em.storageSet({ [popupTargetViewKey]: null });
+    const requestedAt = Number(target.requestedAt || 0);
+    const isRecent = requestedAt > 0 && Date.now() - requestedAt < 2 * 60 * 1000;
+    if (!isRecent || !allowedPanelViews.has(target.view)) return;
+    openPanelView(target.view, false);
+  };
 
   if (em.hasRuntimeApi && chrome.runtime?.onMessage) {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -20,8 +41,15 @@ window.eminus = window.eminus || {};
         if (em.state.isCollapsed) em.toggleCollapse();
         em.scanPendingWhenTokenReady();
         sendResponse({ ok: true });
+      } else if (message?.type === "OPEN_PANEL_VIEW") {
+        openPanelView(message.view, message.refresh === true);
+        sendResponse({ ok: true });
       } else if (message?.type === "BACKGROUND_REFRESH_PANEL") {
         em.scanPendingWhenTokenReady();
+        sendResponse({ ok: true });
+      } else if (message?.type === "SYNC_READ_CONTENT_IDS") {
+        em.state.readContentIds = em.normalizeReadContentIds(message.ids);
+        em.renderPending(em.state.pending);
         sendResponse({ ok: true });
       }
     });
@@ -36,7 +64,8 @@ window.eminus = window.eminus || {};
     if (Number.isFinite(left) && Number.isFinite(top)) em.applyPanelPosition({ left, top });
   });
   em.startRouteObserver();
-  em.hydrateFromStorage().then(() => {
+  em.hydrateFromStorage().then(async () => {
+    await consumePopupTargetView();
     em.loadDetailIntoActivityIframeIfNeeded();
     em.scanPendingWhenTokenReady();
   });
