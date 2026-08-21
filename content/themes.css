@@ -3132,8 +3132,7 @@
 }
 
 #eminus-pending-panel.ep-custom-theme .ep-tab-active,
-#eminus-pending-panel.ep-custom-theme .ep-btn:hover,
-#eminus-pending-panel.ep-custom-theme .ep-theme-chip-active {
+#eminus-pending-panel.ep-custom-theme .ep-btn:hover {
   background: var(--ep-custom-accent, #6c5ce7) !important;
   color: var(--ep-custom-bg, #ffffff) !important;
   border-color: var(--ep-custom-accent, #6c5ce7) !important;

@@ -250,15 +250,31 @@ em.setTheme = async function (themeName) {
   if (themeName !== "light") {
     em.panelEls.root.classList.add("ep-" + themeName + "-theme");
   }
+  em.updateActiveThemeChip(themeName);
   em.updateCustomThemeVisibility(themeName);
   const payload = {};
   payload[em.STORAGE_KEYS.THEME] = themeName;
   await em.preferencesSet(payload);
-  em.updateActiveThemeChip(themeName);
+};
+
+em.isDarkColor = function (hex) {
+  const match = /^#([0-9a-f]{6})$/i.exec(String(hex || ""));
+  if (!match) return false;
+  const int = parseInt(match[1], 16);
+  const r = (int >> 16) & 255;
+  const g = (int >> 8) & 255;
+  const b = int & 255;
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.5;
 };
 
 em.updateActiveThemeChip = function (themeName) {
   if (!em.panelEls || !em.panelEls.themeChips) return;
+  const presetBg = themeName === "custom"
+    ? em.state?.customTheme?.bg
+    : em.CUSTOM_THEME_PRESETS?.[themeName]?.bg;
+  const dark = em.isDarkColor(presetBg);
+  em.panelEls.root.style.setProperty("--ep-chip-active-bg", dark ? "#ffffff" : "#000000");
+  em.panelEls.root.style.setProperty("--ep-chip-active-fg", dark ? "#000000" : "#ffffff");
   em.panelEls.themeChips.forEach((chip) => {
     const isActive = chip.dataset.theme === themeName;
     chip.classList.toggle("ep-theme-chip-active", isActive);

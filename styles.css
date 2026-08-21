@@ -341,27 +341,14 @@
 }
 
 .ep-theme-chip-active {
-  background: #000 !important;
-  color: #fff !important;
-  border-color: #000 !important;
+  background: var(--ep-chip-active-bg, #000) !important;
+  color: var(--ep-chip-active-fg, #fff) !important;
+  border-color: var(--ep-chip-active-bg, #000) !important;
   font-weight: 700;
 }
 
-/* Reversa para temas oscuros para que el chip activo destaque */
-#eminus-pending-panel.ep-dark-theme .ep-theme-chip-active,
-#eminus-pending-panel.ep-hacker-theme .ep-theme-chip-active,
-#eminus-pending-panel.ep-dracula-theme .ep-theme-chip-active,
-#eminus-pending-panel.ep-ocean-theme .ep-theme-chip-active,
-#eminus-pending-panel.ep-synthwave-theme .ep-theme-chip-active,
-#eminus-pending-panel.ep-gruvbox-theme .ep-theme-chip-active,
-#eminus-pending-panel.ep-nord-theme .ep-theme-chip-active,
-#eminus-pending-panel.ep-moka-theme .ep-theme-chip-active,
-#eminus-pending-panel.ep-solarized-osaka-theme .ep-theme-chip-active,
-#eminus-pending-panel.ep-codex-theme .ep-theme-chip-active,
-#eminus-pending-panel.ep-wispr-theme .ep-theme-chip-active {
-  background: #fff !important;
-  color: #000 !important;
-  border-color: #fff !important;
+.ep-theme-chip-active::before {
+  content: "● ";
 }
 
 .ep-config-row {

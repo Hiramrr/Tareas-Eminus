@@ -4,7 +4,7 @@ const THEME_KEY = "eminusPanelTheme";
 const CUSTOM_THEME_KEY = "eminusCustomTheme";
 const POPUP_TARGET_VIEW_KEY = "eminusPopupTargetView";
 const LANG_KEY = "eminusLanguage";
-const em = window.eminus || {};
+var em = window.eminus || (window.eminus = {});
 
 function t(key, fallback) {
   const value = typeof em.t === "function" ? em.t(key) : null;
@@ -299,7 +299,6 @@ function updatePopupOnboarding(snapshot, activities) {
   const card = document.querySelector("#popup-onboarding");
   if (!card) return;
   const hasSnapshot = !!(snapshot && snapshot.updatedAt && Array.isArray(snapshot.pending));
-  const isEmpty = !hasSnapshot || activities.length === 0;
   const title = card.querySelector("#onboarding-title");
   const desc = card.querySelector("#onboarding-desc");
   const steps = card.querySelector("#onboarding-steps");
@@ -317,16 +316,6 @@ function updatePopupOnboarding(snapshot, activities) {
     document.querySelector(".metrics").style.opacity = "0.45";
     document.querySelector(".next").style.opacity = "0.6";
     setNotice(t("popup_notice_updating", "Actualizando pendientes…"), "working");
-  } else if (isEmpty && hasSnapshot) {
-    card.hidden = false;
-    card.classList.remove("hidden");
-    icon.textContent = "✓";
-    icon.classList.add("is-done");
-    title.textContent = t("popup_all_title", "¡Todo al día!");
-    desc.textContent = t("popup_all_desc", "No tienes pendientes con fecha. Disfruta el descanso.");
-    steps.innerHTML = "<li>" + t("popup_all_step1", "Revisa <strong>Contenido</strong> por si hay publicaciones nuevas") + "</li><li>" + t("popup_all_step2", "Usa <kbd>Alt</kbd>+<kbd>E</kbd> para plegar el panel dentro de Eminus") + "</li>";
-    document.querySelector(".metrics").style.opacity = "1";
-    document.querySelector(".next").style.opacity = "1";
   } else {
     card.hidden = true;
     card.classList.add("hidden");
