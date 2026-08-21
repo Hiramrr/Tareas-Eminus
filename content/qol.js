@@ -1,7 +1,3 @@
-/* ══════════════════════════════════════════
-   DAILY QUALITY OF LIFE HELPERS
-   ══════════════════════════════════════════ */
-
 window.eminus = window.eminus || {};
 
 var em = window.eminus;

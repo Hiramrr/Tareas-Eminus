@@ -1,7 +1,3 @@
-/* ══════════════════════════════════════════
-   PANEL DOM CREATION
-   ══════════════════════════════════════════ */
-
 window.eminus = window.eminus || {};
 
 var em = window.eminus;
@@ -44,30 +40,31 @@ em.createPanel = function () {
           <div class="ep-personal-title-row">
             <span class="ep-personal-symbol ep-hidden" id="ep-personal-symbol"></span>
             <div class="ep-title">pendientes eminus</div>
+            <span class="ep-scan-spinner" aria-hidden="true">◐</span>
           </div>
           <div class="ep-subtitle" id="ep-subtitle">Sin lectura</div>
         </div>
         <div class="ep-collapsed-summary" id="ep-collapsed-summary"></div>
         <div class="ep-actions" style="position: relative;">
-          <button class="ep-btn" id="ep-refresh" title="Actualizar">[ ref ]</button>
+          <button class="ep-btn" id="ep-refresh" title="Actualizar">[ actualizar ]</button>
           <div class="ep-archive-stack">
             <button class="ep-btn ep-archive-btn" id="ep-archive-toggle" title="Archivadas" aria-label="Archivadas">
               ${archiveBtnHtml}
             </button>
-            <button class="ep-btn" id="ep-collapse" title="Desplegar">[ + ]</button>
+            <button class="ep-btn" id="ep-collapse" title="Plegar">[ plegar ]</button>
           </div>
         </div>
       </header>
 
-      <div class="ep-tabs">
-        <button class="ep-tab ep-tab-active" data-tab="summary">Resumen</button>
-        <button class="ep-tab" data-tab="pending">Pendientes</button>
-        <button class="ep-tab" data-tab="today">Hoy</button>
-        <button class="ep-tab" data-tab="overdue">Vencidas</button>
-        <button class="ep-tab" data-tab="agenda">Agenda</button>
-        <button class="ep-tab" data-tab="content">Contenido</button>
-        <button class="ep-tab" data-tab="log">Log</button>
-        <button class="ep-tab" data-tab="config">Config</button>
+      <div class="ep-tabs" role="tablist">
+        <button class="ep-tab ep-tab-active" data-tab="summary" role="tab" aria-selected="true">Resumen</button>
+        <button class="ep-tab" data-tab="pending" role="tab" aria-selected="false">Pendientes</button>
+        <button class="ep-tab" data-tab="today" role="tab" aria-selected="false">Hoy</button>
+        <button class="ep-tab" data-tab="overdue" role="tab" aria-selected="false">Vencidas</button>
+        <button class="ep-tab" data-tab="agenda" role="tab" aria-selected="false">Agenda</button>
+        <button class="ep-tab" data-tab="content" role="tab" aria-selected="false">Contenido</button>
+        <button class="ep-tab" data-tab="log" role="tab" aria-selected="false">Log</button>
+        <button class="ep-tab" data-tab="config" role="tab" aria-selected="false">Config</button>
       </div>
 
       <section class="ep-filters" id="ep-filters">
@@ -124,13 +121,13 @@ em.createPanel = function () {
         </div>
       </section>
 
-      <section class="ep-body" id="ep-body-summary"></section>
-      <section class="ep-body ep-hidden" id="ep-body-today"></section>
-      <section class="ep-body ep-hidden" id="ep-body-pending"></section>
-      <section class="ep-body ep-hidden" id="ep-body-overdue"></section>
-      <section class="ep-body ep-hidden" id="ep-body-agenda"></section>
-      <section class="ep-body ep-hidden" id="ep-body-content"></section>
-      <section class="ep-body ep-hidden" id="ep-body-log"></section>
+      <section class="ep-body" id="ep-body-summary" role="tabpanel"></section>
+      <section class="ep-body ep-hidden" id="ep-body-today" role="tabpanel"></section>
+      <section class="ep-body ep-hidden" id="ep-body-pending" role="tabpanel"></section>
+      <section class="ep-body ep-hidden" id="ep-body-overdue" role="tabpanel"></section>
+      <section class="ep-body ep-hidden" id="ep-body-agenda" role="tabpanel"></section>
+      <section class="ep-body ep-hidden" id="ep-body-content" role="tabpanel"></section>
+      <section class="ep-body ep-hidden" id="ep-body-log" role="tabpanel"></section>
       <section class="ep-body ep-hidden" id="ep-body-config">
         <details class="ep-config-section ep-config-personal">
           <summary id="ep-config-personal-summary">Personalización</summary>
@@ -178,31 +175,31 @@ em.createPanel = function () {
         <div class="ep-config-group">
           <label class="ep-config-label" id="ep-theme-label">Tema del panel</label>
           <div class="ep-theme-grid">
-             <button class="ep-theme-chip" data-theme="light">Light</button>
-             <button class="ep-theme-chip" data-theme="jazmin">Jazmín</button>
-             <button class="ep-theme-chip" data-theme="dark">Dark</button>
-             <button class="ep-theme-chip" data-theme="hacker">Hacker</button>
-             <button class="ep-theme-chip" data-theme="ocean">Ocean</button>
-             <button class="ep-theme-chip" data-theme="dracula">Dracula</button>
-             <button class="ep-theme-chip" data-theme="nord">Nord</button>
-             <button class="ep-theme-chip" data-theme="solarized">Solarized</button>
-             <button class="ep-theme-chip" data-theme="solarizedlight">Solarized Light</button>
-             <button class="ep-theme-chip" data-theme="gruvbox">Gruvbox</button>
-             <button class="ep-theme-chip" data-theme="sakura">Sakura</button>
-             <button class="ep-theme-chip" data-theme="lavender">Lavender</button>
-             <button class="ep-theme-chip" data-theme="rosa">Rosa</button>
-             <button class="ep-theme-chip" data-theme="sandia">Sandia</button>
-             <button class="ep-theme-chip" data-theme="matcha">Matcha</button>
-             <button class="ep-theme-chip" data-theme="moka">Moka</button>
-             <button class="ep-theme-chip" data-theme="candy">Candy</button>
-             <button class="ep-theme-chip" data-theme="aurora">Aurora</button>
-             <button class="ep-theme-chip" data-theme="synthwave">Synthwave</button>
-             <button class="ep-theme-chip" data-theme="minimal">Minimal</button>
-             <button class="ep-theme-chip" data-theme="wispr">Wispr</button>
-             <button class="ep-theme-chip" data-theme="solarized-osaka">Solarized Osaka</button>
-             <button class="ep-theme-chip" data-theme="olivia">Olivia</button>
-             <button class="ep-theme-chip" data-theme="codex">Codex</button>
-             <button class="ep-theme-chip" data-theme="custom">Personalizado</button>
+            <button class="ep-theme-chip" data-theme="light" aria-pressed="false">Light</button>
+            <button class="ep-theme-chip" data-theme="jazmin" aria-pressed="false">Jazmín</button>
+            <button class="ep-theme-chip" data-theme="dark" aria-pressed="false">Dark</button>
+            <button class="ep-theme-chip" data-theme="hacker" aria-pressed="false">Hacker</button>
+            <button class="ep-theme-chip" data-theme="ocean" aria-pressed="false">Ocean</button>
+            <button class="ep-theme-chip" data-theme="dracula" aria-pressed="false">Dracula</button>
+            <button class="ep-theme-chip" data-theme="nord" aria-pressed="false">Nord</button>
+            <button class="ep-theme-chip" data-theme="solarized" aria-pressed="false">Solarized</button>
+            <button class="ep-theme-chip" data-theme="solarizedlight" aria-pressed="false">Solarized Light</button>
+            <button class="ep-theme-chip" data-theme="gruvbox" aria-pressed="false">Gruvbox</button>
+            <button class="ep-theme-chip" data-theme="sakura" aria-pressed="false">Sakura</button>
+            <button class="ep-theme-chip" data-theme="lavender" aria-pressed="false">Lavender</button>
+            <button class="ep-theme-chip" data-theme="rosa" aria-pressed="false">Rosa</button>
+            <button class="ep-theme-chip" data-theme="sandia" aria-pressed="false">Sandia</button>
+            <button class="ep-theme-chip" data-theme="matcha" aria-pressed="false">Matcha</button>
+            <button class="ep-theme-chip" data-theme="moka" aria-pressed="false">Moka</button>
+            <button class="ep-theme-chip" data-theme="candy" aria-pressed="false">Candy</button>
+            <button class="ep-theme-chip" data-theme="aurora" aria-pressed="false">Aurora</button>
+            <button class="ep-theme-chip" data-theme="synthwave" aria-pressed="false">Synthwave</button>
+            <button class="ep-theme-chip" data-theme="minimal" aria-pressed="false">Minimal</button>
+            <button class="ep-theme-chip" data-theme="wispr" aria-pressed="false">Wispr</button>
+            <button class="ep-theme-chip" data-theme="solarized-osaka" aria-pressed="false">Solarized Osaka</button>
+            <button class="ep-theme-chip" data-theme="olivia" aria-pressed="false">Olivia</button>
+            <button class="ep-theme-chip" data-theme="codex" aria-pressed="false">Codex</button>
+            <button class="ep-theme-chip" data-theme="custom" aria-pressed="false">Personalizado</button>
           </div>
         </div>
 
@@ -369,12 +366,14 @@ em.createPanel = function () {
             <option value="zh">中文</option>
           </select>
         </div>
+        <div class="ep-config-group ep-shortcuts-hint" id="ep-shortcuts-hint"></div>
         </details>
 
         <details class="ep-config-section ep-config-danger">
           <summary id="ep-config-danger-summary">Datos y preferencias</summary>
         <div class="ep-config-group">
-          <button class="ep-btn ep-clear-local-data" id="ep-clear-local-data" type="button">Borrar datos locales</button>
+          <button class="ep-btn ep-clear-data-btn" id="ep-clear-snapshot" type="button">Borrar datos de lectura</button>
+          <button class="ep-btn ep-clear-data-btn ep-clear-data-danger" id="ep-clear-all" type="button">Borrar todo (datos + preferencias)</button>
         </div>
         </details>
       </section>
@@ -468,7 +467,9 @@ em.createPanel = function () {
     contentBody: root.querySelector("#ep-body-content"),
     logBody: root.querySelector("#ep-body-log"),
     configBody: root.querySelector("#ep-body-config"),
-    clearLocalDataBtn: root.querySelector("#ep-clear-local-data"),
+    clearSnapshotBtn: root.querySelector("#ep-clear-snapshot"),
+    clearAllBtn: root.querySelector("#ep-clear-all"),
+    shortcutsHint: root.querySelector("#ep-shortcuts-hint"),
     archiveAllOverdueBtn: root.querySelector("#ep-archive-all-overdue"),
     unpinAllBtn: root.querySelector("#ep-unpin-all"),
     exportWeekBtn: root.querySelector("#ep-export-week"),
@@ -476,7 +477,6 @@ em.createPanel = function () {
     footer: root.querySelector("#ep-footer-status"),
     jazminBg: root.querySelector("#ep-jazmin-bg"),
     
-    // Labels for i18n
     themeLabel: root.querySelector("#ep-theme-label"),
     autorefreshLabel: root.querySelector("#ep-autorefresh").previousElementSibling,
     reminderLabel: root.querySelector("#ep-reminder").previousElementSibling,
@@ -565,10 +565,43 @@ em.createPanel = function () {
       if (em.setNotificationPreference) em.setNotificationPreference(key, input.checked);
     });
   });
-  em.panelEls.clearLocalDataBtn.addEventListener("click", () => {
-    if (em.clearLocalData && window.confirm(em.t("config_clear_data_confirm"))) {
-      em.clearLocalData();
+  const armTwoStepConfirm = (button, onConfirm) => {
+    if (button.dataset.armed === "1") {
+      delete button.dataset.armed;
+      button.classList.remove("ep-clear-armed");
+      onConfirm();
+      return;
     }
+    Object.values(clearButtons).forEach((other) => {
+      if (other && other !== button) {
+        delete other.dataset.armed;
+        other.classList.remove("ep-clear-armed");
+        other.textContent = other.dataset.originalLabel || other.textContent;
+      }
+    });
+    button.dataset.armed = "1";
+    button.dataset.originalLabel = button.dataset.originalLabel || button.textContent;
+    button.classList.add("ep-clear-armed");
+    button.textContent = em.t("config_clear_confirm_arm");
+    window.clearTimeout(button._disarmTimer);
+    button._disarmTimer = window.setTimeout(() => {
+      if (button.dataset.armed === "1") {
+        delete button.dataset.armed;
+        button.classList.remove("ep-clear-armed");
+        button.textContent = button.dataset.originalLabel;
+      }
+    }, 6000);
+  };
+
+  const clearButtons = {
+    data: em.panelEls.clearSnapshotBtn,
+    all: em.panelEls.clearAllBtn
+  };
+  clearButtons.data.addEventListener("click", () => {
+    armTwoStepConfirm(clearButtons.data, () => em.clearLocalData("data"));
+  });
+  clearButtons.all.addEventListener("click", () => {
+    armTwoStepConfirm(clearButtons.all, () => em.clearLocalData("all"));
   });
   em.panelEls.themeChips.forEach((chip) => {
     chip.addEventListener("click", () => em.setTheme(chip.dataset.theme));
@@ -643,7 +676,6 @@ em.createPanel = function () {
   });
 
   document.addEventListener("click", (e) => {
-    // No longer need theme menu click-outside logic
   });
 
   em.updateArchiveToggleButton();

@@ -1,6 +1,4 @@
-/* ══════════════════════════════════════════
-   THEME: DARK
-   ══════════════════════════════════════════ */
+/* THEME: DARK */
 
 #eminus-pending-panel.ep-dark-theme {
   background: #121212;
@@ -167,9 +165,7 @@
   border-color: #5dade2;
 }
 
-/* ══════════════════════════════════════════
-   THEME: HACKER
-   ══════════════════════════════════════════ */
+/* THEME: HACKER */
 
 #eminus-pending-panel.ep-hacker-theme {
   background: #000000;
@@ -312,9 +308,7 @@
   border-color: #00ff00;
 }
 
-/* ══════════════════════════════════════════
-   THEME: OCEAN
-   ══════════════════════════════════════════ */
+/* THEME: OCEAN */
 
 #eminus-pending-panel.ep-ocean-theme {
   background: #0f172a;
@@ -457,9 +451,7 @@
   border-color: #7dd3fc;
 }
 
-/* ══════════════════════════════════════════
-   THEME: DRACULA
-   ══════════════════════════════════════════ */
+/* THEME: DRACULA */
 
 #eminus-pending-panel.ep-dracula-theme {
   background: #282a36;
@@ -553,9 +545,7 @@
   border-color: #8be9fd;
 }
 
-/* ══════════════════════════════════════════
-   THEME: NORD
-   ══════════════════════════════════════════ */
+/* THEME: NORD */
 
 #eminus-pending-panel.ep-nord-theme {
   background: #2E3440;
@@ -649,9 +639,7 @@
   border-color: #88c0d0;
 }
 
-/* ══════════════════════════════════════════
-   THEME: SOLARIZED
-   ══════════════════════════════════════════ */
+/* THEME: SOLARIZED */
 
 #eminus-pending-panel.ep-solarized-theme {
   background: #002b36;
@@ -746,9 +734,7 @@
   border-color: #268bd2;
 }
 
-/* ══════════════════════════════════════════
-   THEME: SOLARIZED LIGHT
-   ══════════════════════════════════════════ */
+/* THEME: SOLARIZED LIGHT */
 
 #eminus-pending-panel.ep-solarizedlight-theme {
   background: #fdf6e3;
@@ -843,9 +829,7 @@
   border-color: #268bd2;
 }
 
-/* ══════════════════════════════════════════
-   THEME: GRUVBOX
-   ══════════════════════════════════════════ */
+/* THEME: GRUVBOX */
 
 #eminus-pending-panel.ep-gruvbox-theme {
   background: #282828;
@@ -940,9 +924,7 @@
   border-color: #458588;
 }
 
-/* ══════════════════════════════════════════
-   THEMED URGENCY HOVER FIXES
-   ══════════════════════════════════════════ */
+/* THEMED URGENCY HOVER FIXES */
 
 #eminus-pending-panel.ep-dark-theme .ep-item-btn:hover .ep-item.ep-overdue,
 #eminus-pending-panel.ep-ocean-theme .ep-item-btn:hover .ep-item.ep-overdue,
@@ -992,9 +974,7 @@
   color: #000;
 }
 
-/* ══════════════════════════════════════════
-   THEME: SAKURA
-   ══════════════════════════════════════════ */
+/* THEME: SAKURA */
 
 #eminus-pending-panel.ep-sakura-theme {
   background: #1a1225;
@@ -1120,9 +1100,7 @@
   border-color: #c8b0f0;
 }
 
-/* ══════════════════════════════════════════
-   THEME: LAVENDER
-   ══════════════════════════════════════════ */
+/* THEME: LAVENDER */
 
 #eminus-pending-panel.ep-lavender-theme {
   background: #f5f0fa;
@@ -1248,9 +1226,7 @@
   border-color: #7c5cbf;
 }
 
-/* ══════════════════════════════════════════
-   THEME: ROSA
-   ══════════════════════════════════════════ */
+/* THEME: ROSA */
 
 #eminus-pending-panel.ep-rosa-theme {
   background: #fff5f7;
@@ -1376,9 +1352,7 @@
   border-color: #e85080;
 }
 
-/* ══════════════════════════════════════════
-   THEME: SANDIA
-   ══════════════════════════════════════════ */
+/* THEME: SANDIA */
 
 #eminus-pending-panel.ep-sandia-theme {
   background: #1a3a1a;
@@ -1504,9 +1478,7 @@
   border-color: #50d050;
 }
 
-/* ══════════════════════════════════════════
-   THEME: MATCHA
-   ══════════════════════════════════════════ */
+/* THEME: MATCHA */
 
 #eminus-pending-panel.ep-matcha-theme {
   background: #f4f1e8;
@@ -1632,9 +1604,7 @@
   border-color: #5a8a3a;
 }
 
-/* ══════════════════════════════════════════
-   THEME: MOKA
-   ══════════════════════════════════════════ */
+/* THEME: MOKA */
 
 #eminus-pending-panel.ep-moka-theme {
   background: #3e2723;
@@ -1760,9 +1730,7 @@
   border-color: #f48fb1;
 }
 
-/* ══════════════════════════════════════════
-   THEME: JAZMÍN
-   ══════════════════════════════════════════ */
+/* THEME: JAZMÍN */
 
 #eminus-pending-panel.ep-jazmin-theme {
   background: #fffdf5;
@@ -1893,9 +1861,7 @@
   display: block;
 }
 
-/* ══════════════════════════════════════════
-   THEME: CANDY
-   ══════════════════════════════════════════ */
+/* THEME: CANDY */
 
 #eminus-pending-panel.ep-candy-theme {
   background: #fdf0f8;
@@ -2021,9 +1987,7 @@
   border-color: #60b080;
 }
 
-/* ══════════════════════════════════════════
-   THEME: AURORA
-   ══════════════════════════════════════════ */
+/* THEME: AURORA */
 
 #eminus-pending-panel.ep-aurora-theme {
   background: #0a0e1a;
@@ -2149,9 +2113,7 @@
   border-color: #60a5fa;
 }
 
-/* ══════════════════════════════════════════
-   THEME: SYNTHWAVE
-   ══════════════════════════════════════════ */
+/* THEME: SYNTHWAVE */
 
 #eminus-pending-panel.ep-synthwave-theme {
   background: #1a1b26;
@@ -2315,9 +2277,7 @@
   box-shadow: 0 0 10px rgba(187, 154, 247, 0.3);
 }
 
-/* ══════════════════════════════════════════
-   THEME: MINIMAL
-   ══════════════════════════════════════════ */
+/* THEME: MINIMAL */
 
 #eminus-pending-panel.ep-minimal-theme {
   background: #ffffff;
@@ -2499,9 +2459,7 @@
   border: 1px solid #eee;
 }
 
-/* ══════════════════════════════════════════
-   THEME: WISPR
-   ══════════════════════════════════════════ */
+/* THEME: WISPR */
 
 #eminus-pending-panel.ep-wispr-theme {
   background: #fbfaf3;
@@ -2665,9 +2623,7 @@
 }
 
 /* Wispr: Toasts */
-/* ══════════════════════════════════════════
-   THEME: SOLARIZED OSAKA
-   ══════════════════════════════════════════ */
+/* THEME: SOLARIZED OSAKA */
 
 #eminus-pending-panel.ep-solarized-osaka-theme {
   background: #001f27;
@@ -2802,9 +2758,7 @@
   border-color: #2aa198;
 }
 
-/* ══════════════════════════════════════════
-   THEME: OLIVIA
-   ══════════════════════════════════════════ */
+/* THEME: OLIVIA */
 
 #eminus-pending-panel.ep-olivia-theme {
   background: #1c1b1a;
@@ -2941,9 +2895,7 @@
   border-color: #cba694;
 }
 
-/* ══════════════════════════════════════════
-   THEME: CODEX
-   ══════════════════════════════════════════ */
+/* THEME: CODEX */
 
 #eminus-pending-panel.ep-codex-theme {
   --ep-bg-base: #0d1117;
@@ -3143,9 +3095,7 @@
   box-shadow: 3px 3px 0px rgba(76, 201, 240, 0.2);
 }
 
-/* ══════════════════════════════════════════
-   THEME: CUSTOM
-   ══════════════════════════════════════════ */
+/* THEME: CUSTOM */
 
 #eminus-pending-panel.ep-custom-theme {
   --ep-bg-base: var(--ep-custom-bg, #ffffff);

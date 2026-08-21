@@ -1,69 +1,58 @@
-# Miyu --pendientes (Chrome Extension)
+# Miyu --pendientes
 
-Extensión de Chrome (Manifest V3) para inyectar un panel en `eminus.uv.mx` y mostrar:
+Extensión Manifest V3 para Eminus (eminus.uv.mx). Muestra tus pendientes sin abrir cada curso.
 
-- Tareas pendientes por curso
-- Estado de urgencia (vencida, inminente, urgente, normal)
-- Log histórico de revisiones
-- Animación de celebración al entregar tareas
-- Resumen compacto, filtros persistentes y notificaciones que abren la tarea
-- Vista Hoy, orden configurable, acciones masivas y exportación semanal `.ics`
-- Recordatorios escalonados con horas silenciosas y opción de posponer 1 hora
-- Perfil con apodo, nombre del panel, símbolo, mensaje al terminar, materias favoritas y colores por materia
-- Avisos configurables por tipo: tareas, contenido, vencimientos y recordatorios
-- Preferencias personales sincronizadas entre navegadores con respaldo local
-- Popup del ícono adaptado al tema activo con resumen, estado de sincronización, acciones rápidas y próximas entregas
-- Portada Resumen con carga semanal, siguiente tarea y accesos rápidos
-- Estado leído/no leído para publicaciones de contenido
+Funciones:
+
+- Tareas por materia con nivel de urgencia
+- Historial de revisiones
+- Animación al entregar tarea
+- Resumen, filtros y notificaciones que abren la tarea
+- Vista Hoy, orden configurable y exportación a .ics
+- Recordatorios escalonados con horas silenciosas y opción de posponer 1 h
+- Perfil con apodo, nombre del panel, símbolo y mensaje al terminar
+- Avisos por tipo: tareas, contenido, vencimientos y recordatorios
+- Preferencias sincronizadas entre navegadores con respaldo local
+- Popup con resumen, estado de sincronización y próximas entregas
+- Portada con carga semanal y siguiente tarea
+- Marcar contenido como leído o no leído
 
 ## Archivos
 
 | Archivo | Descripción |
 |---------|-------------|
-| `manifest.json` | Configuración de la extensión (MV3) |
-| `content.js` | Inyección del panel flotante y consumo de API Eminus |
-| `styles.css` | Estilos del panel flotante (9 temas) |
-| `service-worker.js` | Badge en el ícono y proxy de API |
-| `popup.html` | Resumen rápido al pulsar el ícono de la extensión |
-| `detail-nav.js` | Botón volver y animaciones en página de detalle |
-| `detail-nav.css` | Estilos del botón volver y animaciones |
-| `logo.png` | Ícono de la extensión |
+| `manifest.json` | Configuración de la extensión |
+| `content.js` | Panel flotante y consumo de API |
+| `styles.css` | Estilos del panel |
+| `service-worker.js` | Badge y proxy de API |
+| `popup.html` | Resumen del icono |
+| `detail-nav.js` | Botón volver en detalle |
+| `detail-nav.css` | Estilos del botón |
+| `logo.png` | Icono |
 
 ## Instalación (modo desarrollador)
 
 1. Abre `chrome://extensions/`
-2. Activa **Developer mode**
-3. Clic en **Load unpacked**
-4. Selecciona la carpeta de este repositorio
+2. Activa Developer mode
+3. Clic en Load unpacked
+4. Selecciona esta carpeta
 
 ## Uso
 
-1. Inicia sesión en Eminus normalmente
-2. Abre cualquier página bajo `https://eminus.uv.mx/eminus4/`
-3. Verás el panel flotante a la derecha
-4. Pulsa el ícono de la extensión para consultar el resumen desde cualquier pestaña
-5. Usa el botón `[ ref ]` para refrescar pendientes
-6. En la pestaña `Log` verás el historial de lecturas
-7. `Alt+E` colapsa/expande el panel
-8. `/` enfoca la búsqueda, `R` actualiza y `T` abre la vista `Hoy`
+1. Inicia sesión en Eminus
+2. Abre cualquier página en `https://eminus.uv.mx/eminus4/`
+3. Verás el panel a la derecha
+4. Pulsa el icono para ver el resumen desde cualquier pestaña
+5. Usa `[ actualizar ]` para refrescar
+6. En `Historial` ves los cambios
+7. `Alt+E` pliega y despliega el panel
+8. `/` busca, `R` actualiza y `T` abre Hoy
 
-## Notas técnicas
+## Notas
 
-- Usa `accessToken` de la sesión web de Eminus.
-- Consulta:
-  - `GET /Course/getAllCourses`
-  - `GET /Activity/getActividadesEstudiante/{idCurso}`
-- Guarda en `chrome.storage.local`:
-  - `eminusLastSnapshot`
-  - `eminusPendingLog`
-  - `eminusKnownPendingIds`
-  - `eminusArchivedPendingIds`
-  - `eminusPinnedPendingIds`
-  - `eminusPanelTheme`
-  - `eminusPanelPosition`
-  - `eminusAccountId`
-  - `eminusAutoRefreshMinutes`
-  - `eminusPanelUiState`
-- Sincroniza preferencias de apariencia, avisos y personalización con `chrome.storage.sync`
+- Usa el `accessToken` de tu sesión en Eminus.
+- Consulta `GET /Course/getAllCourses` y `GET /Activity/getActividadesEstudiante/{idCurso}`
+- Guarda en `chrome.storage.local` claves como `eminusLastSnapshot`, `eminusPendingLog`, `eminusPanelTheme`
+- Sincroniza apariencia y avisos con `chrome.storage.sync`
 
-El auto-refresh usa `chrome.alarms` y puede actualizar con el panel plegado mientras exista una pestaña de Eminus abierta.
+El auto-refresh usa `chrome.alarms` y funciona con el panel plegado si hay una pestaña de Eminus abierta.

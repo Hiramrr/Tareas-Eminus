@@ -1,7 +1,3 @@
-/* ══════════════════════════════════════════
-   CHANGE DETECTION & LOGGING
-   ══════════════════════════════════════════ */
-
 window.eminus = window.eminus || {};
 
 var em = window.eminus;

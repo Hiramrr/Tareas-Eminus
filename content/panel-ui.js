@@ -1,7 +1,3 @@
-/* ══════════════════════════════════════════
-   PANEL UI
-   ══════════════════════════════════════════ */
-
 window.eminus = window.eminus || {};
 
 var em = window.eminus;
@@ -37,7 +33,7 @@ em.setPanelCollapsed = function (isCollapsed, shouldPersist = true) {
     em.panelEls.root.classList.toggle("ep-collapsed", em.state.isCollapsed);
   }
   if (em.panelEls && em.panelEls.collapseBtn) {
-    em.panelEls.collapseBtn.textContent = em.state.isCollapsed ? "[ + ]" : "[ - ]";
+    em.panelEls.collapseBtn.textContent = em.state.isCollapsed ? em.t("panel_open_label") : em.t("panel_fold_label");
     em.panelEls.collapseBtn.title = em.state.isCollapsed ? em.t("expand_tooltip") : em.t("collapse_tooltip");
   }
   if (em.updateCollapsedSummary) em.updateCollapsedSummary();
@@ -76,7 +72,8 @@ em.applyStoredPanelUiState = function (storedState) {
     if (em.panelEls.filterContentSort) em.panelEls.filterContentSort.value = em.state.contentFilters.sort;
   }
 
-  em.setPanelCollapsed(storedState?.isCollapsed !== false, false);
+  const isFirstRun = !storedState;
+  em.setPanelCollapsed(isFirstRun ? false : storedState?.isCollapsed !== false, false);
   if (em.updateTabVisibility) em.updateTabVisibility();
   if (em.updateFilterClearButton) em.updateFilterClearButton();
 };
@@ -116,8 +113,22 @@ em.getActiveFilterCount = function () {
 em.updateFilterClearButton = function () {
   if (!em.panelEls || !em.panelEls.filterClearBtn) return;
   const count = em.getActiveFilterCount();
-  em.panelEls.filterClearBtn.textContent = em.t("filter_clear") + (count ? " (" + count + ")" : "");
-  em.panelEls.filterClearBtn.disabled = count === 0;
+  em.panelEls.filterClearBtn.textContent = em.t("filter_clear");
+  let chip = em.panelEls.filterClearBtn.querySelector(".ep-filter-chip");
+  if (count > 0) {
+    if (!chip) {
+      chip = document.createElement("span");
+      chip.className = "ep-filter-chip";
+      em.panelEls.filterClearBtn.appendChild(chip);
+    }
+    chip.textContent = String(count);
+    em.panelEls.filterClearBtn.classList.add("ep-filter-clear-active");
+    em.panelEls.filterClearBtn.disabled = false;
+  } else {
+    if (chip) chip.remove();
+    em.panelEls.filterClearBtn.classList.remove("ep-filter-clear-active");
+    em.panelEls.filterClearBtn.disabled = true;
+  }
 };
 
 em.clearFilters = function () {
@@ -249,7 +260,9 @@ em.setTheme = async function (themeName) {
 em.updateActiveThemeChip = function (themeName) {
   if (!em.panelEls || !em.panelEls.themeChips) return;
   em.panelEls.themeChips.forEach((chip) => {
-    chip.classList.toggle("ep-theme-chip-active", chip.dataset.theme === themeName);
+    const isActive = chip.dataset.theme === themeName;
+    chip.classList.toggle("ep-theme-chip-active", isActive);
+    chip.setAttribute("aria-pressed", String(isActive));
   });
 };
 
@@ -352,7 +365,6 @@ em.setDeliveryAnimation = async function (animationKey, shouldPersist = true) {
 
 em.setFont = async function (fontKey) {
   const fonts = {
-    // Coding Monospace
     mono: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
     fira: '"Fira Code", "Fira Mono", monospace',
     jetbrains: '"JetBrains Mono", monospace',
@@ -364,13 +376,11 @@ em.setFont = async function (fontKey) {
     operator: '"Operator Mono", "Operator Mono SSm", monospace',
     'comic-mono': '"Comic Mono", "Comic Sans MS", cursive, monospace',
     
-    // Modern Sans
     sans: 'Inter, system-ui, -apple-system, sans-serif',
     roboto: '"Roboto", sans-serif',
     'open-sans': '"Open Sans", sans-serif',
     montserrat: '"Montserrat", sans-serif',
 
-    // Others
     serif: 'Georgia, Cambria, "Times New Roman", Times, serif',
     system: 'system-ui, sans-serif'
   };
@@ -398,11 +408,9 @@ em.setLanguage = async function (lang) {
   
   if (em.applyTranslations) em.applyTranslations();
   
-  // Refresh rendering
   em.renderPending(em.state.pending);
   em.renderLogs(em.state.logs);
   
-  // Refresh status bar
   const visible = em.getVisiblePending(em.state.pending);
   const contentCount = em.getVisibleContent(em.state.pending).length;
   const data = await em.storageGet(em.STORAGE_KEYS.SNAPSHOT);
@@ -455,7 +463,6 @@ em.filterAvailableFonts = function () {
     }
   });
 
-  // Ocultar optgroups vacíos
   const groups = em.panelEls.fontSelect.querySelectorAll("optgroup");
   groups.forEach((group) => {
     const visibleOptions = Array.from(group.querySelectorAll("option")).filter(o => o.style.display !== "none");
@@ -497,8 +504,10 @@ em.updateTabVisibility = function () {
 
   em.panelEls.tabButtons.forEach((btn) => {
     const isLogTab = btn.dataset.tab === "log";
+    const isActiveTab = btn.dataset.tab === em.state.activeTab;
     btn.classList.toggle("ep-hidden", isLogTab && !em.state.isLogTabVisible);
-    btn.classList.toggle("ep-tab-active", btn.dataset.tab === em.state.activeTab);
+    btn.classList.toggle("ep-tab-active", isActiveTab);
+    btn.setAttribute("aria-selected", String(isActiveTab));
   });
 
   if (em.state.isArchiveView) {
@@ -571,11 +580,46 @@ em.setStatus = function (text) {
   }
 };
 
-em.clearLocalData = async function () {
+em.setScanningUi = function (isScanning) {
+  if (!em.panelEls || !em.panelEls.root) return;
+  em.panelEls.root.classList.toggle("ep-scanning", !!isScanning);
+};
+
+em.clearLocalData = async function (scope = "all") {
   if (em.panelUiStatePersistTimer) {
     window.clearTimeout(em.panelUiStatePersistTimer);
     em.panelUiStatePersistTimer = null;
   }
+
+  if (scope === "data") {
+    await em.storageRemove([
+      em.STORAGE_KEYS.SNAPSHOT,
+      em.STORAGE_KEYS.LOG,
+      em.STORAGE_KEYS.KNOWN_IDS,
+      em.STORAGE_KEYS.ARCHIVED,
+      em.STORAGE_KEYS.PINNED,
+      em.STORAGE_KEYS.NOTIFIED_UPCOMING,
+      em.STORAGE_KEYS.LAST_URGENCY_BY_ID,
+      em.STORAGE_KEYS.READ_CONTENT_IDS
+    ]);
+    em.state.pending = [];
+    em.state.logs = [];
+    em.state.archivedIds = new Set();
+    em.state.pinnedIds = new Set();
+    em.state.contentExpandedIds = new Set();
+    em.state.readContentIds = new Set();
+    em.state.notifiedUpcomingIds = new Set();
+    em.state.lastUpdatedAt = null;
+    if (em.panelEls && em.panelEls.subtitle) {
+      em.panelEls.subtitle.textContent = em.t("last_read") + ": " + em.t("never");
+    }
+    em.renderPending([]);
+    em.renderLogs([]);
+    await em.syncBadge(0, 0, 0);
+    em.setStatus(em.t("config_clear_done_data"));
+    return;
+  }
+
   await em.storageClear();
   await em.preferencesClear(em.PREFERENCE_STORAGE_KEYS);
 
@@ -607,7 +651,7 @@ em.clearLocalData = async function () {
   em.state.reminderMode = "staggered";
   em.state.quietHours = { start: "", end: "" };
   em.state.isLogTabVisible = true;
-  em.state.isFiltersCompact = false;
+  em.state.isFiltersCompact = true;
   em.state.customTheme = { ...em.DEFAULT_CUSTOM_THEME };
   em.state.panelSize = "normal";
   em.state.deliveryAnimation = "cycle";
@@ -655,5 +699,5 @@ em.clearLocalData = async function () {
   em.renderPending([]);
   em.renderLogs([]);
   await em.syncBadge(0, 0, 0);
-  em.setStatus("Datos y preferencias borrados");
+  em.setStatus(em.t("config_clear_done_all"));
 };

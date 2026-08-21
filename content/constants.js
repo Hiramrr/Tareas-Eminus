@@ -1,7 +1,3 @@
-/* ══════════════════════════════════════════
-   CONSTANTS
-   ══════════════════════════════════════════ */
-
 window.eminus = window.eminus || {};
 
 window.eminus.API_BASE = "https://eminus.uv.mx/eminusapi8/api";

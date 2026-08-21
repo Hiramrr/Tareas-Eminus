@@ -149,7 +149,7 @@ async function refreshOneEminusTab() {
   const tabs = await chrome.tabs.query({ url: ["https://eminus.uv.mx/eminus4/*"] });
   const tab = tabs.find((entry) => entry.id);
   if (tab?.id) {
-    await chrome.tabs.sendMessage(tab.id, { type: "BACKGROUND_REFRESH_PANEL" }).catch(() => {});
+    await chrome.tabs.sendMessage(tab.id, { type: "BACKGROUND_REFRESH_PANEL", auto: true }).catch(() => {});
   }
 }
 

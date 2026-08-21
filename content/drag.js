@@ -1,7 +1,3 @@
-/* ══════════════════════════════════════════
-   PANEL DRAG & POSITION
-   ══════════════════════════════════════════ */
-
 window.eminus = window.eminus || {};
 
 var em = window.eminus;

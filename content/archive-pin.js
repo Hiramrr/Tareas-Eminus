@@ -1,7 +1,3 @@
-/* ══════════════════════════════════════════
-   ARCHIVE & PIN ACTIONS
-   ══════════════════════════════════════════ */
-
 window.eminus = window.eminus || {};
 
 var em = window.eminus;
@@ -30,7 +26,8 @@ em.persistArchiveState = async function () {
 
 em.archiveItemByIndex = async function (index) {
   const item = em.state.pending[index];
-  if (!item || item.urgency !== "overdue") return;
+  if (!item) return;
+  if (item.kind !== "content" && item.urgency !== "overdue") return;
   if (item.archived) return;
 
   em.state.archivedIds.add(item.id);
@@ -43,7 +40,8 @@ em.archiveItemByIndex = async function (index) {
 
 em.unarchiveItemByIndex = async function (index) {
   const item = em.state.pending[index];
-  if (!item || item.urgency !== "overdue") return;
+  if (!item) return;
+  if (item.kind !== "content" && item.urgency !== "overdue") return;
   if (!item.archived) return;
 
   em.state.archivedIds.delete(item.id);
@@ -54,16 +52,108 @@ em.unarchiveItemByIndex = async function (index) {
   em.setStatus(em.t("status_restored") + ": " + item.title);
 };
 
-em.archiveAllOverdue = async function () {
-  const items = em.getVisiblePending(em.state.pending).filter((item) => item.urgency === "overdue");
+em.hideContentItemWithUndo = async function (index) {
+  const item = em.state.pending[index];
+  if (!item || item.kind !== "content" || item.archived) return;
+
+  const previousIds = new Set(em.state.archivedIds);
+  em.state.archivedIds.add(item.id);
+  item.archived = true;
+
+  em.renderPending(em.state.pending);
+  await em.persistArchiveState();
+  em.setStatus(em.t("status_archived") + ": " + item.title);
+  em.showToast(
+    em.t("content_hidden_one"),
+    "info",
+    {
+      action: {
+        label: em.t("undo"),
+        onClick: async () => {
+          em.state.archivedIds = previousIds;
+          if (em.applyArchivedState) em.applyArchivedState(em.state.pending, em.state.archivedIds);
+          em.renderPending(em.state.pending);
+          await em.persistArchiveState();
+          em.setStatus(em.t("status_restored"));
+        }
+      }
+    }
+  );
+};
+
+em.restoreHiddenContentByCourse = async function (courseName) {
+  const target = String(courseName || "").trim();
+  if (!target) return;
+  const items = em.getContentItems(em.state.pending).filter((item) => item.archived && item.course === target);
   if (!items.length) return;
+  items.forEach((item) => {
+    em.state.archivedIds.delete(item.id);
+    item.archived = false;
+  });
+  em.renderPending(em.state.pending);
+  await em.persistArchiveState();
+  em.showToast(em.t("status_content_restored_many").replace("{n}", items.length), "info");
+  em.setStatus(em.t("status_restored") + ": " + target);
+};
+
+em.archiveContentByCourse = async function (courseName) {
+  const target = String(courseName || "").trim();
+  if (!target) return;
+  const items = em.getContentItems(em.state.pending).filter((item) => !item.archived && item.course === target);
+  if (!items.length) return;
+
+  const previousIds = new Set(em.state.archivedIds);
   items.forEach((item) => {
     em.state.archivedIds.add(item.id);
     item.archived = true;
   });
   em.renderPending(em.state.pending);
   await em.persistArchiveState();
-  em.setStatus(em.t("status_archived_many").replace("{n}", items.length));
+  em.setStatus(em.t("status_content_course_hidden").replace("{course}", target));
+  em.showToast(
+    em.t("status_content_course_hidden_many").replace("{n}", items.length),
+    "info",
+    {
+      action: {
+        label: em.t("undo"),
+        onClick: async () => {
+          em.state.archivedIds = previousIds;
+          if (em.applyArchivedState) em.applyArchivedState(em.state.pending, em.state.archivedIds);
+          em.renderPending(em.state.pending);
+          await em.persistArchiveState();
+          em.setStatus(em.t("status_restored"));
+        }
+      }
+    }
+  );
+};
+
+em.archiveAllOverdue = async function () {
+  const items = em.getVisiblePending(em.state.pending).filter((item) => item.urgency === "overdue");
+  if (!items.length) return;
+  const previousIds = new Set(em.state.archivedIds);
+  items.forEach((item) => {
+    em.state.archivedIds.add(item.id);
+    item.archived = true;
+  });
+  em.renderPending(em.state.pending);
+  await em.persistArchiveState();
+  em.showToast(
+    em.t("status_archived_many").replace("{n}", items.length),
+    "info",
+    {
+      action: {
+        label: em.t("undo"),
+        onClick: async () => {
+          em.state.archivedIds = previousIds;
+          if (em.applyArchivedState) em.applyArchivedState(em.state.pending, em.state.archivedIds);
+          em.renderPending(em.state.pending);
+          await em.persistArchiveState();
+          em.setStatus(em.t("status_restored"));
+        }
+      }
+    }
+  );
 };
 
 em.persistPinnedState = async function () {
@@ -120,6 +210,7 @@ em.unpinItemByIndex = async function (index) {
 em.unpinAllItems = async function () {
   const items = em.state.pending.filter((item) => item.pinned);
   if (!items.length) return;
+  const previousIds = new Set(em.state.pinnedIds);
   items.forEach((item) => {
     em.state.pinnedIds.delete(item.id);
     item.pinned = false;
@@ -131,5 +222,25 @@ em.unpinAllItems = async function () {
   }
   em.renderPending(em.state.pending);
   await em.persistPinnedState();
-  em.setStatus(em.t("status_unpinned_many").replace("{n}", items.length));
+  em.showToast(
+    em.t("status_unpinned_many").replace("{n}", items.length),
+    "info",
+    {
+      action: {
+        label: em.t("undo"),
+        onClick: async () => {
+          em.state.pinnedIds = previousIds;
+          if (em.applyPinnedState) em.applyPinnedState(em.state.pending, em.state.pinnedIds);
+          if (em.sortPendingItems) {
+            em.sortPendingItems(em.state.pending);
+          } else {
+            em.state.pending = em.sortActivityItems(em.state.pending, "deadline");
+          }
+          em.renderPending(em.state.pending);
+          await em.persistPinnedState();
+          em.setStatus(em.t("status_pinned"));
+        }
+      }
+    }
+  );
 };

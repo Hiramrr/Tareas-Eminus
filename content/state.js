@@ -1,7 +1,3 @@
-/* ══════════════════════════════════════════
-   STATE & ARCHIVE/PIN NORMALIZATION HELPERS
-   ══════════════════════════════════════════ */
-
 window.eminus = window.eminus || {};
 
 var em = window.eminus;
@@ -56,7 +52,8 @@ em.state = {
     overdue: true,
     reminders: true
   },
-  isFiltersCompact: false,
+  isFiltersCompact: true,
+  showHiddenContent: false,
   isScanning: false
 };
 

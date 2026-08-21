@@ -1,37 +1,72 @@
-/* ══════════════════════════════════════════
-   TOAST & NOTIFICATIONS
-   ══════════════════════════════════════════ */
-
 window.eminus = window.eminus || {};
 
 var em = window.eminus;
 
-em.showToast = function (message, type) {
+em.MAX_TOASTS = 3;
+em.TOAST_DEFAULT_MS = 4000;
+em.TOAST_ACTION_MS = 8000;
+
+em.getToastStack = function () {
+  if (!em.panelEls || !em.panelEls.root) return null;
+  let stack = em.panelEls.root.querySelector(".ep-toast-stack");
+  if (!stack) {
+    stack = document.createElement("div");
+    stack.className = "ep-toast-stack";
+    em.panelEls.root.appendChild(stack);
+  }
+  return stack;
+};
+
+em.showToast = function (message, type, options) {
   type = type || "info";
-  if (!em.panelEls || !em.panelEls.root) return;
-  let toast = em.panelEls.root.querySelector(".ep-toast");
-  if (toast) {
-    toast.remove();
+  const stack = em.getToastStack();
+  if (!stack) return;
+
+  while (stack.children.length >= em.MAX_TOASTS) {
+    stack.firstElementChild?.remove();
   }
 
-  toast = document.createElement("div");
+  const toast = document.createElement("div");
   toast.className = "ep-toast ep-toast-" + type;
-  toast.textContent = message;
+  toast.setAttribute("role", "status");
 
-  em.panelEls.root.appendChild(toast);
+  const text = document.createElement("span");
+  text.className = "ep-toast-text";
+  text.textContent = message;
+  toast.appendChild(text);
 
-  requestAnimationFrame(() => {
-    toast.classList.add("ep-toast-visible");
-  });
+  let actionTimer = null;
+  if (options && options.action && typeof options.action.onClick === "function") {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "ep-toast-action";
+    button.textContent = options.action.label || em.t("undo");
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      window.clearTimeout(actionTimer);
+      dismiss();
+      options.action.onClick();
+    });
+    toast.appendChild(button);
+  }
 
-  setTimeout(() => {
+  const dismiss = () => {
     toast.classList.remove("ep-toast-visible");
     setTimeout(() => {
       if (toast.parentElement) {
         toast.parentElement.removeChild(toast);
       }
-    }, 300);
-  }, 4000);
+    }, 250);
+  };
+
+  stack.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.classList.add("ep-toast-visible");
+  });
+
+  const duration = Number(options?.duration) || (options?.action ? em.TOAST_ACTION_MS : em.TOAST_DEFAULT_MS);
+  setTimeout(dismiss, duration);
 };
 
 em.getActivityNotificationTarget = function (item) {

@@ -1,12 +1,69 @@
-/* ══════════════════════════════════════════
-   API & DATA FETCHING
-   ══════════════════════════════════════════ */
-
 window.eminus = window.eminus || {};
 
 var em = window.eminus;
 
+em.CONTENT_CACHE_TTL_MS = 5 * 60 * 1000;
+em.CONTENT_CACHE_MAX_ENTRIES = 120;
+
+em.isContentCacheablePath = function (path) {
+  return typeof path === "string" && path.indexOf("/Contenido/") === 0;
+};
+
+em.getContentCacheKey = function (path) {
+  let accountId = "";
+  try {
+    accountId = em.getAccountIdFromToken ? em.getAccountIdFromToken(em.getToken()) || "" : "";
+  } catch (_) {
+    accountId = "";
+  }
+  return String(accountId) + ":" + String(path || "");
+};
+
+em.getCachedContentRows = function (key) {
+  em.state.contentApiCache = em.state.contentApiCache instanceof Map ? em.state.contentApiCache : new Map();
+  const entry = em.state.contentApiCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.fetchedAt > em.CONTENT_CACHE_TTL_MS) {
+    em.state.contentApiCache.delete(key);
+    return null;
+  }
+  return entry.rows;
+};
+
+em.storeContentCacheRows = function (key, rows) {
+  em.state.contentApiCache = em.state.contentApiCache instanceof Map ? em.state.contentApiCache : new Map();
+  const cache = em.state.contentApiCache;
+  const now = Date.now();
+  cache.forEach((entry, entryKey) => {
+    if (now - entry.fetchedAt > em.CONTENT_CACHE_TTL_MS) cache.delete(entryKey);
+  });
+  while (cache.size >= em.CONTENT_CACHE_MAX_ENTRIES) {
+    let oldestKey = null;
+    let oldestTime = Infinity;
+    cache.forEach((entry, entryKey) => {
+      if (entry.fetchedAt < oldestTime) {
+        oldestTime = entry.fetchedAt;
+        oldestKey = entryKey;
+      }
+    });
+    if (!oldestKey) break;
+    cache.delete(oldestKey);
+  }
+  cache.set(key, { rows, fetchedAt: now });
+};
+
+em.clearContentApiCache = function () {
+  em.state.contentApiCache = new Map();
+};
+
 em.fetchJson = async function (path, token) {
+  const cacheable = em.isContentCacheablePath(path);
+  const cacheKey = cacheable ? em.getContentCacheKey(path) : "";
+  if (cacheable) {
+    const cachedRows = em.getCachedContentRows(cacheKey);
+    if (cachedRows) return cachedRows;
+  }
+
   if (em.hasRuntimeApi) {
     try {
       const bgResponse = await chrome.runtime.sendMessage({
@@ -20,7 +77,11 @@ em.fetchJson = async function (path, token) {
         responseError.path = bgResponse?.path || path;
         throw responseError;
       }
-      return Array.isArray(bgResponse.contenido) ? bgResponse.contenido : [];
+      const contenido = Array.isArray(bgResponse.contenido) ? bgResponse.contenido : [];
+      if (cacheable && contenido.length) {
+        em.storeContentCacheRows(cacheKey, contenido);
+      }
+      return contenido;
     } catch (err) {
       const wrappedError = new Error(err.message || em.t("error_network") + " " + path + ". " + em.t("error_reload"));
       wrappedError.status = Number(err.status || 0);

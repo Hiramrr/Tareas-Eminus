@@ -3,6 +3,17 @@ const READ_CONTENT_IDS_KEY = "eminusReadContentIds";
 const THEME_KEY = "eminusPanelTheme";
 const CUSTOM_THEME_KEY = "eminusCustomTheme";
 const POPUP_TARGET_VIEW_KEY = "eminusPopupTargetView";
+const LANG_KEY = "eminusLanguage";
+const em = window.eminus || {};
+
+function t(key, fallback) {
+  const value = typeof em.t === "function" ? em.t(key) : null;
+  return !value || value === key ? fallback : value;
+}
+
+function locale() {
+  return em.state?.lang === "en" ? "en-US" : "es-MX";
+}
 const EMINUS_URL = "https://eminus.uv.mx/eminus4/page/course/list";
 const PANEL_VIEWS = new Set(["summary", "pending", "today", "overdue", "agenda", "content"]);
 const THEME_PRESETS = {
@@ -50,7 +61,18 @@ function isSameDay(a, b) {
 function formatDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "sin fecha";
-  return date.toLocaleString("es-MX", {
+  return t("popup_updated_at", "Actualizado el {d}").replace("{d}", date.toLocaleString(locale(), {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit"
+  }));
+}
+
+function formatDeadline(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return t("due_nodate", "sin fecha");
+  return date.toLocaleString(locale(), {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
@@ -61,35 +83,65 @@ function formatDate(value) {
 function formatRelativeTime(value) {
   const date = new Date(value);
   const elapsed = Date.now() - date.getTime();
-  if (Number.isNaN(date.getTime())) return "Sin lectura guardada";
-  if (elapsed < 60 * 1000) return "Actualizado hace menos de 1 min";
-  if (elapsed < 60 * 60 * 1000) return "Actualizado hace " + Math.floor(elapsed / (60 * 1000)) + " min";
-  if (elapsed < 24 * 60 * 60 * 1000) return "Actualizado hace " + Math.floor(elapsed / (60 * 60 * 1000)) + " h";
-  return "Actualizado el " + date.toLocaleString("es-MX", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
+  if (Number.isNaN(date.getTime())) return t("popup_sync_none", "Sin lectura guardada");
+  if (elapsed < 60 * 1000) return t("popup_updated_just_now", "Actualizado hace menos de 1 min");
+  if (elapsed < 60 * 60 * 1000) return t("popup_updated_min_ago", "Actualizado hace {n} min").replace("{n}", Math.floor(elapsed / (60 * 1000)));
+  if (elapsed < 24 * 60 * 60 * 1000) return t("popup_updated_hours_ago", "Actualizado hace {n} h").replace("{n}", Math.floor(elapsed / (60 * 60 * 1000)));
+  return formatDate(value);
 }
 
 function getSyncState(value) {
-  if (!value) return { label: "sin datos", className: "sync-empty" };
+  if (!value) return { label: t("popup_sync_none", "sin datos"), icon: "○", className: "sync-empty" };
   const elapsed = Date.now() - new Date(value).getTime();
-  if (!Number.isFinite(elapsed)) return { label: "sin datos", className: "sync-empty" };
-  if (elapsed <= 15 * 60 * 1000) return { label: "al día", className: "sync-fresh" };
-  if (elapsed <= 2 * 60 * 60 * 1000) return { label: "revisar", className: "sync-warning" };
-  return { label: "desactualizado", className: "sync-stale" };
+  if (!Number.isFinite(elapsed)) return { label: t("popup_sync_none", "sin datos"), icon: "○", className: "sync-empty" };
+  if (elapsed <= 15 * 60 * 1000) return { label: t("popup_sync_fresh", "al día"), icon: "●", className: "sync-fresh" };
+  if (elapsed <= 2 * 60 * 60 * 1000) return { label: t("popup_sync_check", "revisar"), icon: "◷", className: "sync-warning" };
+  return { label: t("popup_sync_stale", "desactualizado"), icon: "!", className: "sync-stale" };
 }
 
-function setNotice(message, tone = "") {
+async function updateTabBanner() {
+  const banner = document.querySelector("#tab-banner");
+  if (!banner) return;
+  let tabs = [];
+  try {
+    tabs = await getEminusTabs();
+  } catch (_) {
+    tabs = [];
+  }
+  if (tabs.length === 0) {
+    banner.textContent = t("popup_banner_no_tab", "Para que los pendientes se actualicen solos, mantén una pestaña de Eminus abierta.");
+    banner.hidden = false;
+  } else {
+    banner.hidden = true;
+  }
+}
+
+function setNotice(message, tone = "", action = null) {
   const notice = document.querySelector("#popup-notice");
   notice.textContent = message;
   notice.className = "notice" + (tone ? " notice-" + tone : "");
+  if (action && typeof action.onClick === "function") {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "notice-action";
+    button.textContent = action.label || t("popup_undo", "Deshacer");
+    button.addEventListener("click", action.onClick);
+    notice.appendChild(button);
+  }
 }
 
 function normalizeThemeColor(value, fallback) {
   return /^#[0-9a-f]{6}$/i.test(String(value || "")) ? value : fallback;
+}
+
+function isDarkColor(hex) {
+  const match = /^#([0-9a-f]{6})$/i.exec(String(hex || ""));
+  if (!match) return false;
+  const int = parseInt(match[1], 16);
+  const r = (int >> 16) & 255;
+  const g = (int >> 8) & 255;
+  const b = int & 255;
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.5;
 }
 
 function applyTheme(themeName, customTheme) {
@@ -104,6 +156,10 @@ function applyTheme(themeName, customTheme) {
     imminent: normalizeThemeColor(selectedTheme?.imminent, fallback.imminent),
     urgent: normalizeThemeColor(selectedTheme?.urgent, fallback.urgent)
   };
+  const dark = isDarkColor(theme.bg);
+  const semantic = dark
+    ? { success: "#4ade80", warning: "#fbbf24", danger: "#f87171", bannerBg: "rgba(251, 191, 36, 0.14)", bannerBorder: "#fbbf24", bannerText: "#fbbf24" }
+    : { success: "#1b7f2a", warning: "#a36b00", danger: "#b42318", bannerBg: "#fff8e1", bannerBorder: "#b45309", bannerText: "#7c4a03" };
   const root = document.documentElement;
   root.dataset.theme = (THEME_PRESETS[themeName] || themeName === "custom") ? themeName : "light";
   root.style.setProperty("--popup-bg", theme.bg);
@@ -114,6 +170,12 @@ function applyTheme(themeName, customTheme) {
   root.style.setProperty("--popup-overdue", theme.overdue);
   root.style.setProperty("--popup-imminent", theme.imminent);
   root.style.setProperty("--popup-urgent", theme.urgent);
+  root.style.setProperty("--popup-success", semantic.success);
+  root.style.setProperty("--popup-warning", semantic.warning);
+  root.style.setProperty("--popup-danger", semantic.danger);
+  root.style.setProperty("--popup-banner-bg", semantic.bannerBg);
+  root.style.setProperty("--popup-banner-border", semantic.bannerBorder);
+  root.style.setProperty("--popup-banner-text", semantic.bannerText);
 }
 
 async function getPopupData() {
@@ -177,22 +239,28 @@ async function refreshPending() {
   const tabs = await getEminusTabs();
   const tab = tabs.find((entry) => entry.id);
   if (!tab?.id) {
-    await chrome.tabs.create({ url: EMINUS_URL });
-    window.close();
+    setNotice(t("popup_refresh_no_tab", "No hay ninguna pestaña de Eminus abierta; hace falta para actualizar."), "warning", {
+      label: t("popup_action_open_refresh", "Abrir Eminus y actualizar"),
+      onClick: async () => {
+        button.disabled = true;
+        await chrome.tabs.create({ url: EMINUS_URL });
+        window.close();
+      }
+    });
     return;
   }
   button.disabled = true;
-  setNotice("Actualizando pendientes...", "working");
+  setNotice(t("popup_notice_updating", "Actualizando pendientes…"), "working");
   const response = await chrome.tabs.sendMessage(tab.id, { type: "BACKGROUND_REFRESH_PANEL" }).catch(() => null);
   if (!response?.ok) {
-    setNotice("Abre o recarga Eminus para actualizar los datos.", "warning");
+    setNotice(t("popup_notice_open_reload", "Abre o recarga Eminus para actualizar."), "warning");
     button.disabled = false;
     return;
   }
   window.clearTimeout(refreshResetTimer);
   refreshResetTimer = window.setTimeout(() => {
     button.disabled = false;
-    setNotice("La actualización sigue pendiente. Revisa la pestaña de Eminus.", "warning");
+    setNotice(t("popup_notice_slow", "Actualización en curso. Revisa la pestaña de Eminus."), "warning");
   }, 10000);
 }
 
@@ -208,22 +276,76 @@ async function markAllContentRead() {
   const snapshot = data[SNAPSHOT_KEY] || {};
   const items = Array.isArray(snapshot.pending) ? snapshot.pending : [];
   const readIds = new Set(Array.isArray(data[READ_CONTENT_IDS_KEY]) ? data[READ_CONTENT_IDS_KEY] : []);
+  const previousIds = Array.from(readIds);
   const unread = items.filter((item) => isUnreadContent(item, readIds));
+  if (!unread.length) return;
   unread.forEach((item) => readIds.add(item.id));
   const ids = Array.from(readIds);
   await chrome.storage.local.set({ [READ_CONTENT_IDS_KEY]: ids });
   await syncReadContentIds(ids);
   await render();
-  setNotice(unread.length + " publicaciones marcadas como leídas.", "success");
+  setNotice(t("popup_notice_marked", "{n} publicaciones marcadas como leídas.").replace("{n}", unread.length), "success", {
+    label: t("popup_undo", "Deshacer"),
+    onClick: async () => {
+      await chrome.storage.local.set({ [READ_CONTENT_IDS_KEY]: previousIds });
+      await syncReadContentIds(previousIds);
+      await render();
+      setNotice(t("popup_notice_undo_marked", "Se restauraron como no leídas."), "success");
+    }
+  });
 }
 
-function renderTaskList(items) {
+function updatePopupOnboarding(snapshot, activities) {
+  const card = document.querySelector("#popup-onboarding");
+  if (!card) return;
+  const hasSnapshot = !!(snapshot && snapshot.updatedAt && Array.isArray(snapshot.pending));
+  const isEmpty = !hasSnapshot || activities.length === 0;
+  const title = card.querySelector("#onboarding-title");
+  const desc = card.querySelector("#onboarding-desc");
+  const steps = card.querySelector("#onboarding-steps");
+  const icon = card.querySelector(".onboarding-icon");
+
+  if (!hasSnapshot) {
+    card.hidden = false;
+    card.classList.remove("hidden");
+    icon.textContent = "◐";
+    icon.classList.remove("is-done");
+    icon.style.animationName = "";
+    title.textContent = t("popup_ob_welcome", "Bienvenido a Miyu");
+    desc.textContent = t("popup_ob_no_data", "Aún no hay lectura. Abre Eminus para empezar.");
+    steps.innerHTML = "<li>" + t("popup_ob_step1", "Inicia sesión en <strong>eminus.uv.mx</strong>") + "</li><li>" + t("popup_ob_step2", "Ten Eminus abierto en una pestaña") + "</li><li>" + t("popup_ob_step3", "Pulsa <strong>[ actualizar ]</strong>") + "</li>";
+    document.querySelector(".metrics").style.opacity = "0.45";
+    document.querySelector(".next").style.opacity = "0.6";
+    setNotice(t("popup_notice_updating", "Actualizando pendientes…"), "working");
+  } else if (isEmpty && hasSnapshot) {
+    card.hidden = false;
+    card.classList.remove("hidden");
+    icon.textContent = "✓";
+    icon.classList.add("is-done");
+    title.textContent = t("popup_all_title", "¡Todo al día!");
+    desc.textContent = t("popup_all_desc", "No tienes pendientes con fecha. Disfruta el descanso.");
+    steps.innerHTML = "<li>" + t("popup_all_step1", "Revisa <strong>Contenido</strong> por si hay publicaciones nuevas") + "</li><li>" + t("popup_all_step2", "Usa <kbd>Alt</kbd>+<kbd>E</kbd> para plegar el panel dentro de Eminus") + "</li>";
+    document.querySelector(".metrics").style.opacity = "1";
+    document.querySelector(".next").style.opacity = "1";
+  } else {
+    card.hidden = true;
+    card.classList.add("hidden");
+    document.querySelector(".metrics").style.opacity = "1";
+    document.querySelector(".next").style.opacity = "1";
+  }
+}
+
+function renderTaskList(items, hasSnapshot) {
   const list = document.querySelector("#task-list");
   list.textContent = "";
   if (!items.length) {
     const empty = document.createElement("div");
     empty.className = "empty";
-    empty.textContent = "No hay entregas próximas con fecha.";
+    if (!hasSnapshot) {
+      empty.innerHTML = t("popup_empty_nodata", "Aún sin datos. Abre Eminus y pulsa <strong>[ actualizar ]</strong>.") + '<br><small style="opacity:0.7">' + t("popup_empty_tip", "<kbd>Alt</kbd>+<kbd>E</kbd> abre el panel dentro de Eminus.") + "</small>";
+    } else {
+      empty.textContent = t("popup_empty_nodue", "Sin entregas próximas con fecha.");
+    }
     list.appendChild(empty);
     return;
   }
@@ -236,8 +358,14 @@ function renderTaskList(items) {
     button.className = "task task-" + (item.urgency || "normal");
     button.type = "button";
     course.textContent = item.course || "Eminus";
+    if (item.urgency && item.urgency !== "normal") {
+      const badge = document.createElement("span");
+      badge.className = "task-urgency-badge";
+      badge.innerHTML = t("urgency_badge_" + item.urgency, "");
+      course.appendChild(badge);
+    }
     title.textContent = item.title || "Actividad sin título";
-    due.textContent = "vence: " + formatDate(item.deadlineRaw);
+    due.textContent = t("due", "Vence:") + " " + formatDeadline(item.deadlineRaw);
     button.append(course, title, due);
     button.addEventListener("click", async () => {
       await chrome.tabs.create({ url: activityUrl(item) });
@@ -267,13 +395,32 @@ async function render() {
   document.querySelector("#last-sync").textContent = formatRelativeTime(snapshot.updatedAt);
   const syncState = getSyncState(snapshot.updatedAt);
   const syncStateElement = document.querySelector("#sync-state");
-  syncStateElement.textContent = syncState.label;
+  syncStateElement.textContent = syncState.icon + " " + syncState.label;
   syncStateElement.className = "sync-state " + syncState.className;
   const markReadButton = document.querySelector("#mark-content-read");
   markReadButton.hidden = unreadContent.length === 0;
-  markReadButton.textContent = "Marcar contenido leído (" + unreadContent.length + ")";
+  markReadButton.textContent = t("popup_mark_read", "Marcar contenido leído ({n})").replace("{n}", unreadContent.length);
   applyTheme(data[THEME_KEY] || "light", data[CUSTOM_THEME_KEY]);
-  renderTaskList(upcoming);
+  const hasSnapshot = !!(snapshot && snapshot.updatedAt);
+  updatePopupOnboarding(snapshot, activities);
+  renderTaskList(upcoming, hasSnapshot);
+}
+
+function applyStaticTranslations() {
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    el.textContent = t(el.getAttribute("data-i18n"), el.textContent);
+  });
+  const refreshButton = document.querySelector("#refresh-pending");
+  if (refreshButton && !refreshButton.disabled) refreshButton.textContent = t("popup_refresh", "[ actualizar ]");
+  const openButton = document.querySelector("#open-eminus");
+  if (openButton) openButton.textContent = t("popup_open_summary", "Abrir resumen en Eminus");
+  const onboardingOpen = document.querySelector("#onboarding-open");
+  if (onboardingOpen) onboardingOpen.textContent = t("popup_ob_open", "Abrir Eminus");
+  const onboardingRefresh = document.querySelector("#onboarding-refresh");
+  if (onboardingRefresh) onboardingRefresh.textContent = t("popup_ob_refresh_now", "[ actualizar ahora ]");
+  const hint = document.querySelector("#onboarding-hint");
+  if (hint) hint.innerHTML = t("popup_ob_hint", "<kbd>Alt</kbd>+<kbd>E</kbd> abre/cierra el panel · <kbd>/</kbd> busca · <kbd>R</kbd> actualiza");
+  document.documentElement.lang = em.state?.lang || "es";
 }
 
 document.querySelectorAll("[data-view]").forEach((button) => {
@@ -282,16 +429,35 @@ document.querySelectorAll("[data-view]").forEach((button) => {
 document.querySelector("#refresh-pending").addEventListener("click", refreshPending);
 document.querySelector("#mark-content-read").addEventListener("click", markAllContentRead);
 document.querySelector("#open-eminus").addEventListener("click", () => openPanel("summary", true));
+document.querySelector("#onboarding-open")?.addEventListener("click", () => openPanel("summary", true));
+document.querySelector("#onboarding-refresh")?.addEventListener("click", refreshPending);
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName !== "local" && areaName !== "sync") return;
+  if (changes[LANG_KEY]) {
+    em.state = em.state || {};
+    em.state.lang = changes[LANG_KEY].newValue || "es";
+    applyStaticTranslations();
+  }
   if (changes[SNAPSHOT_KEY] || changes[READ_CONTENT_IDS_KEY] || changes[THEME_KEY] || changes[CUSTOM_THEME_KEY]) {
     render();
     if (changes[SNAPSHOT_KEY]) {
       window.clearTimeout(refreshResetTimer);
       refreshResetTimer = null;
       document.querySelector("#refresh-pending").disabled = false;
-      setNotice("Lectura actualizada.", "success");
+      setNotice(t("popup_notice_updated", "Lectura actualizada."), "success");
     }
   }
 });
-render();
+if (chrome.tabs?.onRemoved) chrome.tabs.onRemoved.addListener(() => updateTabBanner());
+(async () => {
+  try {
+    const storedLang = await chrome.storage.local.get(LANG_KEY);
+    em.state = em.state || {};
+    em.state.lang = storedLang[LANG_KEY] || "es";
+  } catch (_) {
+    em.state = em.state || {};
+  }
+  applyStaticTranslations();
+  await updateTabBanner();
+  render();
+})();

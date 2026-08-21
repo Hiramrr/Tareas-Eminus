@@ -1,7 +1,3 @@
-/* ══════════════════════════════════════════
-   PERSISTENCE & SCAN
-   ══════════════════════════════════════════ */
-
 window.eminus = window.eminus || {};
 
 var em = window.eminus;
@@ -54,6 +50,7 @@ em.hydrateFromStorage = async function () {
     clearPayload[em.STORAGE_KEYS.READ_CONTENT_IDS] = [];
     clearPayload[em.STORAGE_KEYS.LAST_URGENCY_BY_ID] = {};
     clearPayload[em.STORAGE_KEYS.ACCOUNT_ID] = currentAccountId;
+    if (em.clearContentApiCache) em.clearContentApiCache();
     await em.storageSet(clearPayload);
     data[em.STORAGE_KEYS.LOG] = [];
     data[em.STORAGE_KEYS.SNAPSHOT] = null;
@@ -108,7 +105,6 @@ em.hydrateFromStorage = async function () {
     em.applyPinnedState(em.state.pending, em.state.pinnedIds);
     em.state.lastUpdatedAt = snapshot.updatedAt || null;
 
-    // Prune settings against actual pending tasks
     em.state.archivedIds = em.pruneArchivedIds(em.state.pending, em.state.archivedIds);
     em.state.pinnedIds = em.prunePinnedIds(em.state.pending, em.state.pinnedIds);
     em.state.notifiedUpcomingIds = em.pruneNotifiedUpcomingIds(em.state.pending, em.state.notifiedUpcomingIds);
@@ -223,16 +219,30 @@ em.buildUrgencyMap = function (items) {
   return map;
 };
 
-em.scanPendingWhenTokenReady = function () {
+em.scanPendingWhenTokenReady = function (options = {}) {
   if (em.getToken()) {
     if (em.stopTokenWatcher) em.stopTokenWatcher();
-    em.scanPending();
+    if (em._waitingTokenTimer) { window.clearTimeout(em._waitingTokenTimer); em._waitingTokenTimer = null; }
+    em.scanPending(options);
     return;
   }
 
   em.setStatus(em.t("status_waiting_token"));
+  // refuerzo visual: mostrar onboarding mientras no hay token
+  if (!em.state.lastUpdatedAt) em.renderPending(em.state.pending || []);
+  if (em._waitingTokenTimer) window.clearTimeout(em._waitingTokenTimer);
+  em._waitingTokenTimer = window.setTimeout(() => {
+    em._waitingTokenTimer = null;
+    if (!em.getToken()) {
+      em.setStatus(em.t("error_no_token"));
+      if (!em.state.lastUpdatedAt) em.renderPending(em.state.pending || []);
+    }
+  }, 7000);
   if (em.startTokenWatcher) {
-    em.startTokenWatcher(() => em.scanPending());
+    em.startTokenWatcher((token) => {
+      if (em._waitingTokenTimer) { window.clearTimeout(em._waitingTokenTimer); em._waitingTokenTimer = null; }
+      em.scanPending(options);
+    });
   }
 };
 
@@ -248,28 +258,39 @@ em.waitForTokenRefresh = function (previousToken) {
     window.setTimeout(() => em.scanPendingWhenTokenReady(), 0);
   }, {
     previousToken,
-    requireChange: true
-  });
+    requireChange: true  });
 };
 
-em.scanPending = async function () {
+em.scanPending = async function (options = {}) {
   if (em.state.isScanning) return;
+  let token = "";
+  try {
+    token = em.getToken();
+  } catch (_) {
+    token = "";
+  }
+  if (!token) {
+    em.setStatus(em.t("status_waiting_token"));
+    if (!em.state.lastUpdatedAt) em.renderPending(em.state.pending || []);
+    if (em.startTokenWatcher) {
+      em.startTokenWatcher(() => em.scanPending());
+    }
+    return;
+  }
   em.state.isScanning = true;
-  em.setStatus(em.t("status_scanning"));
+  const isFirstScan = !em.state.lastUpdatedAt;
+  const scanningMessage = isFirstScan ? em.t("status_scanning") : (em.t("status_scanning_refresh") || "Actualizando cursos y actividades…");
+  em.setStatus(scanningMessage);
+  if (em.renderPending) em.renderPending(em.state.pending || []);
+  if (em.setScanningUi) em.setScanningUi(true);
+  if (!options?.silent && em.showToast) em.showToast(scanningMessage, "info");
   if (em.panelEls && em.panelEls.refreshBtn) {
     em.panelEls.refreshBtn.disabled = true;
   }
 
-  let token = "";
+  let scanError = null;
+
   try {
-    token = em.getToken();
-    if (!token) {
-      em.setStatus(em.t("status_waiting_token"));
-      if (em.startTokenWatcher) {
-        em.startTokenWatcher(() => em.scanPending());
-      }
-      return;
-    }
     if (em.stopTokenWatcher) em.stopTokenWatcher();
 
     const currentAccountId = em.getAccountIdFromToken(token);
@@ -299,10 +320,11 @@ em.scanPending = async function () {
       clearPayload[em.STORAGE_KEYS.PINNED] = [];
       clearPayload[em.STORAGE_KEYS.NOTIFIED_UPCOMING] = [];
       clearPayload[em.STORAGE_KEYS.READ_CONTENT_IDS] = [];
-      clearPayload[em.STORAGE_KEYS.LAST_URGENCY_BY_ID] = {};
-      clearPayload[em.STORAGE_KEYS.ACCOUNT_ID] = currentAccountId;
-      await em.storageSet(clearPayload);
-    } else if (!knownData[em.STORAGE_KEYS.ACCOUNT_ID] && currentAccountId) {
+    clearPayload[em.STORAGE_KEYS.LAST_URGENCY_BY_ID] = {};
+    clearPayload[em.STORAGE_KEYS.ACCOUNT_ID] = currentAccountId;
+    if (em.clearContentApiCache) em.clearContentApiCache();
+    await em.storageSet(clearPayload);
+  } else if (!knownData[em.STORAGE_KEYS.ACCOUNT_ID] && currentAccountId) {
       const idPayload = {};
       idPayload[em.STORAGE_KEYS.ACCOUNT_ID] = currentAccountId;
       await em.storageSet(idPayload);
@@ -324,7 +346,11 @@ em.scanPending = async function () {
         em.state.pending = activityPending;
         em.renderPending(activityPending);
         if (em.panelEls && em.panelEls.contentBody) {
-          em.panelEls.contentBody.innerHTML = `<div class="ep-empty">${em.escapeHtml(em.t("status_content"))}: ${em.escapeHtml(em.t("status_loading"))}</div>`;
+          if (em.renderSetHtml) {
+            em.renderSetHtml(em.panelEls.contentBody, `<div class="ep-empty">${em.escapeHtml(em.t("status_content"))}: ${em.escapeHtml(em.t("status_loading"))}</div>`);
+          } else {
+            em.panelEls.contentBody.innerHTML = `<div class="ep-empty">${em.escapeHtml(em.t("status_content"))}: ${em.escapeHtml(em.t("status_loading"))}</div>`;
+          }
         }
 
         const visibleActivities = em.getVisiblePending(activityPending);
@@ -366,7 +392,6 @@ em.scanPending = async function () {
       return previousPending.length > 0 && !previousOverdueIds.has(item.id);
     });
 
-    // Upcoming reminders logic
     const upcomingNotifications = [];
     const reminderThresholds = em.getReminderThresholds().slice().sort((a, b) => a - b);
     if (reminderThresholds.length && !em.isQuietHoursNow() && (!em.isNotificationEnabled || em.isNotificationEnabled("reminders"))) {
@@ -387,11 +412,11 @@ em.scanPending = async function () {
     }
 
     em.state.pending = pending;
+    em.state.isScanning = false;
     em.renderPending(pending);
 
     const logMeta = await em.appendLog(pending, knownIds, visiblePending, previousPending);
     
-    // Save notified IDs
     if (upcomingNotifications.length > 0) {
       const notifiedPayload = {};
       notifiedPayload[em.STORAGE_KEYS.NOTIFIED_UPCOMING] = Array.from(em.state.notifiedUpcomingIds);
@@ -458,6 +483,7 @@ em.scanPending = async function () {
 
     await em.syncBadge(visiblePending.length, newTaskCount, currentOverdue.length);
   } catch (err) {
+    scanError = err;
     console.error("[Eminus Pending Panel] Error de lectura");
     if (!navigator.onLine) {
       const snapshot = await em.storageGet([em.STORAGE_KEYS.SNAPSHOT, em.STORAGE_KEYS.PINNED]);
@@ -483,10 +509,10 @@ em.scanPending = async function () {
         em.updateAutoRefreshLabel(em.autoRefreshMinutes);
         const visible = em.getVisiblePending(em.state.pending);
         const overdueCount = visible.filter((item) => item.urgency === "overdue").length;
-        em.setStatus(em.t("offline") + " — " + visible.length + " " + em.t("status_pending") + " " + em.t("status_cache"));
+        em.setStatus(em.t("offline") + ", " + visible.length + " " + em.t("status_pending") + " " + em.t("status_cache"));
         await em.syncBadge(visible.length, 0, overdueCount);
       } else {
-        em.setStatus(em.t("offline") + " — " + em.t("no_cache"));
+        em.setStatus(em.t("offline") + ", " + em.t("no_cache"));
       }
     } else if (em.isUnauthorizedError(err)) {
       em.waitForTokenRefresh(token);
@@ -494,9 +520,13 @@ em.scanPending = async function () {
       em.setStatus(err.message || em.t("error_read"));
     }
   } finally {
+    em.state.isScanning = false;
+    if (em.setScanningUi) em.setScanningUi(false);
     if (em.panelEls && em.panelEls.refreshBtn) {
       em.panelEls.refreshBtn.disabled = false;
     }
-    em.state.isScanning = false;
+    if (scanError && em.renderPending) {
+      em.renderPending(em.state.pending || []);
+    }
   }
 };

@@ -1,7 +1,3 @@
-/* ══════════════════════════════════════════
-   NAVIGATION
-   ══════════════════════════════════════════ */
-
 window.eminus = window.eminus || {};
 
 var em = window.eminus;
@@ -69,7 +65,6 @@ em.clearEminusAppCache = async function () {
         .map((key) => caches.delete(key)));
     }
   } catch (_) {
-    // Best effort only; navigation can still continue.
   }
 
   try {
@@ -80,7 +75,6 @@ em.clearEminusAppCache = async function () {
         .map((registration) => registration.unregister()));
     }
   } catch (_) {
-    // Best effort only; navigation can still continue.
   }
 };
 
@@ -142,6 +136,7 @@ em.ensureIframeLoadsDetail = function (target) {
       }
       if (expired && !done) {
         em.setStatus(em.t("status_nav_error"));
+        em.showToast(em.t("status_nav_error"), "error");
       }
     }
   }, 300);
@@ -167,6 +162,7 @@ em.loadDetailIntoActivityIframeIfNeeded = async function () {
 
   em.clearPendingNavigationTarget();
   em.setStatus(em.t("status_nav_no_iframe"));
+  em.showToast(em.t("status_nav_no_iframe"), "error");
   window.location.assign(em.buildActivityDetailUrl(target.activityId, target.courseId));
 };
 
@@ -211,7 +207,6 @@ em.mergeLayoutNavigation = function (courseId, unitId) {
     };
     localStorage.setItem("layoutConfigNavegation", JSON.stringify(next));
   } catch (_) {
-    // Best effort: Eminus will still open the content route.
   }
 };
 
@@ -221,6 +216,7 @@ em.navigateToContent = async function (item) {
   const unitId = em.normalizeNonNegativeId(item.unitId);
   if (!courseId) {
     em.setStatus(em.t("error_nav_no_id"));
+    em.showToast(em.t("error_nav_no_id"), "error");
     return;
   }
 
@@ -238,6 +234,7 @@ em.downloadContentAttachment = async function (item, attachment) {
   const token = em.getToken();
   if (!courseId || !elementId || !fileId || !token) {
     em.setStatus("No se pudo preparar la descarga.");
+    em.showToast("No se pudo preparar la descarga.", "error");
     return;
   }
 
@@ -271,6 +268,7 @@ em.downloadContentAttachment = async function (item, attachment) {
   } catch (err) {
     console.error("[Eminus Pending] Error al descargar archivo de contenido", err);
     em.setStatus("No se pudo descargar el archivo.");
+    em.showToast("No se pudo descargar el archivo.", "error");
   }
 };
 
@@ -337,4 +335,5 @@ em.navigateToActivity = async function (item) {
     return;
   }
   em.setStatus(em.t("error_nav_no_id"));
+  em.showToast(em.t("error_nav_no_id"), "error");
 };

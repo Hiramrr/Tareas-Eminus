@@ -14,32 +14,56 @@
           <h1>Miyu --pendientes</h1>
           <div class="sync-row">
             <p id="last-sync">Sin lectura guardada</p>
-            <span class="sync-state sync-empty" id="sync-state">sin datos</span>
+            <span class="sync-state sync-empty" id="sync-state">○ sin datos</span>
           </div>
         </div>
       </header>
 
+      <div class="tab-banner" id="tab-banner" role="status" hidden></div>
+
+      <section id="popup-onboarding" class="onboarding hidden" aria-live="polite" hidden>
+        <div class="onboarding-icon" aria-hidden="true">◐</div>
+        <h3 id="onboarding-title">Bienvenido a Miyu</h3>
+        <p id="onboarding-desc"></p>
+        <ol id="onboarding-steps" class="onboarding-steps"></ol>
+        <div class="onboarding-actions">
+          <button class="primary-button" id="onboarding-open" type="button">Abrir Eminus</button>
+          <button class="secondary-button" id="onboarding-refresh" type="button">[ actualizar ahora ]</button>
+        </div>
+        <small class="onboarding-hint" id="onboarding-hint"></small>
+      </section>
+
       <section class="metrics" aria-label="Resumen">
-        <button type="button" data-view="pending"><strong id="pending-count">0</strong><span>pendientes</span></button>
-        <button type="button" data-view="today"><strong id="today-count">0</strong><span>para hoy</span></button>
-        <button type="button" data-view="overdue"><strong id="overdue-count">0</strong><span>vencidas</span></button>
-        <button type="button" data-view="content"><strong id="content-count">0</strong><span>contenido nuevo</span></button>
+        <button type="button" data-view="pending" class="metric-pending">
+          <span class="metric-top"><span class="metric-icon" aria-hidden="true">≡</span><strong id="pending-count">0</strong></span>
+          <span data-i18n="popup_metric_pending">pendientes</span>
+        </button>
+        <button type="button" data-view="today" class="metric-today">
+          <span class="metric-top"><span class="metric-icon" aria-hidden="true">◷</span><strong id="today-count">0</strong></span>
+          <span data-i18n="popup_metric_today">para hoy</span>
+        </button>
+        <button type="button" data-view="overdue" class="metric-overdue">
+          <span class="metric-top"><span class="metric-icon" aria-hidden="true">!</span><strong id="overdue-count">0</strong></span>
+          <span data-i18n="popup_metric_overdue">vencidas</span>
+        </button>
+        <button type="button" data-view="content" class="metric-content">
+          <span class="metric-top"><span class="metric-icon" aria-hidden="true">✉</span><strong id="content-count">0</strong></span>
+          <span data-i18n="popup_metric_content">contenido nuevo</span>
+        </button>
       </section>
 
       <section class="quick-actions">
         <div class="section-heading">
-          <h2>Acciones rápidas</h2>
+          <h2 data-i18n="popup_section_actions">Acciones rápidas</h2>
           <button class="text-button" id="refresh-pending" type="button">[ actualizar ]</button>
         </div>
         <div class="action-grid">
-          <button type="button" data-view="today">Hoy</button>
-          <button type="button" data-view="agenda">Agenda</button>
-          <button type="button" data-view="content">Contenido</button>
+          <button type="button" data-view="agenda" data-i18n="popup_view_agenda">Agenda</button>
         </div>
       </section>
 
       <section class="next">
-        <h2>Próximas entregas</h2>
+        <h2 data-i18n="popup_section_next">Próximas entregas</h2>
         <div id="task-list"></div>
       </section>
 
@@ -48,9 +72,9 @@
       <footer>
         <button class="secondary-button" id="mark-content-read" type="button">Marcar contenido como leído</button>
         <button class="primary-button" id="open-eminus" type="button">Abrir resumen en Eminus</button>
-        <small>La actualización automática necesita una pestaña de Eminus abierta.</small>
       </footer>
     </main>
+    <script src="content/i18n.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>

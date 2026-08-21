@@ -1,11 +1,3 @@
-/* ══════════════════════════════════════════
-   Miyu --pendientes v1.0.0
-   Panel principal — inyectado en eminus.uv.mx/eminus4/*
-
-   La lógica se ha distribuido en módulos
-   con responsabilidades únicas dentro de content/
-   ══════════════════════════════════════════ */
-
 window.eminus = window.eminus || {};
 
 (function () {
@@ -45,7 +37,7 @@ window.eminus = window.eminus || {};
         openPanelView(message.view, message.refresh === true);
         sendResponse({ ok: true });
       } else if (message?.type === "BACKGROUND_REFRESH_PANEL") {
-        em.scanPendingWhenTokenReady();
+        em.scanPendingWhenTokenReady({ silent: message.auto === true });
         sendResponse({ ok: true });
       } else if (message?.type === "SYNC_READ_CONTENT_IDS") {
         em.state.readContentIds = em.normalizeReadContentIds(message.ids);
@@ -67,7 +59,7 @@ window.eminus = window.eminus || {};
   em.hydrateFromStorage().then(async () => {
     await consumePopupTargetView();
     em.loadDetailIntoActivityIframeIfNeeded();
-    em.scanPendingWhenTokenReady();
+    em.scanPendingWhenTokenReady({ silent: true });
   });
 
   document.addEventListener("keydown", (e) => {
@@ -92,17 +84,20 @@ window.eminus = window.eminus || {};
       e.preventDefault();
       if (em.state.isCollapsed) em.toggleCollapse();
       em.setTab("today");
+    } else if (e.key === "?") {
+      e.preventDefault();
+      em.showToast(em.t("shortcuts_help"), "info", { duration: 8000 });
     }
   });
 
   window.addEventListener("online", () => {
     if (em.panelEls?.footer) {
       const offlineLabel = em.t("offline");
-      const regex = new RegExp(`^${offlineLabel}\\s*(—\\s*)?`);
+      const regex = new RegExp(`^${offlineLabel}\\s*(,\\s*)?`);
       const txt = em.panelEls.footer.textContent.replace(regex, "");
       em.panelEls.footer.textContent = txt || em.t("online");
     }
-    em.scanPendingWhenTokenReady();
+    em.scanPendingWhenTokenReady({ silent: true });
   });
 
   window.addEventListener("offline", () => {
