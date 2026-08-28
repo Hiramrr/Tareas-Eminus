@@ -195,9 +195,13 @@
 
 .ep-actions {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   flex: 0 0 auto;
   align-items: center;
+}
+
+.ep-actions .ep-btn {
+  min-height: 26px;
 }
 
 .ep-btn {
@@ -515,6 +519,17 @@
   color: #000;
   font-weight: 700;
   background: #fff;
+}
+
+.ep-task-view-select {
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  min-height: 34px;
+  padding: 0 18px 0 8px;
+  text-align: center;
+  width: 100%;
 }
 
 .ep-filters {
@@ -925,34 +940,6 @@
   opacity: 0.7;
 }
 
-.ep-summary-row {
-  display: flex;
-  gap: 14px;
-  justify-content: space-between;
-}
-
-.ep-summary-row strong {
-  font-size: 12px;
-}
-
-.ep-summary-course {
-  max-width: 52%;
-  text-align: right;
-}
-
-.ep-summary-progress {
-  border: 1px solid currentColor;
-  height: 8px;
-  margin-top: 10px;
-  padding: 1px;
-}
-
-.ep-summary-progress span {
-  background: currentColor;
-  display: block;
-  height: 100%;
-}
-
 .ep-summary-actions,
 .ep-content-toolbar {
   display: flex;
@@ -1201,31 +1188,11 @@
   min-width: 20px;
 }
 
-/* ARCHIVE STACK & BUTTON */
+/* ARCHIVE BUTTON */
 
 .ep-item.ep-archived {
   opacity: 0.75;
   border-style: dashed;
-}
-
-.ep-archive-stack {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ep-archive-stack .ep-btn#ep-collapse {
-  position: relative;
-  z-index: 1;
-}
-
-.ep-archive-stack .ep-archive-btn {
-  position: absolute;
-  top: -16px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
 }
 
 .ep-archive-btn {

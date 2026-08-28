@@ -8,8 +8,6 @@ em.createPanel = function () {
   root.classList.add("ep-collapsed");
 
   const archiveBtnHtml = em.ARCHIVE_BUTTON_HTML;
-  const archiveIconSvg = em.ARCHIVE_ICON_SVG;
-
   root.innerHTML = `
       <header class="ep-header">
         <div class="ep-brand-inline">
@@ -45,22 +43,23 @@ em.createPanel = function () {
           <div class="ep-subtitle" id="ep-subtitle">Sin lectura</div>
         </div>
         <div class="ep-collapsed-summary" id="ep-collapsed-summary"></div>
-        <div class="ep-actions" style="position: relative;">
+        <div class="ep-actions">
           <button class="ep-btn" id="ep-refresh" title="Actualizar">[ actualizar ]</button>
-          <div class="ep-archive-stack">
-            <button class="ep-btn ep-archive-btn" id="ep-archive-toggle" title="Archivadas" aria-label="Archivadas">
-              ${archiveBtnHtml}
-            </button>
-            <button class="ep-btn" id="ep-collapse" title="Plegar">[ plegar ]</button>
-          </div>
+          <button class="ep-btn ep-archive-btn" id="ep-archive-toggle" title="Archivadas" aria-label="Archivadas">
+            ${archiveBtnHtml}
+          </button>
+          <button class="ep-btn" id="ep-collapse" title="Minimizar">[ minimizar ]</button>
         </div>
       </header>
 
       <div class="ep-tabs" role="tablist">
         <button class="ep-tab ep-tab-active" data-tab="summary" role="tab" aria-selected="true">Resumen</button>
-        <button class="ep-tab" data-tab="pending" role="tab" aria-selected="false">Pendientes</button>
-        <button class="ep-tab" data-tab="today" role="tab" aria-selected="false">Hoy</button>
-        <button class="ep-tab" data-tab="overdue" role="tab" aria-selected="false">Vencidas</button>
+        <select class="ep-tab ep-config-select ep-task-view-select" id="ep-task-view" aria-label="Vista de pendientes">
+          <option value="" disabled>Pendientes</option>
+          <option value="pending">Todos</option>
+          <option value="today">Hoy</option>
+          <option value="overdue">Vencidas</option>
+        </select>
         <button class="ep-tab" data-tab="agenda" role="tab" aria-selected="false">Agenda</button>
         <button class="ep-tab" data-tab="content" role="tab" aria-selected="false">Contenido</button>
         <button class="ep-tab" data-tab="log" role="tab" aria-selected="false">Log</button>
@@ -316,28 +315,10 @@ em.createPanel = function () {
         <div class="ep-config-group">
           <label class="ep-config-label">Fuente de la interfaz</label>
           <select class="ep-config-select" id="ep-font">
-            <optgroup label="Coding Fonts (Monospace)">
-              <option value="mono">Default Mono</option>
-              <option value="fira">Fira Code</option>
-              <option value="jetbrains">JetBrains Mono</option>
-              <option value="cascadia">Cascadia Code</option>
-              <option value="hack">Hack Mono</option>
-              <option value="input">Input Mono</option>
-              <option value="dank">Dank Mono</option>
-              <option value="monolisa">MonoLisa</option>
-              <option value="operator">Operator Mono</option>
-              <option value="comic-mono">Comic Mono</option>
-            </optgroup>
-            <optgroup label="Modern Sans">
-              <option value="sans">Inter / Standard Sans</option>
-              <option value="roboto">Roboto</option>
-              <option value="open-sans">Open Sans</option>
-              <option value="montserrat">Montserrat</option>
-            </optgroup>
-            <optgroup label="Other">
-              <option value="serif">Classic Serif</option>
-              <option value="system">System Native</option>
-            </optgroup>
+            <option value="mono">Monoespaciada</option>
+            <option value="sans">Sans serif</option>
+            <option value="serif">Serif</option>
+            <option value="system">Sistema</option>
           </select>
         </div>
         <div class="ep-config-group">
@@ -446,8 +427,10 @@ em.createPanel = function () {
     },
     archiveBtn: root.querySelector("#ep-archive-toggle"),
     collapseBtn: root.querySelector("#ep-collapse"),
-    tabButtons: root.querySelectorAll(".ep-tab"),
+    tabButtons: root.querySelectorAll(".ep-tab[data-tab]"),
+    taskTab: root.querySelector(".ep-task-view-select"),
     filtersWrap: root.querySelector("#ep-filters"),
+    taskViewSelect: root.querySelector("#ep-task-view"),
     filterCompactBtn: root.querySelector("#ep-filter-compact"),
     filterClearBtn: root.querySelector("#ep-filter-clear"),
     filterQuery: root.querySelector("#ep-filter-query"),
@@ -611,6 +594,9 @@ em.createPanel = function () {
   em.panelEls.tabButtons.forEach((btn) => {
     btn.addEventListener("click", () => em.setTab(btn.dataset.tab));
   });
+  em.panelEls.taskViewSelect.addEventListener("change", (event) => {
+    em.setTab(event.target.value);
+  });
   em.panelEls.filterQuery.addEventListener("input", (e) => {
     em.state.filters.query = String(e.target.value || "");
     em.updateFilterClearButton();
@@ -681,6 +667,5 @@ em.createPanel = function () {
   em.updateArchiveToggleButton();
   if (em.applyTranslations) em.applyTranslations();
   em.setupPanelDrag();
-  em.filterAvailableFonts();
   em.updateFilterClearButton();
 };

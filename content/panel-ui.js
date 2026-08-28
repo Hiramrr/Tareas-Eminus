@@ -382,34 +382,21 @@ em.setDeliveryAnimation = async function (animationKey, shouldPersist = true) {
 em.setFont = async function (fontKey) {
   const fonts = {
     mono: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
-    fira: '"Fira Code", "Fira Mono", monospace',
-    jetbrains: '"JetBrains Mono", monospace',
-    cascadia: '"Cascadia Code", "Cascadia Mono", Consolas, monospace',
-    hack: '"Hack", "Hack NF", monospace',
-    input: '"Input Mono", "Input Mono Narrow", monospace',
-    dank: '"Dank Mono", "dm", monospace',
-    monolisa: '"MonoLisa", monospace',
-    operator: '"Operator Mono", "Operator Mono SSm", monospace',
-    'comic-mono': '"Comic Mono", "Comic Sans MS", cursive, monospace',
-    
     sans: 'Inter, system-ui, -apple-system, sans-serif',
-    roboto: '"Roboto", sans-serif',
-    'open-sans': '"Open Sans", sans-serif',
-    montserrat: '"Montserrat", sans-serif',
-
     serif: 'Georgia, Cambria, "Times New Roman", Times, serif',
     system: 'system-ui, sans-serif'
   };
 
-  const family = fonts[fontKey] || fonts.mono;
+  const normalizedKey = Object.prototype.hasOwnProperty.call(fonts, fontKey) ? fontKey : "mono";
+  const family = fonts[normalizedKey];
   em.panelEls.root.style.setProperty("--ep-font-family", family);
   
   if (em.panelEls.fontSelect) {
-    em.panelEls.fontSelect.value = fontKey;
+    em.panelEls.fontSelect.value = normalizedKey;
   }
 
   const payload = {};
-  payload[em.STORAGE_KEYS.FONT] = fontKey;
+  payload[em.STORAGE_KEYS.FONT] = normalizedKey;
   await em.preferencesSet(payload);
 };
 
@@ -450,44 +437,6 @@ em.setLogTabVisible = async function (isVisible) {
   em.updateTabVisibility();
 };
 
-em.filterAvailableFonts = function () {
-  if (!em.panelEls || !em.panelEls.fontSelect) return;
-  const options = em.panelEls.fontSelect.querySelectorAll("option");
-  const fontsToCheck = {
-    fira: "Fira Code",
-    jetbrains: "JetBrains Mono",
-    cascadia: "Cascadia Code",
-    hack: "Hack",
-    input: "Input Mono",
-    dank: "Dank Mono",
-    monolisa: "MonoLisa",
-    operator: "Operator Mono",
-    'comic-mono': "Comic Mono",
-    roboto: "Roboto",
-    'open-sans': "Open Sans",
-    montserrat: "Montserrat"
-  };
-
-  options.forEach((opt) => {
-    const key = opt.value;
-    const fontName = fontsToCheck[key];
-    if (fontName) {
-      if (!em.isFontInstalled(fontName)) {
-        opt.style.display = "none";
-        opt.disabled = true;
-      }
-    }
-  });
-
-  const groups = em.panelEls.fontSelect.querySelectorAll("optgroup");
-  groups.forEach((group) => {
-    const visibleOptions = Array.from(group.querySelectorAll("option")).filter(o => o.style.display !== "none");
-    if (visibleOptions.length === 0) {
-      group.style.display = "none";
-    }
-  });
-};
-
 em.updateArchiveToggleButton = function () {
   if (!em.panelEls || !em.panelEls.archiveBtn) return;
   const label = em.state.isArchiveView ? em.t("archive_back") : em.t("archive_view");
@@ -518,6 +467,7 @@ em.updateTabVisibility = function () {
     em.state.activeTab = "summary";
   }
 
+  const isPendingView = ["pending", "today", "overdue"].includes(em.state.activeTab);
   em.panelEls.tabButtons.forEach((btn) => {
     const isLogTab = btn.dataset.tab === "log";
     const isActiveTab = btn.dataset.tab === em.state.activeTab;
@@ -525,6 +475,12 @@ em.updateTabVisibility = function () {
     btn.classList.toggle("ep-tab-active", isActiveTab);
     btn.setAttribute("aria-selected", String(isActiveTab));
   });
+  if (em.panelEls.taskTab) {
+    em.panelEls.taskTab.classList.toggle("ep-tab-active", isPendingView);
+  }
+  if (em.panelEls.taskViewSelect) {
+    em.panelEls.taskViewSelect.value = isPendingView ? em.state.activeTab : "";
+  }
 
   if (em.state.isArchiveView) {
     em.panelEls.filtersWrap.classList.add("ep-hidden");

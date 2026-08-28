@@ -7,8 +7,8 @@ em.i18n = {
     unread: "Sin lectura",
     refresh: "[ actualizar ]",
     refresh_tooltip: "Actualizar",
-    collapse_tooltip: "Plegar",
-    expand_tooltip: "Desplegar",
+    collapse_tooltip: "Minimizar",
+    expand_tooltip: "Restaurar",
     archive_view: "Archivadas",
     archive_back: "Volver",
     tab_today: "Hoy",
@@ -237,12 +237,12 @@ em.i18n = {
     popup_all_title: "¡Todo al día!",
     popup_all_desc: "No tienes pendientes con fecha. Disfruta el descanso.",
     popup_all_step1: "Revisa <strong>Contenido</strong> por si hay publicaciones nuevas",
-    popup_all_step2: "Usa <kbd>Alt</kbd>+<kbd>E</kbd> para plegar el panel dentro de Eminus",
+    popup_all_step2: "Usa <kbd>Alt</kbd>+<kbd>E</kbd> para minimizar o restaurar el panel dentro de Eminus",
     popup_empty_nodata: "Aún sin datos. Abre Eminus y pulsa <strong>[ actualizar ]</strong>.",
     popup_empty_tip: "<kbd>Alt</kbd>+<kbd>E</kbd> abre el panel dentro de Eminus.",
     popup_empty_nodue: "Sin entregas próximas con fecha.",
-    panel_open_label: "[ abrir ]",
-    panel_fold_label: "[ plegar ]",
+    panel_open_label: "[ restaurar ]",
+    panel_fold_label: "[ minimizar ]",
     undo: "Deshacer",
     urgency_badge_overdue: "vencida",
     urgency_badge_imminent: "&lt;24 h",
@@ -264,8 +264,8 @@ em.i18n = {
     ep_content_empty_desc: "Aparecerá aquí cuando tus cursos publiquen material.",
     ep_content_filtered_title: "Sin contenido con esos filtros",
     ep_content_filtered_desc: "Prueba limpiando los filtros.",
-    shortcuts_hint: "<kbd>Alt</kbd>+<kbd>E</kbd> plega/despliega · <kbd>/</kbd> busca · <kbd>R</kbd> actualiza · <kbd>T</kbd> hoy · <kbd>?</kbd> atajos",
-    shortcuts_help: "Atajos: Alt+E plega/despliega · / busca · R actualiza · T hoy · ? esta ayuda",
+    shortcuts_hint: "<kbd>Alt</kbd>+<kbd>E</kbd> minimiza/restaura · <kbd>/</kbd> busca · <kbd>R</kbd> actualiza · <kbd>T</kbd> hoy · <kbd>?</kbd> atajos",
+    shortcuts_help: "Atajos: Alt+E minimiza/restaura · / busca · R actualiza · T hoy · ? esta ayuda",
     config_clear_data_data: "Borrar datos de lectura",
     config_clear_data_all: "Borrar todo (datos + preferencias)",
     config_clear_confirm_arm: "¿Seguro? Clic de nuevo para confirmar",
@@ -281,8 +281,8 @@ em.i18n = {
     unread: "Unread",
     refresh: "[ refresh ]",
     refresh_tooltip: "Refresh",
-    collapse_tooltip: "Collapse",
-    expand_tooltip: "Expand",
+    collapse_tooltip: "Minimize",
+    expand_tooltip: "Restore",
     archive_view: "Archived",
     archive_back: "Back",
     tab_today: "Today",
@@ -511,12 +511,12 @@ em.i18n = {
     popup_all_title: "All caught up!",
     popup_all_desc: "No upcoming due dates. Enjoy the break.",
     popup_all_step1: "Check <strong>Content</strong> for new posts",
-    popup_all_step2: "Use <kbd>Alt</kbd>+<kbd>E</kbd> to collapse the panel inside Eminus",
+    popup_all_step2: "Use <kbd>Alt</kbd>+<kbd>E</kbd> to minimize or restore the panel inside Eminus",
     popup_empty_nodata: "No data yet. Open Eminus and press <strong>[ refresh ]</strong>.",
     popup_empty_tip: "<kbd>Alt</kbd>+<kbd>E</kbd> opens the panel inside Eminus.",
     popup_empty_nodue: "No upcoming deadlines.",
-    panel_open_label: "[ open ]",
-    panel_fold_label: "[ fold ]",
+    panel_open_label: "[ restore ]",
+    panel_fold_label: "[ minimize ]",
     undo: "Undo",
     urgency_badge_overdue: "overdue",
     urgency_badge_imminent: "&lt;24 h",
@@ -555,8 +555,8 @@ em.i18n = {
     unread: "Non lu",
     refresh: "[ actualiser ]",
     refresh_tooltip: "Actualiser",
-    collapse_tooltip: "Plier",
-    expand_tooltip: "Déployer",
+    collapse_tooltip: "Réduire",
+    expand_tooltip: "Restaurer",
     archive_view: "Archivées",
     archive_back: "Retour",
     tab_pending: "En attente",
@@ -665,8 +665,8 @@ em.i18n = {
     status_completed: "Terminée",
     status_pending_label: "En attente",
     day_0: "Dim", day_1: "Lun", day_2: "Mar", day_3: "Mer", day_4: "Jeu", day_5: "Ven", day_6: "Sam",
-    panel_open_label: "[ ouvrir ]",
-    panel_fold_label: "[ replier ]",
+    panel_open_label: "[ restaurer ]",
+    panel_fold_label: "[ réduire ]",
     undo: "Annuler",
     urgency_badge_overdue: "en retard",
     urgency_badge_imminent: "&lt;24 h",
@@ -701,8 +701,8 @@ em.i18n = {
     unread: "未読",
     refresh: "[ 更新 ]",
     refresh_tooltip: "更新",
-    collapse_tooltip: "折りたたむ",
-    expand_tooltip: "展開する",
+    collapse_tooltip: "最小化",
+    expand_tooltip: "元に戻す",
     archive_view: "アーカイブ",
     archive_back: "戻る",
     tab_pending: "保留中",
@@ -811,8 +811,8 @@ em.i18n = {
     status_completed: "完了済み",
     status_pending_label: "保留中",
     day_0: "日", day_1: "月", day_2: "火", day_3: "水", day_4: "木", day_5: "金", day_6: "土",
-    panel_open_label: "[ 開く ]",
-    panel_fold_label: "[ 閉じる ]",
+    panel_open_label: "[ 元に戻す ]",
+    panel_fold_label: "[ 最小化 ]",
     undo: "元に戻す",
     urgency_badge_overdue: "期限切れ",
     urgency_badge_imminent: "&lt;24時間",
@@ -847,8 +847,8 @@ em.i18n = {
     unread: "읽지 않음",
     refresh: "[ 새로고침 ]",
     refresh_tooltip: "새로고침",
-    collapse_tooltip: "접기",
-    expand_tooltip: "펴기",
+    collapse_tooltip: "최소화",
+    expand_tooltip: "복원",
     archive_view: "보관됨",
     archive_back: "뒤로",
     tab_pending: "대기 중",
@@ -957,8 +957,8 @@ em.i18n = {
     status_completed: "완료됨",
     status_pending_label: "대기 중",
     day_0: "일", day_1: "월", day_2: "화", day_3: "수", day_4: "목", day_5: "금", day_6: "토",
-    panel_open_label: "[ 열기 ]",
-    panel_fold_label: "[ 접기 ]",
+    panel_open_label: "[ 복원 ]",
+    panel_fold_label: "[ 최소화 ]",
     undo: "실행 취소",
     urgency_badge_overdue: "기한 지남",
     urgency_badge_imminent: "&lt;24시간",
@@ -993,8 +993,8 @@ em.i18n = {
     unread: "未读",
     refresh: "[ 刷新 ]",
     refresh_tooltip: "刷新",
-    collapse_tooltip: "收起",
-    expand_tooltip: "展开",
+    collapse_tooltip: "最小化",
+    expand_tooltip: "还原",
     archive_view: "已归档",
     archive_back: "返回",
     tab_pending: "待办",
@@ -1104,8 +1104,8 @@ em.i18n = {
     status_completed: "已完成",
     status_pending_label: "待办",
     day_0: "日", day_1: "一", day_2: "二", day_3: "三", day_4: "四", day_5: "五", day_6: "六",
-    panel_open_label: "[ 展开 ]",
-    panel_fold_label: "[ 折叠 ]",
+    panel_open_label: "[ 还原 ]",
+    panel_fold_label: "[ 最小化 ]",
     undo: "撤销",
     urgency_badge_overdue: "已过期",
     urgency_badge_imminent: "&lt;24小时",
@@ -1139,17 +1139,13 @@ em.i18n = {
 
 Object.assign(em.i18n.es, {
   tab_summary: "Resumen",
+  task_view_all: "Todos",
   summary_pending: "pendientes",
   summary_overdue: "vencidas",
   summary_today: "para hoy",
   summary_unread_content: "contenido nuevo",
   summary_next_task: "Siguiente entrega",
   summary_no_next: "Sin entregas próximas.",
-  summary_week_load: "Próximos 7 días",
-  summary_deliveries: "entregas",
-  summary_busiest_course: "Materia con más carga",
-  summary_none: "sin pendientes",
-  summary_open_today: "[ ver hoy ]",
   summary_open_agenda: "[ ver agenda ]",
   summary_open_content: "[ ver contenido ]",
   content_unread: "Sin leer",
@@ -1175,17 +1171,13 @@ Object.assign(em.i18n.es, {
 
 Object.assign(em.i18n.en, {
   tab_summary: "Summary",
+  task_view_all: "All",
   summary_pending: "pending",
   summary_overdue: "overdue",
   summary_today: "due today",
   summary_unread_content: "new content",
   summary_next_task: "Next due",
   summary_no_next: "No upcoming tasks.",
-  summary_week_load: "Next 7 days",
-  summary_deliveries: "tasks",
-  summary_busiest_course: "Busiest course",
-  summary_none: "no pending tasks",
-  summary_open_today: "[ open today ]",
   summary_open_agenda: "[ open agenda ]",
   summary_open_content: "[ open content ]",
   content_unread: "Unread",
@@ -1211,17 +1203,13 @@ Object.assign(em.i18n.en, {
 
 Object.assign(em.i18n.fr, {
   tab_summary: "Résumé",
+  task_view_all: "Toutes",
   summary_pending: "en attente",
   summary_overdue: "en retard",
   summary_today: "pour aujourd'hui",
   summary_unread_content: "nouveau contenu",
   summary_next_task: "Prochaine échéance",
   summary_no_next: "Aucune échéance à venir.",
-  summary_week_load: "Charge des 7 prochains jours",
-  summary_deliveries: "travaux",
-  summary_busiest_course: "Cours le plus chargé",
-  summary_none: "aucun travail",
-  summary_open_today: "[ ouvrir aujourd'hui ]",
   summary_open_agenda: "[ ouvrir agenda ]",
   summary_open_content: "[ ouvrir contenu ]",
   content_unread: "Contenu non lu",
@@ -1247,17 +1235,13 @@ Object.assign(em.i18n.fr, {
 
 Object.assign(em.i18n.ja, {
   tab_summary: "概要",
+  task_view_all: "すべて",
   summary_pending: "未提出",
   summary_overdue: "期限切れ",
   summary_today: "本日締切",
   summary_unread_content: "新着コンテンツ",
   summary_next_task: "次の締切",
   summary_no_next: "日付付きの予定はありません。",
-  summary_week_load: "今後7日間の課題",
-  summary_deliveries: "件",
-  summary_busiest_course: "課題が多い科目",
-  summary_none: "課題なし",
-  summary_open_today: "[ 今日を開く ]",
   summary_open_agenda: "[ 予定を開く ]",
   summary_open_content: "[ コンテンツを開く ]",
   content_unread: "未読コンテンツ",
@@ -1283,17 +1267,13 @@ Object.assign(em.i18n.ja, {
 
 Object.assign(em.i18n.ko, {
   tab_summary: "요약",
+  task_view_all: "전체",
   summary_pending: "할 일",
   summary_overdue: "기한 초과",
   summary_today: "오늘 마감",
   summary_unread_content: "새 콘텐츠",
   summary_next_task: "다음 마감",
   summary_no_next: "예정된 마감이 없습니다.",
-  summary_week_load: "향후 7일 일정",
-  summary_deliveries: "개",
-  summary_busiest_course: "과제가 많은 강의",
-  summary_none: "할 일 없음",
-  summary_open_today: "[ 오늘 열기 ]",
   summary_open_agenda: "[ 일정 열기 ]",
   summary_open_content: "[ 콘텐츠 열기 ]",
   content_unread: "읽지 않은 콘텐츠",
@@ -1319,17 +1299,13 @@ Object.assign(em.i18n.ko, {
 
 Object.assign(em.i18n.zh, {
   tab_summary: "摘要",
+  task_view_all: "全部",
   summary_pending: "待办",
   summary_overdue: "已逾期",
   summary_today: "今日截止",
   summary_unread_content: "新内容",
   summary_next_task: "下一个截止日期",
   summary_no_next: "没有即将截止的任务。",
-  summary_week_load: "未来7天任务量",
-  summary_deliveries: "项",
-  summary_busiest_course: "任务最多的课程",
-  summary_none: "无待办",
-  summary_open_today: "[ 打开今天 ]",
   summary_open_agenda: "[ 打开日程 ]",
   summary_open_content: "[ 打开内容 ]",
   content_unread: "未读内容",
@@ -1385,12 +1361,6 @@ em.applyTranslations = function() {
 
   const tabSummary = els.root.querySelector('[data-tab="summary"]');
   if (tabSummary) tabSummary.textContent = em.t('tab_summary');
-  const tabToday = els.root.querySelector('[data-tab="today"]');
-  if (tabToday) tabToday.textContent = em.t('tab_today');
-  const tabPending = els.root.querySelector('[data-tab="pending"]');
-  if (tabPending) tabPending.textContent = em.t('tab_pending');
-  const tabOverdue = els.root.querySelector('[data-tab="overdue"]');
-  if (tabOverdue) tabOverdue.textContent = em.t('tab_overdue');
   const tabAgenda = els.root.querySelector('[data-tab="agenda"]');
   if (tabAgenda) tabAgenda.textContent = em.t('tab_agenda');
   const tabContent = els.root.querySelector('[data-tab="content"]');
@@ -1399,7 +1369,13 @@ em.applyTranslations = function() {
   if (tabLog) tabLog.textContent = em.t('tab_log');
   const tabConfig = els.root.querySelector('[data-tab="config"]');
   if (tabConfig) tabConfig.textContent = em.t('tab_config');
-
+  if (els.taskViewSelect && els.taskViewSelect.options.length >= 4) {
+    els.taskViewSelect.setAttribute('aria-label', em.t('tab_pending'));
+    els.taskViewSelect.options[0].textContent = em.t('tab_pending');
+    els.taskViewSelect.options[1].textContent = em.t('task_view_all');
+    els.taskViewSelect.options[2].textContent = em.t('tab_today');
+    els.taskViewSelect.options[3].textContent = em.t('tab_overdue');
+  }
   if (els.themeLabel) els.themeLabel.textContent = em.t('theme_label');
   if (els.configDailySummary) els.configDailySummary.textContent = em.t("config_daily");
   if (els.configPersonalSummary) els.configPersonalSummary.textContent = em.t("config_personal");

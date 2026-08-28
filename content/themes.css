@@ -2345,10 +2345,6 @@
   gap: 14px;
 }
 
-#eminus-pending-panel.ep-minimal-theme .ep-archive-stack .ep-archive-btn {
-  top: -8px; /* Slightly higher to avoid overlap */
-}
-
 #eminus-pending-panel.ep-minimal-theme .ep-btn:hover {
   background: #f0f0f0;
   color: #000 !important;

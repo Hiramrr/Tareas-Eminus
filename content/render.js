@@ -144,26 +144,16 @@ em.renderSummary = function (items) {
 
   const activities = em.getVisiblePending(items);
   const now = new Date();
-  const weekEnd = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   const overdue = activities.filter((item) => item.urgency === "overdue");
   const dueToday = activities.filter((item) => {
     if (!item.deadlineRaw) return false;
     const deadline = new Date(item.deadlineRaw);
     return !Number.isNaN(deadline.getTime()) && em.isSameDay(deadline, now);
   });
-  const weekItems = activities.filter((item) => {
-    if (!item.deadlineRaw) return false;
-    const deadline = new Date(item.deadlineRaw);
-    return !Number.isNaN(deadline.getTime()) && deadline >= now && deadline < weekEnd;
-  });
   const next = activities
     .filter((item) => item.deadlineRaw && new Date(item.deadlineRaw).getTime() >= now.getTime())
     .sort(em.compareDeadlines)[0];
   const unreadContent = em.getUnreadContentCount ? em.getUnreadContentCount(items) : 0;
-  const courseCounts = new Map();
-  activities.forEach((item) => courseCounts.set(item.course, (courseCounts.get(item.course) || 0) + 1));
-  const busiestCourse = Array.from(courseCounts.entries()).sort((a, b) => b[1] - a[1])[0];
-  const weekPercent = activities.length ? Math.min(100, Math.round((weekItems.length / activities.length) * 100)) : 0;
   const nextIndex = next ? items.indexOf(next) : -1;
 
   const summaryHtml = `
@@ -191,23 +181,8 @@ em.renderSummary = function (items) {
         </button>
       ` : `<div class="ep-summary-empty">${em.escapeHtml(em.t("summary_no_next"))}</div>`}
     </section>
-    <section class="ep-summary-section">
-      <div class="ep-summary-row">
-        <div>
-          <div class="ep-summary-label">${em.escapeHtml(em.t("summary_week_load"))}</div>
-          <strong>${weekItems.length} ${em.escapeHtml(em.t("summary_deliveries"))}</strong>
-        </div>
-        <div class="ep-summary-course">
-          <div class="ep-summary-label">${em.escapeHtml(em.t("summary_busiest_course"))}</div>
-          <strong>${busiestCourse ? em.escapeHtml(busiestCourse[0]) + " · " + busiestCourse[1] : em.escapeHtml(em.t("summary_none"))}</strong>
-        </div>
-      </div>
-      <div class="ep-summary-progress"><span style="width:${weekPercent}%"></span></div>
-    </section>
     <div class="ep-summary-actions">
-      <button class="ep-mini-btn" type="button" data-summary-tab="today">${em.escapeHtml(em.t("summary_open_today"))}</button>
       <button class="ep-mini-btn" type="button" data-summary-tab="agenda">${em.escapeHtml(em.t("summary_open_agenda"))}</button>
-      <button class="ep-mini-btn" type="button" data-summary-tab="content">${em.escapeHtml(em.t("summary_open_content"))}</button>
     </div>
   `;
   em.renderSetHtml(em.panelEls.summaryBody, summaryHtml);

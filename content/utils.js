@@ -247,36 +247,3 @@ em.setsEqual = function (a, b) {
   }
   return true;
 };
-
-em.isFontInstalled = function (fontName) {
-  try {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return true; // Asumimos true si no hay canvas
-    
-    const text = "abcdefghijklmnopqrstuvwxyz0123456789";
-    const size = "72px";
-    
-    ctx.font = size + " monospace";
-    const monoWidth = ctx.measureText(text).width;
-    
-    ctx.font = size + " sans-serif";
-    const sansWidth = ctx.measureText(text).width;
-    
-    ctx.font = size + " serif";
-    const serifWidth = ctx.measureText(text).width;
-    
-    ctx.font = size + " '" + fontName + "', monospace";
-    const testMonoWidth = ctx.measureText(text).width;
-    
-    ctx.font = size + " '" + fontName + "', sans-serif";
-    const testSansWidth = ctx.measureText(text).width;
-    
-    ctx.font = size + " '" + fontName + "', serif";
-    const testSerifWidth = ctx.measureText(text).width;
-    
-    return monoWidth !== testMonoWidth || sansWidth !== testSansWidth || serifWidth !== testSerifWidth;
-  } catch (e) {
-    return true; // Ante la duda, no ocultamos
-  }
-};
