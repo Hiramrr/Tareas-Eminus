@@ -60,7 +60,6 @@ em.state = {
 em.routeObserverStarted = false;
 em.detailForceTimer = null;
 em.dragState = null;
-em.autoRefreshTimer = null;
 em.autoRefreshMinutes = 0;
 em.panelEls = null;
 em.panelUiStatePersistTimer = null;

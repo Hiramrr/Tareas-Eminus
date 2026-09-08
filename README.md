@@ -22,13 +22,15 @@ Funciones:
 | Archivo | Descripción |
 |---------|-------------|
 | `manifest.json` | Configuración de la extensión |
-| `content.js` | Panel flotante y consumo de API |
+| `content.js` | Arranque del panel: mensajes, atajos y eventos globales |
+| `content/` | Módulos del panel (API, render, estado, temas, i18n, etc.) |
 | `styles.css` | Estilos del panel |
-| `service-worker.js` | Badge y proxy de API |
-| `popup.html` | Resumen del icono |
-| `detail-nav.js` | Botón volver en detalle |
-| `detail-nav.css` | Estilos del botón |
+| `content/themes.css` | Temas de color del panel |
+| `service-worker.js` | Badge, notificaciones, alarmas y proxy de API |
+| `popup.html` / `popup.js` / `popup.css` | Resumen al pulsar el icono |
+| `detail-nav.js` / `detail-nav.css` | Botón volver en el detalle de actividad |
 | `logo.png` | Icono |
+| `jazmin.png` | Fondo decorativo del tema Jazmín |
 
 ## Instalación (modo desarrollador)
 

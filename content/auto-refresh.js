@@ -3,10 +3,6 @@ window.eminus = window.eminus || {};
 var em = window.eminus;
 
 em.startAutoRefresh = function (minutes) {
-  if (em.autoRefreshTimer) {
-    window.clearInterval(em.autoRefreshTimer);
-    em.autoRefreshTimer = null;
-  }
   if (!minutes || minutes <= 0) return;
   em.autoRefreshMinutes = minutes;
   em.syncAutoRefreshAlarm(minutes);
@@ -18,10 +14,6 @@ em.startAutoRefresh = function (minutes) {
 };
 
 em.stopAutoRefresh = function () {
-  if (em.autoRefreshTimer) {
-    window.clearInterval(em.autoRefreshTimer);
-    em.autoRefreshTimer = null;
-  }
   em.autoRefreshMinutes = 0;
   em.syncAutoRefreshAlarm(0);
   if (em.panelEls && em.panelEls.autoRefreshSelect) {
