@@ -18,6 +18,7 @@
         "content/utils.js",
         "content/auth.js",
         "content/constants.js",
+        "content/themes-data.js",
         "content/storage.js",
         "content/i18n.js",
         "content/state.js",

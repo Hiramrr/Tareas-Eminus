@@ -181,32 +181,10 @@ em.toggleFiltersCompact = function () {
   em.setFiltersCompact(em.state.isFiltersCompact);
 };
 
-em.PANEL_THEME_CLASSES = [
-  "ep-dark-theme",
-  "ep-hacker-theme",
-  "ep-ocean-theme",
-  "ep-dracula-theme",
-  "ep-nord-theme",
-  "ep-solarized-theme",
-  "ep-solarizedlight-theme",
-  "ep-gruvbox-theme",
-  "ep-sakura-theme",
-  "ep-lavender-theme",
-  "ep-rosa-theme",
-  "ep-sandia-theme",
-  "ep-matcha-theme",
-  "ep-moka-theme",
-  "ep-jazmin-theme",
-  "ep-candy-theme",
-  "ep-aurora-theme",
-  "ep-synthwave-theme",
-  "ep-minimal-theme",
-  "ep-wispr-theme",
-  "ep-solarized-osaka-theme",
-  "ep-olivia-theme",
-  "ep-codex-theme",
-  "ep-custom-theme"
-];
+em.PANEL_THEME_CLASSES = em.THEMES
+  .filter((theme) => theme.id !== "light")
+  .map((theme) => "ep-" + theme.id + "-theme")
+  .concat("ep-custom-theme");
 
 em.DEFAULT_CUSTOM_THEME = {
   bg: "#ffffff",
@@ -216,33 +194,6 @@ em.DEFAULT_CUSTOM_THEME = {
   overdue: "#e74c3c",
   imminent: "#f1c40f",
   urgent: "#e67e22"
-};
-
-em.CUSTOM_THEME_PRESETS = {
-  light: { bg: "#ffffff", text: "#000000", border: "#000000", accent: "#000000", overdue: "#c0392b", imminent: "#f1c40f", urgent: "#e67e22" },
-  jazmin: { bg: "#fffdf5", text: "#3d3a28", border: "#ddd8c0", accent: "#6a8a50", overdue: "#c06850", imminent: "#b8a030", urgent: "#6a8a50" },
-  dark: { bg: "#121212", text: "#e0e0e0", border: "#444444", accent: "#e0e0e0", overdue: "#ff6b6b", imminent: "#f6e58d", urgent: "#a3e635" },
-  hacker: { bg: "#000000", text: "#00ff00", border: "#00ff00", accent: "#00ff00", overdue: "#ff0000", imminent: "#ffff00", urgent: "#ccff00" },
-  ocean: { bg: "#0f172a", text: "#38bdf8", border: "#1e293b", accent: "#38bdf8", overdue: "#f43f5e", imminent: "#eab308", urgent: "#a3e635" },
-  dracula: { bg: "#282a36", text: "#f8f8f2", border: "#44475a", accent: "#f8f8f2", overdue: "#ff5555", imminent: "#f1fa8c", urgent: "#50fa7b" },
-  nord: { bg: "#2E3440", text: "#D8DEE9", border: "#4C566A", accent: "#D8DEE9", overdue: "#bf616a", imminent: "#ebcb8b", urgent: "#a3be8c" },
-  solarized: { bg: "#002b36", text: "#839496", border: "#073642", accent: "#839496", overdue: "#dc322f", imminent: "#b58900", urgent: "#859900" },
-  solarizedlight: { bg: "#fdf6e3", text: "#586e75", border: "#eee8d5", accent: "#586e75", overdue: "#dc322f", imminent: "#b58900", urgent: "#859900" },
-  gruvbox: { bg: "#282828", text: "#ebdbb2", border: "#504945", accent: "#ebdbb2", overdue: "#cc241d", imminent: "#d79921", urgent: "#98971a" },
-  sakura: { bg: "#1a1225", text: "#f0d0e0", border: "#3d2a4a", accent: "#f8a4c8", overdue: "#e84a6f", imminent: "#f0c060", urgent: "#88c890" },
-  lavender: { bg: "#f5f0fa", text: "#2d2049", border: "#c9b8e8", accent: "#7c5cbf", overdue: "#c0392b", imminent: "#d4a017", urgent: "#4a8c4a" },
-  rosa: { bg: "#fff5f7", text: "#4a1028", border: "#f0c0cf", accent: "#e85080", overdue: "#c0392b", imminent: "#d4a017", urgent: "#4a8c4a" },
-  sandia: { bg: "#1a3a1a", text: "#f0c8c8", border: "#2d5a2d", accent: "#c0392b", overdue: "#e74c3c", imminent: "#f0c040", urgent: "#50d050" },
-  matcha: { bg: "#f4f1e8", text: "#2c3e2c", border: "#b8c9a8", accent: "#5a7a4a", overdue: "#b04040", imminent: "#b89030", urgent: "#5a8a3a" },
-  moka: { bg: "#3e2723", text: "#f8c0d0", border: "#6d4c41", accent: "#f48fb1", overdue: "#ef5350", imminent: "#fdd835", urgent: "#66bb6a" },
-  candy: { bg: "#fdf0f8", text: "#3a2050", border: "#e8b8d0", accent: "#80b8f0", overdue: "#e86080", imminent: "#e0a040", urgent: "#60b080" },
-  aurora: { bg: "#0a0e1a", text: "#e4e8f0", border: "#1e293b", accent: "#34d399", overdue: "#ef4444", imminent: "#f59e0b", urgent: "#34d399" },
-  synthwave: { bg: "#1a1b26", text: "#c0caf5", border: "#24283b", accent: "#7aa2f7", overdue: "#f7768e", imminent: "#e0af68", urgent: "#9ece6a" },
-  minimal: { bg: "#ffffff", text: "#1a1a1a", border: "#f0f0f0", accent: "#f0f0f0", overdue: "#ff4d4f", imminent: "#ffc53d", urgent: "#73d13d" },
-  wispr: { bg: "#fbfaf3", text: "#1a1a1a", border: "#e5e4da", accent: "#1a342d", overdue: "#ff4d4f", imminent: "#ffc53d", urgent: "#73d13d" },
-  "solarized-osaka": { bg: "#001f27", text: "#fdf6e3", border: "#073642", accent: "#2aa198", overdue: "#dc322f", imminent: "#b58900", urgent: "#859900" },
-  olivia: { bg: "#1c1b1a", text: "#f7f0e6", border: "#3d3330", accent: "#cba694", overdue: "#c05858", imminent: "#c0a058", urgent: "#72c058" },
-  codex: { bg: "#0d1117", text: "#d7e0ea", border: "#2a3441", accent: "#42d392", overdue: "#ff6b6b", imminent: "#ffd166", urgent: "#4cc9f0" }
 };
 
 em.setTheme = async function (themeName) {
@@ -271,7 +222,7 @@ em.updateActiveThemeChip = function (themeName) {
   if (!em.panelEls || !em.panelEls.themeChips) return;
   const presetBg = themeName === "custom"
     ? em.state?.customTheme?.bg
-    : em.CUSTOM_THEME_PRESETS?.[themeName]?.bg;
+    : em.THEME_PRESETS?.[themeName]?.bg;
   const dark = em.isDarkColor(presetBg);
   em.panelEls.root.style.setProperty("--ep-chip-active-bg", dark ? "#ffffff" : "#000000");
   em.panelEls.root.style.setProperty("--ep-chip-active-fg", dark ? "#000000" : "#ffffff");
@@ -338,7 +289,7 @@ em.updateCustomThemeFromInputs = async function (activateTheme) {
 };
 
 em.setCustomThemeFromBase = async function (themeName) {
-  const preset = em.CUSTOM_THEME_PRESETS[themeName];
+  const preset = em.THEME_PRESETS[themeName];
   if (!preset) return;
   em.applyCustomTheme(preset);
   const payload = {};

@@ -8,6 +8,12 @@ em.createPanel = function () {
   root.classList.add("ep-collapsed");
 
   const archiveBtnHtml = em.ARCHIVE_BUTTON_HTML;
+  const themeChipsHtml = em.THEMES
+    .map((theme) => `<button class="ep-theme-chip" data-theme="${theme.id}" aria-pressed="false">${theme.label}</button>`)
+    .join("\n            ");
+  const themeOptionsHtml = em.THEMES
+    .map((theme) => `<option value="${theme.id}">${theme.label}</option>`)
+    .join("\n              ");
   root.innerHTML = `
       <header class="ep-header">
         <div class="ep-brand-inline">
@@ -174,30 +180,7 @@ em.createPanel = function () {
         <div class="ep-config-group">
           <label class="ep-config-label" id="ep-theme-label">Tema del panel</label>
           <div class="ep-theme-grid">
-            <button class="ep-theme-chip" data-theme="light" aria-pressed="false">Light</button>
-            <button class="ep-theme-chip" data-theme="jazmin" aria-pressed="false">Jazmín</button>
-            <button class="ep-theme-chip" data-theme="dark" aria-pressed="false">Dark</button>
-            <button class="ep-theme-chip" data-theme="hacker" aria-pressed="false">Hacker</button>
-            <button class="ep-theme-chip" data-theme="ocean" aria-pressed="false">Ocean</button>
-            <button class="ep-theme-chip" data-theme="dracula" aria-pressed="false">Dracula</button>
-            <button class="ep-theme-chip" data-theme="nord" aria-pressed="false">Nord</button>
-            <button class="ep-theme-chip" data-theme="solarized" aria-pressed="false">Solarized</button>
-            <button class="ep-theme-chip" data-theme="solarizedlight" aria-pressed="false">Solarized Light</button>
-            <button class="ep-theme-chip" data-theme="gruvbox" aria-pressed="false">Gruvbox</button>
-            <button class="ep-theme-chip" data-theme="sakura" aria-pressed="false">Sakura</button>
-            <button class="ep-theme-chip" data-theme="lavender" aria-pressed="false">Lavender</button>
-            <button class="ep-theme-chip" data-theme="rosa" aria-pressed="false">Rosa</button>
-            <button class="ep-theme-chip" data-theme="sandia" aria-pressed="false">Sandia</button>
-            <button class="ep-theme-chip" data-theme="matcha" aria-pressed="false">Matcha</button>
-            <button class="ep-theme-chip" data-theme="moka" aria-pressed="false">Moka</button>
-            <button class="ep-theme-chip" data-theme="candy" aria-pressed="false">Candy</button>
-            <button class="ep-theme-chip" data-theme="aurora" aria-pressed="false">Aurora</button>
-            <button class="ep-theme-chip" data-theme="synthwave" aria-pressed="false">Synthwave</button>
-            <button class="ep-theme-chip" data-theme="minimal" aria-pressed="false">Minimal</button>
-            <button class="ep-theme-chip" data-theme="wispr" aria-pressed="false">Wispr</button>
-            <button class="ep-theme-chip" data-theme="solarized-osaka" aria-pressed="false">Solarized Osaka</button>
-            <button class="ep-theme-chip" data-theme="olivia" aria-pressed="false">Olivia</button>
-            <button class="ep-theme-chip" data-theme="codex" aria-pressed="false">Codex</button>
+            ${themeChipsHtml}
             <button class="ep-theme-chip" data-theme="custom" aria-pressed="false">Personalizado</button>
           </div>
         </div>
@@ -208,30 +191,7 @@ em.createPanel = function () {
             <label class="ep-custom-base-label" for="ep-custom-base-theme">Tomar como base</label>
             <select class="ep-config-select" id="ep-custom-base-theme">
               <option value="">elige un tema...</option>
-              <option value="light">Light</option>
-              <option value="jazmin">Jazmín</option>
-              <option value="dark">Dark</option>
-              <option value="hacker">Hacker</option>
-              <option value="ocean">Ocean</option>
-              <option value="dracula">Dracula</option>
-              <option value="nord">Nord</option>
-              <option value="solarized">Solarized</option>
-              <option value="solarizedlight">Solarized Light</option>
-              <option value="gruvbox">Gruvbox</option>
-              <option value="sakura">Sakura</option>
-              <option value="lavender">Lavender</option>
-              <option value="rosa">Rosa</option>
-              <option value="sandia">Sandia</option>
-              <option value="matcha">Matcha</option>
-              <option value="moka">Moka</option>
-              <option value="candy">Candy</option>
-              <option value="aurora">Aurora</option>
-              <option value="synthwave">Synthwave</option>
-              <option value="minimal">Minimal</option>
-              <option value="wispr">Wispr</option>
-              <option value="solarized-osaka">Solarized Osaka</option>
-              <option value="olivia">Olivia</option>
-              <option value="codex">Codex</option>
+              ${themeOptionsHtml}
             </select>
           </div>
           <div class="ep-custom-theme-grid">
