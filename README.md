@@ -50,6 +50,10 @@ Funciones:
 7. `Alt+E` pliega y despliega el panel
 8. `/` busca, `R` actualiza y `T` abre Hoy
 
+## Desarrollo
+
+- `node scripts/check-i18n.js` verifica que los 6 idiomas tengan las mismas claves que `es` y que el código no use claves inexistentes. Córrelo tras tocar `content/i18n.js` o textos de la interfaz.
+
 ## Notas
 
 - Usa el `accessToken` de tu sesión en Eminus.
