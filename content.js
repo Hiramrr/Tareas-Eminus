@@ -87,8 +87,31 @@ window.eminus = window.eminus || {};
     } else if (e.key === "?") {
       e.preventDefault();
       em.showToast(em.t("shortcuts_help"), "info", { duration: 8000 });
+    } else {
+      const tabByDigit = { 1: "summary", 2: "pending", 3: "today", 4: "overdue", 5: "agenda", 6: "content", 7: "config" };
+      const targetTab = tabByDigit[e.key];
+      if (targetTab) {
+        e.preventDefault();
+        if (em.state.isArchiveView && em.setArchiveView) em.setArchiveView(false);
+        if (em.state.isCollapsed) em.toggleCollapse();
+        em.setTab(targetTab);
+      }
     }
   });
+
+  // Tick de 60 s: los "(en 2h 05m)" y la urgencia (inminente/vencida) se
+  // calculan al renderizar, así que con el panel abierto mucho tiempo
+  // envejecen. Re-renderiza y, si alguna urgencia cambió, sincroniza el badge.
+  window.setInterval(() => {
+    if (document.hidden || em.state.isScanning) return;
+    const urgencyChanged = em.refreshUrgencies ? em.refreshUrgencies() : false;
+    em.renderPending(em.state.pending || []);
+    if (urgencyChanged) {
+      const visible = em.getVisiblePending(em.state.pending || []);
+      const overdueCount = visible.filter((item) => item.urgency === "overdue").length;
+      em.syncBadge(visible.length, 0, overdueCount);
+    }
+  }, 60000);
 
   window.addEventListener("online", () => {
     if (em.panelEls?.footer) {

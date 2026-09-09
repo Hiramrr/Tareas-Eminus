@@ -86,7 +86,8 @@ em.notifyUser = async function (title, body, target, options) {
       body,
       target: target || null,
       snoozeMinutes: Number(options?.snoozeMinutes || 0),
-      snoozeLabel: String(options?.snoozeLabel || "")
+      snoozeLabel: String(options?.snoozeLabel || ""),
+      snoozeTomorrowLabel: String(options?.snoozeTomorrowLabel || "")
     });
   } catch (_) {
     console.debug("No se pudo enviar notificación");

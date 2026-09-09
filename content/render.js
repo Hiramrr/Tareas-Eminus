@@ -61,6 +61,9 @@ em.ensureContainerDelegation = function (container) {
       }
     } else if (action === "unarchive") {
       await em.unarchiveItemByIndex(index);
+    } else if (action === "export-ics") {
+      const item = findItemByIndex(index);
+      if (item && em.exportItemCalendar) em.exportItemCalendar(item);
     } else if (action === "pin") {
       await em.pinItemByIndex(index);
     } else if (action === "unpin") {
@@ -454,7 +457,10 @@ em.renderPending = function (items) {
         const actionHtml = actionConfig
           ? `<button class="ep-mini-btn" type="button" data-action="${actionConfig.action}" data-item-index="${originalIndex}">${em.escapeHtml(actionConfig.label)}</button>`
           : "";
-        const buttonsHtml = [pinHtml, actionHtml].filter(Boolean).join("");
+        const icsHtml = showPin && item.kind !== "content" && item.deadlineRaw
+          ? `<button class="ep-mini-btn ep-ics-btn" type="button" data-action="export-ics" data-item-index="${originalIndex}" title="${em.escapeHtml(em.t("action_export_task"))}">.ics</button>`
+          : "";
+        const buttonsHtml = [pinHtml, icsHtml, actionHtml].filter(Boolean).join("");
         const contentParts = [];
         if (item.kind === "content") {
           contentParts.push(item.contentTypeLabel || em.t("content_label"));
@@ -664,6 +670,7 @@ em.renderPending = function (items) {
   if (em.updateCollapsedSummary) em.updateCollapsedSummary();
   if (em.updateFilterClearButton) em.updateFilterClearButton();
   if (em.updateBulkActionButtons) em.updateBulkActionButtons();
+  if (em.updateTabCounters) em.updateTabCounters();
   if (em.renderCoursePreferences) em.renderCoursePreferences();
 };
 

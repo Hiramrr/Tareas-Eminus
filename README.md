@@ -8,8 +8,9 @@ Funciones:
 - Historial de revisiones
 - Animación al entregar tarea
 - Resumen, filtros y notificaciones que abren la tarea
-- Vista Hoy, orden configurable y exportación a .ics
-- Recordatorios escalonados con horas silenciosas y opción de posponer 1 h
+- Vista Hoy, orden configurable y exportación a .ics (semana completa o tarea suelta)
+- Recordatorios escalonados con horas silenciosas y opción de posponer 1 h o hasta mañana
+- Contadores en las pestañas (pendientes, hoy, vencidas y contenido sin leer)
 - Perfil con apodo, nombre del panel, símbolo y mensaje al terminar
 - Avisos por tipo: tareas, contenido, vencimientos y recordatorios
 - Preferencias sincronizadas entre navegadores con respaldo local
@@ -48,7 +49,7 @@ Funciones:
 5. Usa `[ actualizar ]` para refrescar
 6. En `Historial` ves los cambios
 7. `Alt+E` pliega y despliega el panel
-8. `/` busca, `R` actualiza y `T` abre Hoy
+8. `/` busca, `Esc` limpia la búsqueda, `R` actualiza, `T` abre Hoy y `1`-`7` cambian de pestaña
 
 ## Desarrollo
 

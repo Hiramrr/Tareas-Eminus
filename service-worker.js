@@ -77,7 +77,8 @@ async function storeNotificationTarget(notificationId, target, options) {
       title: String(options?.title || "Eminus"),
       body: String(options?.body || ""),
       snoozeMinutes: snoozeMinutes > 0 ? snoozeMinutes : 0,
-      snoozeLabel: String(options?.snoozeLabel || "Posponer")
+      snoozeLabel: String(options?.snoozeLabel || "Posponer"),
+      snoozeTomorrowLabel: String(options?.snoozeTomorrowLabel || "")
     }]])
   });
 }
@@ -111,12 +112,29 @@ chrome.notifications.onClosed.addListener((notificationId) => {
   removeNotificationTarget(notificationId).catch(() => {});
 });
 
+// Minutos hasta mañana a las 08:00 locales, para el botón "Hasta mañana".
+function minutesUntilTomorrowMorning() {
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 8, 0, 0, 0);
+  return Math.max(1, Math.round((next.getTime() - now.getTime()) / 60000));
+}
+
+function buildSnoozeButtons(metadata) {
+  const buttons = [{ title: String(metadata?.snoozeLabel || "Posponer") }];
+  if (metadata?.snoozeTomorrowLabel) {
+    buttons.push({ title: String(metadata.snoozeTomorrowLabel) });
+  }
+  return buttons;
+}
+
 chrome.notifications.onButtonClicked.addListener(async (notificationId, buttonIndex) => {
-  if (buttonIndex !== 0) return;
+  if (buttonIndex !== 0 && buttonIndex !== 1) return;
   try {
     const data = await chrome.storage.local.get([NOTIFICATION_TARGETS_KEY, SNOOZE_TARGETS_KEY]);
     const metadata = data[NOTIFICATION_TARGETS_KEY]?.[notificationId];
-    const minutes = Number(metadata?.snoozeMinutes || 0);
+    const minutes = buttonIndex === 1
+      ? (metadata?.snoozeTomorrowLabel ? minutesUntilTomorrowMorning() : 0)
+      : Number(metadata?.snoozeMinutes || 0);
     if (!metadata?.target || minutes <= 0) return;
     const alarmName = SNOOZE_ALARM_PREFIX + Date.now() + "-" + Math.random().toString(36).slice(2, 8);
     const snoozed = data[SNOOZE_TARGETS_KEY] && typeof data[SNOOZE_TARGETS_KEY] === "object"
@@ -183,7 +201,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
         title: metadata.title,
         message: metadata.body,
         priority: 1,
-        buttons: [{ title: metadata.snoozeLabel || "Posponer" }]
+        buttons: buildSnoozeButtons(metadata)
       });
     })().catch(() => {});
   }
@@ -295,7 +313,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             title,
             body,
             snoozeMinutes: message.snoozeMinutes,
-            snoozeLabel: message.snoozeLabel
+            snoozeLabel: message.snoozeLabel,
+            snoozeTomorrowLabel: message.snoozeTomorrowLabel
           });
         }
         const notificationOptions = {
@@ -306,7 +325,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           priority: 1
         };
         if (target && Number(message.snoozeMinutes || 0) > 0) {
-          notificationOptions.buttons = [{ title: String(message.snoozeLabel || "Posponer") }];
+          notificationOptions.buttons = buildSnoozeButtons({
+            snoozeLabel: message.snoozeLabel,
+            snoozeTomorrowLabel: message.snoozeTomorrowLabel
+          });
         }
         await chrome.notifications.create(notificationId, notificationOptions);
         sendResponse({ ok: true, actionable: !!target });

@@ -110,33 +110,21 @@ em.toCalendarUtc = function (date) {
   return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
 };
 
-em.exportWeekCalendar = function () {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const end = new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000);
-  const activities = em.getVisiblePending(em.state.pending).filter((item) => {
-    if (!item.deadlineRaw) return false;
-    const deadline = new Date(item.deadlineRaw);
-    return !Number.isNaN(deadline.getTime()) && deadline >= start && deadline < end;
-  });
-  if (!activities.length) {
-    em.setStatus(em.t("status_calendar_empty"));
-    return;
-  }
-  const createdAt = em.toCalendarUtc(new Date());
-  const events = activities.map((item) => {
-    const deadline = new Date(item.deadlineRaw);
-    return [
-      "BEGIN:VEVENT",
-      "UID:" + em.escapeCalendarText(item.id) + "@miyu-eminus",
-      "DTSTAMP:" + createdAt,
-      "DTSTART:" + em.toCalendarUtc(deadline),
-      "DTEND:" + em.toCalendarUtc(new Date(deadline.getTime() + 30 * 60 * 1000)),
-      "SUMMARY:" + em.escapeCalendarText(item.title),
-      "DESCRIPTION:" + em.escapeCalendarText(item.course + " - " + em.t("due") + " " + (item.deadlineStr || "")),
-      "END:VEVENT"
-    ].join("\r\n");
-  });
+em.buildCalendarEvent = function (item, createdAt) {
+  const deadline = new Date(em.toEpoch(item.deadlineRaw));
+  return [
+    "BEGIN:VEVENT",
+    "UID:" + em.escapeCalendarText(item.id) + "@miyu-eminus",
+    "DTSTAMP:" + createdAt,
+    "DTSTART:" + em.toCalendarUtc(deadline),
+    "DTEND:" + em.toCalendarUtc(new Date(deadline.getTime() + 30 * 60 * 1000)),
+    "SUMMARY:" + em.escapeCalendarText(item.title),
+    "DESCRIPTION:" + em.escapeCalendarText(item.course + " - " + em.t("due") + " " + (item.deadlineStr || "")),
+    "END:VEVENT"
+  ].join("\r\n");
+};
+
+em.downloadCalendarFile = function (events, filename) {
   const calendar = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -148,12 +136,55 @@ em.exportWeekCalendar = function () {
   const url = URL.createObjectURL(new Blob([calendar], { type: "text/calendar;charset=utf-8" }));
   const link = document.createElement("a");
   link.href = url;
-  link.download = "miyu-pendientes-semana.ics";
+  link.download = filename;
   document.body.appendChild(link);
   link.click();
   link.remove();
   window.setTimeout(() => URL.revokeObjectURL(url), 30000);
+};
+
+em.exportWeekCalendar = function () {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const end = new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const activities = em.getVisiblePending(em.state.pending).filter((item) => {
+    if (!item.deadlineRaw) return false;
+    const deadline = new Date(em.toEpoch(item.deadlineRaw));
+    return !Number.isNaN(deadline.getTime()) && deadline >= start && deadline < end;
+  });
+  if (!activities.length) {
+    em.setStatus(em.t("status_calendar_empty"));
+    return;
+  }
+  const createdAt = em.toCalendarUtc(new Date());
+  em.downloadCalendarFile(activities.map((item) => em.buildCalendarEvent(item, createdAt)), "miyu-pendientes-semana.ics");
   em.setStatus(em.t("status_calendar_exported").replace("{n}", activities.length));
+};
+
+em.exportItemCalendar = function (item) {
+  if (!item || !item.deadlineRaw) {
+    em.setStatus(em.t("status_calendar_empty"));
+    return;
+  }
+  const createdAt = em.toCalendarUtc(new Date());
+  em.downloadCalendarFile([em.buildCalendarEvent(item, createdAt)], "miyu-tarea-" + (item.activityId || "pendiente") + ".ics");
+  em.setStatus(em.t("status_calendar_exported").replace("{n}", 1));
+};
+
+// Recalcula la urgencia de las actividades con el reloj actual. Devuelve true
+// si algo cambió (una tarea venció o entró en ventana de 24/48 h) para que el
+// tick de la interfaz sepa si debe sincronizar el badge.
+em.refreshUrgencies = function () {
+  let changed = false;
+  (em.state.pending || []).forEach((item) => {
+    if (!item || item.kind === "content" || !item.deadlineRaw) return;
+    const urgency = em.classifyUrgency(new Date(em.toEpoch(item.deadlineRaw)));
+    if (urgency !== item.urgency) {
+      item.urgency = urgency;
+      changed = true;
+    }
+  });
+  return changed;
 };
 
 em.setQuietHours = async function (start, end) {

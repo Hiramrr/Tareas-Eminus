@@ -510,7 +510,8 @@ em.scanPending = async function (options = {}) {
       em.showToast(msg, "urgent");
       await em.notifyUser(em.t("reminder_title"), msg, em.getActivityNotificationTarget(reminder.item), {
         snoozeMinutes: 60,
-        snoozeLabel: em.t("action_snooze")
+        snoozeLabel: em.t("action_snooze"),
+        snoozeTomorrowLabel: em.t("action_snooze_tomorrow")
       });
     }
 

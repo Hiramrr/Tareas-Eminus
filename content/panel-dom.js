@@ -322,7 +322,7 @@ em.createPanel = function () {
         </details>
       </section>
 
-      <footer class="ep-footer" id="ep-footer-status">Listo</footer>
+      <footer class="ep-footer" id="ep-footer-status" role="status" aria-live="polite">Listo</footer>
       <img class="ep-jazmin-bg" id="ep-jazmin-bg" src="" alt="" />
     `;
 
@@ -570,6 +570,20 @@ em.createPanel = function () {
     em.updateFilterClearButton();
     em.schedulePanelUiStatePersist();
     em.renderPending(em.state.pending);
+  });
+  em.panelEls.filterQuery.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (em.panelEls.filterQuery.value) {
+      em.panelEls.filterQuery.value = "";
+      em.state.filters.query = "";
+      em.updateFilterClearButton();
+      em.schedulePanelUiStatePersist();
+      em.renderPending(em.state.pending);
+    } else {
+      em.panelEls.filterQuery.blur();
+    }
   });
   em.panelEls.filterCourse.addEventListener("change", (e) => {
     em.state.filters.course = String(e.target.value || "all");

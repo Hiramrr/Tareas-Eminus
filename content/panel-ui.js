@@ -413,6 +413,40 @@ em.updateBulkActionButtons = function () {
   }
 };
 
+// Contadores vivos en la barra de pestañas: pendientes/hoy/vencidas en el
+// selector de tareas y no leídos en Contenido. También expone el atajo de
+// teclado de cada pestaña en su tooltip.
+em.updateTabCounters = function () {
+  if (!em.panelEls || !em.panelEls.root) return;
+  const items = em.state.pending || [];
+  const visible = em.getVisiblePending(items);
+  const overdueCount = visible.filter((item) => item.urgency === "overdue").length;
+  const todayCount = em.getTodayItems(em.getActivityItems(items.filter((item) => !item.archived))).length;
+  const unreadContent = em.getUnreadContentCount ? em.getUnreadContentCount(items) : 0;
+  const withCount = (label, count) => (count > 0 ? label + " (" + count + ")" : label);
+
+  const tabShortcuts = { summary: "1", agenda: "5", content: "6", config: "7" };
+  em.panelEls.tabButtons.forEach((btn) => {
+    const tab = btn.dataset.tab;
+    const shortcut = tabShortcuts[tab];
+    if (tab === "content") {
+      btn.textContent = withCount(em.t("tab_content"), unreadContent);
+    }
+    if (shortcut) {
+      btn.title = btn.textContent + " [" + shortcut + "]";
+    }
+  });
+
+  const select = em.panelEls.taskViewSelect;
+  if (select && select.options.length >= 4) {
+    select.options[0].textContent = withCount(em.t("tab_pending"), visible.length);
+    select.options[1].textContent = withCount(em.t("task_view_all"), visible.length);
+    select.options[2].textContent = withCount(em.t("tab_today"), todayCount);
+    select.options[3].textContent = withCount(em.t("tab_overdue"), overdueCount);
+    select.title = em.t("tab_pending") + " [2-4]";
+  }
+};
+
 em.updateTabVisibility = function () {
   if (!em.state.isLogTabVisible && em.state.activeTab === "log") {
     em.state.activeTab = "summary";
