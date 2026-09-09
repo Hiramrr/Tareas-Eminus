@@ -134,8 +134,8 @@ em.createPanel = function () {
       <section class="ep-body ep-hidden" id="ep-body-content" role="tabpanel"></section>
       <section class="ep-body ep-hidden" id="ep-body-log" role="tabpanel"></section>
       <section class="ep-body ep-hidden" id="ep-body-config">
-        <details class="ep-config-section ep-config-personal">
-          <summary id="ep-config-personal-summary">Personalización</summary>
+        <details class="ep-config-section ep-config-personal" name="ep-config-sections" open>
+          <summary><span class="ep-config-summary-title" id="ep-config-personal-summary">Personalización</span><span class="ep-config-summary-hint" id="ep-config-personal-hint">saludo, apodo y materias</span></summary>
           <div class="ep-config-group">
             <label class="ep-config-label" id="ep-nickname-label" for="ep-nickname">Cómo quieres que te salude Miyu</label>
             <input class="ep-config-select" id="ep-nickname" type="text" maxlength="32" placeholder="Tu apodo" />
@@ -175,8 +175,8 @@ em.createPanel = function () {
           </div>
         </details>
 
-        <details class="ep-config-section ep-config-appearance">
-          <summary id="ep-config-appearance-summary">Apariencia</summary>
+        <details class="ep-config-section ep-config-appearance" name="ep-config-sections">
+          <summary><span class="ep-config-summary-title" id="ep-config-appearance-summary">Apariencia</span><span class="ep-config-summary-hint" id="ep-config-appearance-hint">temas y colores</span></summary>
         <div class="ep-config-group">
           <label class="ep-config-label" id="ep-theme-label">Tema del panel</label>
           <div class="ep-theme-grid">
@@ -206,8 +206,8 @@ em.createPanel = function () {
         </div>
         </details>
 
-        <details class="ep-config-section ep-config-daily">
-        <summary id="ep-config-daily-summary">Uso diario</summary>
+        <details class="ep-config-section ep-config-daily" name="ep-config-sections">
+        <summary><span class="ep-config-summary-title" id="ep-config-daily-summary">Uso diario</span><span class="ep-config-summary-hint" id="ep-config-daily-hint">actualización y avisos</span></summary>
         <div class="ep-config-row">
           <div class="ep-config-group">
             <label class="ep-config-label">Auto-refresh</label>
@@ -258,43 +258,46 @@ em.createPanel = function () {
         </div>
         </details>
 
-        <details class="ep-config-section ep-config-interface">
-        <summary id="ep-config-interface-summary">Interfaz</summary>
-        <div class="ep-config-group">
-          <label class="ep-config-label">Animación de entrega</label>
-          <select class="ep-config-select" id="ep-delivery-animation">
-            <option value="cycle">rotar animaciones</option>
-            <option value="off">desactivada</option>
-            <option value="confetti">confetti</option>
-            <option value="abduction">ovni</option>
-            <option value="teams">disco</option>
-            <option value="pinata">piñata</option>
-          </select>
+        <details class="ep-config-section ep-config-interface" name="ep-config-sections">
+        <summary><span class="ep-config-summary-title" id="ep-config-interface-summary">Interfaz</span><span class="ep-config-summary-hint" id="ep-config-interface-hint">fuente, tamaño e idioma</span></summary>
+        <div class="ep-config-row">
+          <div class="ep-config-group">
+            <label class="ep-config-label">Animación de entrega</label>
+            <select class="ep-config-select" id="ep-delivery-animation">
+              <option value="cycle">rotar animaciones</option>
+              <option value="off">desactivada</option>
+              <option value="confetti">confetti</option>
+              <option value="abduction">ovni</option>
+              <option value="teams">disco</option>
+              <option value="pinata">piñata</option>
+            </select>
+          </div>
+          <div class="ep-config-group">
+            <label class="ep-config-label">Fuente de la interfaz</label>
+            <select class="ep-config-select" id="ep-font">
+              <option value="mono">Monoespaciada</option>
+              <option value="sans">Sans serif</option>
+              <option value="serif">Serif</option>
+              <option value="system">Sistema</option>
+            </select>
+          </div>
         </div>
-
-        <div class="ep-config-group">
-          <label class="ep-config-label">Fuente de la interfaz</label>
-          <select class="ep-config-select" id="ep-font">
-            <option value="mono">Monoespaciada</option>
-            <option value="sans">Sans serif</option>
-            <option value="serif">Serif</option>
-            <option value="system">Sistema</option>
-          </select>
-        </div>
-        <div class="ep-config-group">
-          <label class="ep-config-label">Tamaño del panel</label>
-          <select class="ep-config-select" id="ep-panel-size">
-            <option value="compact">compacto</option>
-            <option value="normal">normal</option>
-            <option value="wide">ancho</option>
-          </select>
-        </div>
-        <div class="ep-config-group">
-          <label class="ep-config-label" id="ep-log-visibility-label">Apartado de log</label>
-          <select class="ep-config-select" id="ep-log-visibility">
-            <option value="visible">visible</option>
-            <option value="removed">oculto</option>
-          </select>
+        <div class="ep-config-row">
+          <div class="ep-config-group">
+            <label class="ep-config-label">Tamaño del panel</label>
+            <select class="ep-config-select" id="ep-panel-size">
+              <option value="compact">compacto</option>
+              <option value="normal">normal</option>
+              <option value="wide">ancho</option>
+            </select>
+          </div>
+          <div class="ep-config-group">
+            <label class="ep-config-label" id="ep-log-visibility-label">Apartado de log</label>
+            <select class="ep-config-select" id="ep-log-visibility">
+              <option value="visible">visible</option>
+              <option value="removed">oculto</option>
+            </select>
+          </div>
         </div>
         <div class="ep-config-group">
           <label class="ep-config-label" id="ep-lang-label">Idioma</label>
@@ -310,8 +313,8 @@ em.createPanel = function () {
         <div class="ep-config-group ep-shortcuts-hint" id="ep-shortcuts-hint"></div>
         </details>
 
-        <details class="ep-config-section ep-config-danger">
-          <summary id="ep-config-danger-summary">Datos y preferencias</summary>
+        <details class="ep-config-section ep-config-danger" name="ep-config-sections">
+          <summary><span class="ep-config-summary-title" id="ep-config-danger-summary">Datos y preferencias</span><span class="ep-config-summary-hint" id="ep-config-danger-hint">borrar y reiniciar</span></summary>
         <div class="ep-config-group">
           <button class="ep-btn ep-clear-data-btn" id="ep-clear-snapshot" type="button">Borrar datos de lectura</button>
           <button class="ep-btn ep-clear-data-btn ep-clear-data-danger" id="ep-clear-all" type="button">Borrar todo (datos + preferencias)</button>
@@ -440,6 +443,11 @@ em.createPanel = function () {
   em.panelEls.configAppearanceSummary = root.querySelector("#ep-config-appearance-summary");
   em.panelEls.configInterfaceSummary = root.querySelector("#ep-config-interface-summary");
   em.panelEls.configDangerSummary = root.querySelector("#ep-config-danger-summary");
+  em.panelEls.configDailyHint = root.querySelector("#ep-config-daily-hint");
+  em.panelEls.configPersonalHint = root.querySelector("#ep-config-personal-hint");
+  em.panelEls.configAppearanceHint = root.querySelector("#ep-config-appearance-hint");
+  em.panelEls.configInterfaceHint = root.querySelector("#ep-config-interface-hint");
+  em.panelEls.configDangerHint = root.querySelector("#ep-config-danger-hint");
 
   const hourOptions = Array.from({ length: 24 }, (_, hour) => {
     const value = String(hour);

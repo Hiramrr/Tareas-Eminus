@@ -55,6 +55,11 @@ em.i18n = {
     config_appearance: "Apariencia",
     config_interface: "Interfaz",
     config_danger: "Datos y preferencias",
+    config_daily_hint: "actualización y avisos",
+    config_personal_hint: "saludo, apodo y materias",
+    config_appearance_hint: "temas y colores",
+    config_interface_hint: "fuente, tamaño e idioma",
+    config_danger_hint: "borrar y reiniciar",
     autorefresh_label: "Actualización automática",
     ar_off: "desactivado",
     ar_1m: "cada minuto",
@@ -320,6 +325,11 @@ em.i18n = {
     config_appearance: "Appearance",
     config_interface: "Interface",
     config_danger: "Saved data",
+    config_daily_hint: "refresh and alerts",
+    config_personal_hint: "greeting, nickname and courses",
+    config_appearance_hint: "themes and colors",
+    config_interface_hint: "font, size and language",
+    config_danger_hint: "clear and reset",
     autorefresh_label: "Auto refresh",
     ar_off: "off",
     ar_1m: "every 1 min",
@@ -1337,6 +1347,11 @@ Object.assign(em.i18n.fr, {
   config_appearance: "Apparence",
   config_interface: "Interface",
   config_danger: "Données et préférences",
+  config_daily_hint: "actualisation et alertes",
+  config_personal_hint: "salutation, surnom et matières",
+  config_appearance_hint: "thèmes et couleurs",
+  config_interface_hint: "police, taille et langue",
+  config_danger_hint: "effacer et réinitialiser",
   rem_staggered: "échelonnés : 48 h, 24 h, 6 h et 1 h",
   quiet_hours_label: "Heures silencieuses",
   quiet_start_off: "pas d'heure de début",
@@ -1462,6 +1477,11 @@ Object.assign(em.i18n.ja, {
   config_appearance: "外観",
   config_interface: "インターフェース",
   config_danger: "データと設定",
+  config_daily_hint: "更新と通知",
+  config_personal_hint: "あいさつ・ニックネーム・科目",
+  config_appearance_hint: "テーマと色",
+  config_interface_hint: "フォント・サイズ・言語",
+  config_danger_hint: "消去とリセット",
   rem_staggered: "段階的: 48時間・24時間・6時間・1時間前",
   quiet_hours_label: "サイレント時間",
   quiet_start_off: "開始時刻なし",
@@ -1587,6 +1607,11 @@ Object.assign(em.i18n.ko, {
   config_appearance: "모양",
   config_interface: "인터페이스",
   config_danger: "데이터 및 환경설정",
+  config_daily_hint: "새로고침과 알림",
+  config_personal_hint: "인사말, 별명, 과목",
+  config_appearance_hint: "테마와 색상",
+  config_interface_hint: "글꼴, 크기, 언어",
+  config_danger_hint: "삭제 및 초기화",
   rem_staggered: "단계별: 48시간, 24시간, 6시간, 1시간 전",
   quiet_hours_label: "방해 금지 시간",
   quiet_start_off: "시작 시간 없음",
@@ -1712,6 +1737,11 @@ Object.assign(em.i18n.zh, {
   config_appearance: "外观",
   config_interface: "界面",
   config_danger: "数据与偏好",
+  config_daily_hint: "刷新与提醒",
+  config_personal_hint: "问候、昵称与课程",
+  config_appearance_hint: "主题与颜色",
+  config_interface_hint: "字体、尺寸与语言",
+  config_danger_hint: "清除与重置",
   rem_staggered: "分级提醒：提前48小时、24小时、6小时和1小时",
   quiet_hours_label: "免打扰时间",
   quiet_start_off: "无开始时间",
@@ -1852,6 +1882,11 @@ em.applyTranslations = function() {
   if (els.configAppearanceSummary) els.configAppearanceSummary.textContent = em.t("config_appearance");
   if (els.configInterfaceSummary) els.configInterfaceSummary.textContent = em.t("config_interface");
   if (els.configDangerSummary) els.configDangerSummary.textContent = em.t("config_danger");
+  if (els.configDailyHint) els.configDailyHint.textContent = em.t("config_daily_hint");
+  if (els.configPersonalHint) els.configPersonalHint.textContent = em.t("config_personal_hint");
+  if (els.configAppearanceHint) els.configAppearanceHint.textContent = em.t("config_appearance_hint");
+  if (els.configInterfaceHint) els.configInterfaceHint.textContent = em.t("config_interface_hint");
+  if (els.configDangerHint) els.configDangerHint.textContent = em.t("config_danger_hint");
   if (els.autorefreshLabel) els.autorefreshLabel.textContent = em.t('autorefresh_label');
   if (els.reminderLabel) els.reminderLabel.textContent = em.t('reminder_label');
   if (els.quietHoursLabel) els.quietHoursLabel.textContent = em.t("quiet_hours_label");
