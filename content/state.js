@@ -14,6 +14,7 @@ em.state = {
   readContentIds: new Set(),
   notifiedUpcomingIds: new Set(),
   lastUpdatedAt: null,
+  lastContentScanAt: 0,
   isArchiveView: false,
   lastTabBeforeArchive: "pending",
   reminderMode: "staggered",
@@ -57,7 +58,7 @@ em.state = {
   isScanning: false
 };
 
-em.routeObserverStarted = false;
+em.routeObserverTimer = null;
 em.detailForceTimer = null;
 em.dragState = null;
 em.autoRefreshMinutes = 0;

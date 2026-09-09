@@ -16,6 +16,7 @@ em.persistArchiveState = async function () {
   payload2[em.STORAGE_KEYS.SNAPSHOT] = {
     updatedAt,
     pendingCount,
+    contentScanAt: Number(em.state.lastContentScanAt) || 0,
     pending: em.state.pending
   };
   await em.storageSet(payload2);
@@ -36,6 +37,22 @@ em.archiveItemByIndex = async function (index) {
   em.renderPending(em.state.pending);
   await em.persistArchiveState();
   em.setStatus(em.t("status_archived") + ": " + item.title);
+  em.showToast(
+    em.t("status_archived") + ": " + item.title,
+    "info",
+    {
+      action: {
+        label: em.t("undo"),
+        onClick: async () => {
+          em.state.archivedIds.delete(item.id);
+          item.archived = false;
+          em.renderPending(em.state.pending);
+          await em.persistArchiveState();
+          em.setStatus(em.t("status_restored") + ": " + item.title);
+        }
+      }
+    }
+  );
 };
 
 em.unarchiveItemByIndex = async function (index) {
@@ -171,14 +188,7 @@ em.pinItemByIndex = async function (index) {
   em.state.pinnedIds.add(item.id);
   item.pinned = true;
 
-  em.state.pending.sort((a, b) => {
-    if (a.pinned && !b.pinned) return -1;
-    if (!a.pinned && b.pinned) return 1;
-    if (!a.deadlineRaw && !b.deadlineRaw) return 0;
-    if (!a.deadlineRaw) return 1;
-    if (!b.deadlineRaw) return -1;
-    return new Date(a.deadlineRaw).getTime() - new Date(b.deadlineRaw).getTime();
-  });
+  em.sortPendingItems(em.state.pending);
 
   em.renderPending(em.state.pending);
   await em.persistPinnedState();
@@ -193,14 +203,7 @@ em.unpinItemByIndex = async function (index) {
   em.state.pinnedIds.delete(item.id);
   item.pinned = false;
 
-  em.state.pending.sort((a, b) => {
-    if (a.pinned && !b.pinned) return -1;
-    if (!a.pinned && b.pinned) return 1;
-    if (!a.deadlineRaw && !b.deadlineRaw) return 0;
-    if (!a.deadlineRaw) return 1;
-    if (!b.deadlineRaw) return -1;
-    return new Date(a.deadlineRaw).getTime() - new Date(b.deadlineRaw).getTime();
-  });
+  em.sortPendingItems(em.state.pending);
 
   em.renderPending(em.state.pending);
   await em.persistPinnedState();

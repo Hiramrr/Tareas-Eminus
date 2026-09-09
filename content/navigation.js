@@ -8,6 +8,7 @@ em.savePendingNavigationTarget = function (item) {
   sessionStorage.setItem(em.NAV_KEYS.TITLE, String(item.title || ""));
   sessionStorage.setItem(em.NAV_KEYS.TS, String(Date.now()));
   sessionStorage.setItem(em.NAV_KEYS.STEP, "activity_detail");
+  em.startRouteObserver();
 };
 
 em.readPendingNavigationTarget = function () {
@@ -272,19 +273,21 @@ em.downloadContentAttachment = async function (item, attachment) {
   }
 };
 
+// Vigila la ruta solo mientras exista una navegación pendiente; sin objetivo
+// no hay polling (loadDetailIntoActivityIframeIfNeeded no hace nada sin él).
+// El objetivo expira solo (readPendingNavigationTarget), así que el intervalo
+// siempre termina por detenerse.
 em.startRouteObserver = function () {
-  if (em.routeObserverStarted) return;
-  em.routeObserverStarted = true;
+  if (em.routeObserverTimer) return;
+  if (!em.readPendingNavigationTarget()) return;
 
-  let lastHref = location.href;
-  window.setInterval(() => {
-    const currentHref = location.href;
-    const hasTarget = !!em.readPendingNavigationTarget();
-    const routeChanged = currentHref !== lastHref;
-    if (routeChanged || hasTarget) {
-      lastHref = currentHref;
-      em.loadDetailIntoActivityIframeIfNeeded();
+  em.routeObserverTimer = window.setInterval(() => {
+    if (!em.readPendingNavigationTarget()) {
+      window.clearInterval(em.routeObserverTimer);
+      em.routeObserverTimer = null;
+      return;
     }
+    em.loadDetailIntoActivityIframeIfNeeded();
   }, 350);
 };
 

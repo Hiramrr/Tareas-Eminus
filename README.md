@@ -66,3 +66,5 @@ Requiere Node 22. Instala las herramientas con `npm install` y corre todo con `n
 - Sincroniza apariencia y avisos con `chrome.storage.sync`
 
 El auto-refresh usa `chrome.alarms` y funciona con el panel plegado si hay una pestaña de Eminus abierta.
+
+Los escaneos automáticos (al cargar la página, auto-refresh, al volver la conexión) reutilizan el contenido publicado del último escaneo si tiene menos de 15 minutos; las actividades se consultan siempre. `[ actualizar ]` y la tecla `R` fuerzan un escaneo completo.

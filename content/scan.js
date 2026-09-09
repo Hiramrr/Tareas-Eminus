@@ -104,6 +104,7 @@ em.hydrateFromStorage = async function () {
     em.state.pending = em.applyArchivedState(snapshot.pending, em.state.archivedIds);
     em.applyPinnedState(em.state.pending, em.state.pinnedIds);
     em.state.lastUpdatedAt = snapshot.updatedAt || null;
+    em.state.lastContentScanAt = Number(snapshot.contentScanAt) || 0;
 
     em.state.archivedIds = em.pruneArchivedIds(em.state.pending, em.state.archivedIds);
     em.state.pinnedIds = em.prunePinnedIds(em.state.pending, em.state.pinnedIds);
@@ -117,14 +118,7 @@ em.hydrateFromStorage = async function () {
     prunePayload[em.STORAGE_KEYS.READ_CONTENT_IDS] = Array.from(em.state.readContentIds);
     await em.storageSet(prunePayload);
 
-    em.state.pending.sort((a, b) => {
-      if (a.pinned && !b.pinned) return -1;
-      if (!a.pinned && b.pinned) return 1;
-      if (!a.deadlineRaw && !b.deadlineRaw) return 0;
-      if (!a.deadlineRaw) return 1;
-      if (!b.deadlineRaw) return -1;
-      return new Date(a.deadlineRaw).getTime() - new Date(b.deadlineRaw).getTime();
-    });
+    em.sortPendingItems(em.state.pending);
 
     if (em.panelEls && em.panelEls.subtitle) {
       em.panelEls.subtitle.textContent = em.t("last_read") + ": " + em.formatDateTime(snapshot.updatedAt);
@@ -136,6 +130,7 @@ em.hydrateFromStorage = async function () {
   } else {
     em.state.pending = [];
     em.state.lastUpdatedAt = null;
+    em.state.lastContentScanAt = 0;
     em.renderPending([]);
     if (em.panelEls && em.panelEls.subtitle) {
       em.panelEls.subtitle.textContent = em.t("last_read") + ": " + em.t("never");
@@ -261,6 +256,26 @@ em.waitForTokenRefresh = function (previousToken) {
     requireChange: true  });
 };
 
+em.renderCachedSnapshotFallback = async function () {
+  const snapshot = await em.storageGet([em.STORAGE_KEYS.SNAPSHOT, em.STORAGE_KEYS.PINNED]);
+  const cached = snapshot[em.STORAGE_KEYS.SNAPSHOT];
+  if (!cached || !Array.isArray(cached.pending) || cached.pending.length === 0) return false;
+
+  em.state.pinnedIds = em.normalizePinnedIds(snapshot[em.STORAGE_KEYS.PINNED]);
+  em.state.pending = em.applyArchivedState(cached.pending, em.state.archivedIds);
+  em.applyPinnedState(em.state.pending, em.state.pinnedIds);
+  em.sortPendingItems(em.state.pending);
+  em.state.lastUpdatedAt = cached.updatedAt;
+  em.state.lastContentScanAt = Number(cached.contentScanAt) || 0;
+  em.renderPending(em.state.pending);
+  em.renderLogs(em.state.logs);
+  if (em.panelEls && em.panelEls.subtitle) {
+    em.panelEls.subtitle.textContent = em.t("last_read") + ": " + em.formatDateTime(cached.updatedAt);
+  }
+  em.updateAutoRefreshLabel(em.autoRefreshMinutes);
+  return true;
+};
+
 em.scanPending = async function (options = {}) {
   if (em.state.isScanning) return;
   let token = "";
@@ -323,6 +338,7 @@ em.scanPending = async function (options = {}) {
     clearPayload[em.STORAGE_KEYS.LAST_URGENCY_BY_ID] = {};
     clearPayload[em.STORAGE_KEYS.ACCOUNT_ID] = currentAccountId;
     if (em.clearContentApiCache) em.clearContentApiCache();
+    em.state.lastContentScanAt = 0;
     await em.storageSet(clearPayload);
   } else if (!knownData[em.STORAGE_KEYS.ACCOUNT_ID] && currentAccountId) {
       const idPayload = {};
@@ -339,12 +355,22 @@ em.scanPending = async function (options = {}) {
     em.state.contentFileLocationCache = new Map();
     const lastUrgencyById = em.normalizeUrgencyMap(knownData[em.STORAGE_KEYS.LAST_URGENCY_BY_ID]);
 
+    // El contenido publicado cambia poco: los escaneos automáticos (silent)
+    // reutilizan el último resultado si es reciente y así evitan el fan-out de
+    // getUnidades/getElementos por curso. Un refresco manual siempre lo rehace.
+    const previousContentItems = em.getContentItems(em.state.pending || []);
+    const contentIsFresh = Number(em.state.lastContentScanAt) > 0 &&
+      (Date.now() - Number(em.state.lastContentScanAt)) < em.CONTENT_RESCAN_MS;
+    const reuseContent = options.silent === true && contentIsFresh && previousContentItems.length > 0;
+
     const pending = await em.buildPendingData(token, em.state.pinnedIds, {
+      reusedContentItems: reuseContent ? previousContentItems : null,
       onActivitiesReady: async (activityPending) => {
         em.applyArchivedState(activityPending, em.state.archivedIds);
         em.applyPinnedState(activityPending, em.state.pinnedIds);
         em.state.pending = activityPending;
         em.renderPending(activityPending);
+        if (reuseContent) return;
         if (em.panelEls && em.panelEls.contentBody) {
           if (em.renderSetHtml) {
             em.renderSetHtml(em.panelEls.contentBody, `<div class="ep-empty">${em.escapeHtml(em.t("status_content"))}: ${em.escapeHtml(em.t("status_loading"))}</div>`);
@@ -360,28 +386,30 @@ em.scanPending = async function (options = {}) {
         await em.syncBadge(visibleActivities.length, 0, overdueCount);
       }
     });
+    if (!reuseContent) {
+      em.state.lastContentScanAt = Date.now();
+    }
     em.applyArchivedState(pending, em.state.archivedIds);
     em.applyPinnedState(pending, em.state.pinnedIds);
     em.state.readContentIds = em.pruneReadContentIds(pending, em.state.readContentIds);
 
+    // Una sola escritura agrupada en lugar de varios storageSet secuenciales.
+    const prunePayload = {};
     const prunedArchived = em.pruneArchivedIds(pending, em.state.archivedIds);
     if (!em.setsEqual(prunedArchived, em.state.archivedIds)) {
       em.state.archivedIds = prunedArchived;
-      const archPayload = {};
-      archPayload[em.STORAGE_KEYS.ARCHIVED] = Array.from(prunedArchived);
-      await em.storageSet(archPayload);
+      prunePayload[em.STORAGE_KEYS.ARCHIVED] = Array.from(prunedArchived);
     }
 
     const prunedPinned = em.prunePinnedIds(pending, em.state.pinnedIds);
     if (!em.setsEqual(prunedPinned, em.state.pinnedIds)) {
       em.state.pinnedIds = prunedPinned;
-      const pinPayload = {};
-      pinPayload[em.STORAGE_KEYS.PINNED] = Array.from(prunedPinned);
-      await em.storageSet(pinPayload);
+      prunePayload[em.STORAGE_KEYS.PINNED] = Array.from(prunedPinned);
     }
 
     const visiblePending = em.getVisiblePending(pending);
-    await em.persistReadContentIds();
+    prunePayload[em.STORAGE_KEYS.READ_CONTENT_IDS] = Array.from(em.state.readContentIds);
+    await em.storageSet(prunePayload);
 
     const previousPending = em.state.pending || [];
     const previousOverdueIds = new Set(previousPending.filter((item) => item.urgency === "overdue" && !item.archived).map((item) => item.id));
@@ -416,16 +444,13 @@ em.scanPending = async function (options = {}) {
     em.renderPending(pending);
 
     const logMeta = await em.appendLog(pending, knownIds, visiblePending, previousPending);
-    
-    if (upcomingNotifications.length > 0) {
-      const notifiedPayload = {};
-      notifiedPayload[em.STORAGE_KEYS.NOTIFIED_UPCOMING] = Array.from(em.state.notifiedUpcomingIds);
-      await em.storageSet(notifiedPayload);
-    }
 
-    const urgencyPayload = {};
-    urgencyPayload[em.STORAGE_KEYS.LAST_URGENCY_BY_ID] = em.buildUrgencyMap(pending);
-    await em.storageSet(urgencyPayload);
+    const postScanPayload = {};
+    if (upcomingNotifications.length > 0) {
+      postScanPayload[em.STORAGE_KEYS.NOTIFIED_UPCOMING] = Array.from(em.state.notifiedUpcomingIds);
+    }
+    postScanPayload[em.STORAGE_KEYS.LAST_URGENCY_BY_ID] = em.buildUrgencyMap(pending);
+    await em.storageSet(postScanPayload);
 
     em.renderLogs(em.state.logs);
     em.state.lastUpdatedAt = logMeta.updatedAt;
@@ -484,40 +509,22 @@ em.scanPending = async function (options = {}) {
     await em.syncBadge(visiblePending.length, newTaskCount, currentOverdue.length);
   } catch (err) {
     scanError = err;
-    console.error("[Eminus Pending Panel] Error de lectura");
-    if (!navigator.onLine) {
-      const snapshot = await em.storageGet([em.STORAGE_KEYS.SNAPSHOT, em.STORAGE_KEYS.PINNED]);
-      const cached = snapshot[em.STORAGE_KEYS.SNAPSHOT];
-      if (cached && Array.isArray(cached.pending) && cached.pending.length > 0) {
-        em.state.pinnedIds = em.normalizePinnedIds(snapshot[em.STORAGE_KEYS.PINNED]);
-        em.state.pending = em.applyArchivedState(cached.pending, em.state.archivedIds);
-        em.applyPinnedState(em.state.pending, em.state.pinnedIds);
-        em.state.pending.sort((a, b) => {
-          if (a.pinned && !b.pinned) return -1;
-          if (!a.pinned && b.pinned) return 1;
-          if (!a.deadlineRaw && !b.deadlineRaw) return 0;
-          if (!a.deadlineRaw) return 1;
-          if (!b.deadlineRaw) return -1;
-          return new Date(a.deadlineRaw).getTime() - new Date(b.deadlineRaw).getTime();
-        });
-        em.state.lastUpdatedAt = cached.updatedAt;
-        em.renderPending(em.state.pending);
-        em.renderLogs(em.state.logs);
-        if (em.panelEls && em.panelEls.subtitle) {
-          em.panelEls.subtitle.textContent = em.t("last_read") + ": " + em.formatDateTime(cached.updatedAt);
-        }
-        em.updateAutoRefreshLabel(em.autoRefreshMinutes);
-        const visible = em.getVisiblePending(em.state.pending);
-        const overdueCount = visible.filter((item) => item.urgency === "overdue").length;
-        em.setStatus(em.t("offline") + ", " + visible.length + " " + em.t("status_pending") + " " + em.t("status_cache"));
-        await em.syncBadge(visible.length, 0, overdueCount);
-      } else {
-        em.setStatus(em.t("offline") + ", " + em.t("no_cache"));
-      }
-    } else if (em.isUnauthorizedError(err)) {
+    console.error("[Eminus Pending Panel] Error de lectura", err);
+    if (em.isUnauthorizedError(err)) {
       em.waitForTokenRefresh(token);
     } else {
-      em.setStatus(err.message || em.t("error_read"));
+      // Ante cualquier fallo (offline, 5xx, timeout) es mejor mostrar el
+      // último snapshot que dejar al usuario sin datos.
+      const errorLabel = !navigator.onLine ? em.t("offline") : (err.message || em.t("error_read"));
+      const restored = await em.renderCachedSnapshotFallback();
+      if (restored) {
+        const visible = em.getVisiblePending(em.state.pending);
+        const overdueCount = visible.filter((item) => item.urgency === "overdue").length;
+        em.setStatus(errorLabel + ", " + visible.length + " " + em.t("status_pending") + " " + em.t("status_cache"));
+        await em.syncBadge(visible.length, 0, overdueCount);
+      } else {
+        em.setStatus(errorLabel + ", " + em.t("no_cache"));
+      }
     }
   } finally {
     em.state.isScanning = false;

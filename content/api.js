@@ -4,6 +4,11 @@ var em = window.eminus;
 
 em.CONTENT_CACHE_TTL_MS = 5 * 60 * 1000;
 em.CONTENT_CACHE_MAX_ENTRIES = 120;
+// El contenido publicado cambia poco: los escaneos automáticos reutilizan el
+// último resultado mientras sea más reciente que esta ventana. [ actualizar ]
+// y la tecla R siempre fuerzan un escaneo completo.
+em.CONTENT_RESCAN_MS = 15 * 60 * 1000;
+em.FETCH_CONCURRENCY = 6;
 
 em.isContentCacheablePath = function (path) {
   return typeof path === "string" && path.indexOf("/Contenido/") === 0;
@@ -555,7 +560,7 @@ em.mapWithConcurrency = async function (items, limit, mapper) {
 
 em.buildPublishedContentData = async function (token, courses, pinnedSet) {
   pinnedSet = pinnedSet || new Set();
-  const itemsByCourse = await em.mapWithConcurrency(courses, 3, async (cEntry) => {
+  const itemsByCourse = await em.mapWithConcurrency(courses, em.FETCH_CONCURRENCY, async (cEntry) => {
     const course = cEntry?.curso || {};
     const courseId = em.normalizePositiveId(course.idCurso ?? cEntry?.idCurso ?? course.courseId ?? cEntry?.courseId);
     const courseName = String(course.nombre || "").trim();
@@ -570,7 +575,7 @@ em.buildPublishedContentData = async function (token, courses, pinnedSet) {
     }
 
     const publishedUnits = units.filter(em.isPublishedContentEntry);
-    const itemsByUnit = await em.mapWithConcurrency(publishedUnits, 4, async (unit) => {
+    const itemsByUnit = await em.mapWithConcurrency(publishedUnits, em.FETCH_CONCURRENCY, async (unit) => {
       const unitItems = [];
       const unitItem = em.buildContentItemFromUnit(unit, courseId, courseName, pinnedSet);
       if (unitItem) unitItems.push(unitItem);
@@ -633,7 +638,7 @@ em.buildPendingData = async function (token, pinnedSet, options) {
   const courses = em.filterActiveCourses(coursesRaw);
   const pending = [];
 
-  const activitiesByCourse = await em.mapWithConcurrency(courses, 4, async (cEntry) => {
+  const activitiesByCourse = await em.mapWithConcurrency(courses, em.FETCH_CONCURRENCY, async (cEntry) => {
     const course = cEntry?.curso || {};
     const courseId = em.normalizePositiveId(course.idCurso ?? cEntry?.idCurso ?? course.courseId ?? cEntry?.courseId);
     const courseName = String(course.nombre || "").trim();
@@ -656,7 +661,9 @@ em.buildPendingData = async function (token, pinnedSet, options) {
       const remaining = em.getTimeRemaining(deadlineDate);
       const urgency = em.classifyUrgency(deadlineDate);
 
-      const id = courseId + ":" + (act.idActividad || act.titulo || Math.random());
+      // Fallback determinista: un id aleatorio haría que la tarea se marcara
+      // como nueva en cada escaneo y que archivado/fijado no persistieran.
+      const id = courseId + ":" + (act.idActividad || (String(act.titulo || "") + "|" + deadlineStr));
 
       coursePending.push({
         id,
@@ -685,7 +692,9 @@ em.buildPendingData = async function (token, pinnedSet, options) {
     await options.onActivitiesReady(pending.slice());
   }
 
-  const contentItems = await em.buildPublishedContentData(token, courses, pinnedSet);
+  const contentItems = Array.isArray(options.reusedContentItems)
+    ? options.reusedContentItems
+    : await em.buildPublishedContentData(token, courses, pinnedSet);
   pending.push(...contentItems);
 
   return em.sortPendingItems(pending);

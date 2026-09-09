@@ -81,6 +81,7 @@ em.appendLog = async function (pending, knownIdsBefore, visiblePending, previous
     newTaskCount,
     newContentCount,
     overdueCount,
+    contentScanAt: Number(em.state.lastContentScanAt) || 0,
     pending
   };
   payload[em.STORAGE_KEYS.KNOWN_IDS] = currentIds;
