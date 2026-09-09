@@ -1059,7 +1059,6 @@ em.i18n = {
     reminder_title: "Eminus 提醒",
     new_task_notif: "新任务",
     overdue_notif: "逾期任务",
-    online: "在线",
     error_network: "获取时发生 network 错误",
     error_reload: "刷新 Eminus 并重试。",
     error_no_channel: "无可用扩展通道。",

@@ -52,7 +52,11 @@ Funciones:
 
 ## Desarrollo
 
-- `node scripts/check-i18n.js` verifica que los 6 idiomas tengan las mismas claves que `es` y que el código no use claves inexistentes. Córrelo tras tocar `content/i18n.js` o textos de la interfaz.
+Requiere Node 22. Instala las herramientas con `npm install` y corre todo con `npm run check` (es lo mismo que ejecuta el CI de GitHub):
+
+- `npm run lint`: ESLint sobre todo el JS.
+- `npm run check-i18n`: verifica que los 6 idiomas tengan las mismas claves que `es` y que el código no use claves inexistentes. Córrelo tras tocar `content/i18n.js` o textos de la interfaz.
+- `npm test`: pruebas de la lógica pura (fechas, urgencia, pendientes, temas, i18n) con el runner nativo de Node.
 
 ## Notas
 

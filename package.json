@@ -1,0 +1,15 @@
+{
+  "name": "miyu-pendientes",
+  "version": "1.2.0",
+  "private": true,
+  "description": "Extensión MV3 para Eminus (eminus.uv.mx)",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "node --test",
+    "check-i18n": "node scripts/check-i18n.js",
+    "check": "npm run lint && npm run check-i18n && npm test"
+  },
+  "devDependencies": {
+    "eslint": "^9"
+  }
+}
