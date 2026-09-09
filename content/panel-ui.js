@@ -84,7 +84,7 @@ em.updateCollapsedSummary = function () {
   const overdueCount = visible.filter((item) => item.urgency === "overdue").length;
   const next = visible
     .filter((item) => item.deadlineRaw && item.urgency !== "overdue")
-    .sort((a, b) => new Date(a.deadlineRaw).getTime() - new Date(b.deadlineRaw).getTime())[0];
+    .sort((a, b) => em.toEpoch(a.deadlineRaw) - em.toEpoch(b.deadlineRaw))[0];
   const parts = [visible.length + " " + em.t("status_pending")];
   if (overdueCount > 0) {
     parts.push(overdueCount + " " + em.t("filter_urgency_overdue"));

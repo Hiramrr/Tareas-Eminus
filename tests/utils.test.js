@@ -34,6 +34,25 @@ test("classifyUrgency: umbrales de 24 h y 48 h", () => {
   assert.equal(em.classifyUrgency(new Date(now + 72 * HOUR)), "normal");
 });
 
+test("toEpoch: memoiza y coincide con Date.parse", () => {
+  const iso = "2025-03-15T10:30:00.000Z";
+  assert.equal(em.toEpoch(iso), new Date(iso).getTime());
+  assert.equal(em.toEpoch(iso), em.toEpoch(iso));
+  assert.ok(Number.isNaN(em.toEpoch("")));
+  assert.ok(Number.isNaN(em.toEpoch(null)));
+  assert.ok(Number.isNaN(em.toEpoch("basura")));
+});
+
+test("buildItemIndexMap: índices por referencia de ítem", () => {
+  const a = { id: "a" };
+  const b = { id: "b" };
+  const map = em.buildItemIndexMap([a, b]);
+  assert.equal(map.get(a), 0);
+  assert.equal(map.get(b), 1);
+  assert.equal(map.get({ id: "a" }), undefined);
+  assert.equal(em.buildItemIndexMap(null).size, 0);
+});
+
 test("asBool: valores de la API de Eminus", () => {
   assert.equal(em.asBool("sin entregar"), false);
   assert.equal(em.asBool("pendiente"), false);

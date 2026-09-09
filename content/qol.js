@@ -82,7 +82,7 @@ em.compareDeadlines = function (a, b) {
   if (!a.deadlineRaw && !b.deadlineRaw) return String(a.title || "").localeCompare(String(b.title || ""));
   if (!a.deadlineRaw) return 1;
   if (!b.deadlineRaw) return -1;
-  return new Date(a.deadlineRaw).getTime() - new Date(b.deadlineRaw).getTime();
+  return em.toEpoch(a.deadlineRaw) - em.toEpoch(b.deadlineRaw);
 };
 
 em.getTodayItems = function (items) {
@@ -92,7 +92,7 @@ em.getTodayItems = function (items) {
     if (!item || item.archived) return false;
     if (item.pinned || item.urgency === "overdue") return true;
     if (!item.deadlineRaw) return false;
-    const deadline = new Date(item.deadlineRaw).getTime();
+    const deadline = em.toEpoch(item.deadlineRaw);
     return Number.isFinite(deadline) && deadline >= now && deadline <= limit;
   });
   return em.sortTodayItems ? em.sortTodayItems(todayItems) : em.sortActivityItems(todayItems);

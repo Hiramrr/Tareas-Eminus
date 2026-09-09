@@ -240,6 +240,29 @@ em.formatDateTime = function (iso) {
   }
 };
 
+// Memoiza Date.parse: los sorts y renders comparan las mismas cadenas ISO
+// muchas veces por pasada (O(n log n) parseos por sort sin caché).
+em.EPOCH_CACHE_MAX = 4000;
+em._epochCache = new Map();
+em.toEpoch = function (iso) {
+  if (!iso) return NaN;
+  const key = String(iso);
+  let ts = em._epochCache.get(key);
+  if (ts === undefined) {
+    ts = new Date(key).getTime();
+    if (em._epochCache.size >= em.EPOCH_CACHE_MAX) em._epochCache.clear();
+    em._epochCache.set(key, ts);
+  }
+  return ts;
+};
+
+// Mapa item->índice para no hacer items.indexOf(item) (O(n²)) al renderizar listas.
+em.buildItemIndexMap = function (items) {
+  const map = new Map();
+  (Array.isArray(items) ? items : []).forEach((item, index) => map.set(item, index));
+  return map;
+};
+
 em.setsEqual = function (a, b) {
   if (a.size !== b.size) return false;
   for (const value of a) {

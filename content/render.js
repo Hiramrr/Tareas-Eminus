@@ -151,7 +151,7 @@ em.renderSummary = function (items) {
     return !Number.isNaN(deadline.getTime()) && em.isSameDay(deadline, now);
   });
   const next = activities
-    .filter((item) => item.deadlineRaw && new Date(item.deadlineRaw).getTime() >= now.getTime())
+    .filter((item) => item.deadlineRaw && em.toEpoch(item.deadlineRaw) >= now.getTime())
     .sort(em.compareDeadlines)[0];
   const unreadContent = em.getUnreadContentCount ? em.getUnreadContentCount(items) : 0;
   const nextIndex = next ? items.indexOf(next) : -1;
@@ -188,9 +188,12 @@ em.renderSummary = function (items) {
   em.renderSetHtml(em.panelEls.summaryBody, summaryHtml);
 };
 
-em.renderAgenda = function (items) {
+em.renderAgenda = function (items, allItems) {
   if (!em.panelEls || !em.panelEls.agendaBody) return;
 
+  // data-item-index debe apuntar a em.state.pending (lista completa), no a la
+  // lista filtrada que recibe la agenda; de lo contrario el clic abre otro ítem.
+  const indexMap = em.buildItemIndexMap(Array.isArray(allItems) ? allItems : items);
   const visibleItems = items.filter((item) => !item.archived && item.kind !== "content");
   const overdueItems = visibleItems.filter((item) => item.urgency === "overdue");
   const noDateItems = visibleItems.filter((item) => !item.deadlineRaw && item.urgency !== "overdue");
@@ -212,7 +215,7 @@ em.renderAgenda = function (items) {
 
   const buildMiniItem = (item) => {
     const urgencyClass = "ep-" + item.urgency;
-    const originalIndex = items.indexOf(item);
+    const originalIndex = indexMap.get(item) ?? -1;
 
     let timeStr = "";
     if (item.deadlineRaw) {
@@ -275,7 +278,7 @@ em.renderAgenda = function (items) {
     html += `<div class="ep-agenda-day">`;
     html += `<div class="ep-agenda-day-header">${em.escapeHtml(em.t("agenda_later"))}</div>`;
       futureItems.forEach((item) => {
-        const originalIndex = items.indexOf(item);
+        const originalIndex = indexMap.get(item) ?? -1;
         const urgencyClass = "ep-" + item.urgency;
         const urgencyBadge = item.urgency && item.urgency !== "normal"
           ? `<span class="ep-urgency-badge">${em.t("urgency_badge_" + item.urgency)}</span>`
@@ -315,6 +318,7 @@ em.renderPending = function (items) {
   if (!em.panelEls || !em.panelEls.pendingBody) return;
   if (!em.panelEls || !em.panelEls.overdueBody) return;
 
+  const itemIndexMap = em.buildItemIndexMap(items);
   const nonArchivedItems = items.filter((item) => !item.archived);
   const activityItems = em.getActivityItems(nonArchivedItems);
   const contentItems = em.applyContentFilters(em.getContentItems(nonArchivedItems));
@@ -440,7 +444,7 @@ em.renderPending = function (items) {
           ? `<span class="ep-urgency-badge">${em.t("urgency_badge_" + item.urgency)}</span>`
           : "";
 
-        const originalIndex = items.indexOf(item);
+        const originalIndex = itemIndexMap.get(item) ?? -1;
         const archivedClass = item.archived ? "ep-archived" : "";
         const pinLabel = item.pinned ? em.t("action_unpin") : em.t("action_pin");
         const pinAction = item.pinned ? "unpin" : "pin";
@@ -480,17 +484,18 @@ em.renderPending = function (items) {
     const esc = em.escapeHtml;
     const showHidden = !!em.state.showHiddenContent;
     const sourceItems = Array.isArray(em.state.pending) ? em.state.pending : [];
+    const sourceIndexMap = sourceItems === items ? itemIndexMap : em.buildItemIndexMap(sourceItems);
     const hiddenContent = em.getContentItems(sourceItems)
       .filter((item) => item.archived)
       .slice()
       .sort((a, b) => {
-        const aTime = a.publishedRaw ? new Date(a.publishedRaw).getTime() : 0;
-        const bTime = b.publishedRaw ? new Date(b.publishedRaw).getTime() : 0;
+        const aTime = a.publishedRaw ? em.toEpoch(a.publishedRaw) : 0;
+        const bTime = b.publishedRaw ? em.toEpoch(b.publishedRaw) : 0;
         return bTime - aTime;
       });
 
     const renderContentCard = (item, restoreMode) => {
-      const originalIndex = sourceItems.indexOf(item);
+      const originalIndex = sourceIndexMap.get(item) ?? -1;
       const published = item.publishedLabel ? em.t("content_published") + " " + item.publishedLabel : item.contentTypeLabel || em.t("content_label");
       const metaParts = [item.contentTypeLabel || em.t("content_label"), item.unitName, published].filter(Boolean);
       const descriptionHtml = item.description
@@ -624,12 +629,16 @@ em.renderPending = function (items) {
     em.renderSetHtml(em.panelEls.pendingBody, buildListHtml(pendingItems, pendingEmptyMessage, null, true));
     em.renderSetHtml(em.panelEls.overdueBody, buildListHtml(overdueItems, em.t("empty_overdue"), { label: em.t("action_archive"), action: "archive" }, true));
     if (em.panelEls.contentBody) em.renderSetHtml(em.panelEls.contentBody, buildContentHtml(contentItems));
-    em.renderAgenda(filteredItems);
+    em.renderAgenda(filteredItems, items);
   }
 
   const addContentDetailListeners = (container) => {
     if (!container) return;
     container.querySelectorAll(".ep-content-detail").forEach((detail) => {
+      // renderSetHtml conserva el DOM cuando el HTML no cambió: sin esta guarda
+      // se acumularía un listener de toggle por cada render.
+      if (detail.__eminusToggleBound) return;
+      detail.__eminusToggleBound = true;
       detail.addEventListener("toggle", () => {
         const index = Number(detail.getAttribute("data-item-index"));
         const item = em.state.pending[index];
@@ -708,7 +717,8 @@ em.renderLogs = function (logs) {
   em.renderSetHtml(em.panelEls.logBody, html);
 
   const clearBtn = em.panelEls.logBody.querySelector("#ep-clear-log");
-  if (clearBtn) {
+  if (clearBtn && !clearBtn.__eminusClearBound) {
+    clearBtn.__eminusClearBound = true;
     clearBtn.addEventListener("click", async () => {
       em.state.logs = [];
       const payload = {};

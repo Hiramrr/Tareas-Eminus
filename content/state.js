@@ -252,8 +252,8 @@ em.applyContentFilters = function (items, options) {
     if (selectedSort === "title") {
       return String(a.title || "").localeCompare(String(b.title || ""));
     }
-    const aTime = a.publishedRaw ? new Date(a.publishedRaw).getTime() : 0;
-    const bTime = b.publishedRaw ? new Date(b.publishedRaw).getTime() : 0;
+    const aTime = a.publishedRaw ? em.toEpoch(a.publishedRaw) : 0;
+    const bTime = b.publishedRaw ? em.toEpoch(b.publishedRaw) : 0;
     return selectedSort === "oldest" ? aTime - bTime : bTime - aTime;
   });
 

@@ -106,17 +106,25 @@ em.hydrateFromStorage = async function () {
     em.state.lastUpdatedAt = snapshot.updatedAt || null;
     em.state.lastContentScanAt = Number(snapshot.contentScanAt) || 0;
 
-    em.state.archivedIds = em.pruneArchivedIds(em.state.pending, em.state.archivedIds);
-    em.state.pinnedIds = em.prunePinnedIds(em.state.pending, em.state.pinnedIds);
-    em.state.notifiedUpcomingIds = em.pruneNotifiedUpcomingIds(em.state.pending, em.state.notifiedUpcomingIds);
-    em.state.readContentIds = em.pruneReadContentIds(em.state.pending, em.state.readContentIds);
-
+    // Solo escribe las claves cuya poda cambió algo; en la mayoría de cargas
+    // no cambia nada y no hace falta tocar storage.
     const prunePayload = {};
-    prunePayload[em.STORAGE_KEYS.ARCHIVED] = Array.from(em.state.archivedIds);
-    prunePayload[em.STORAGE_KEYS.PINNED] = Array.from(em.state.pinnedIds);
-    prunePayload[em.STORAGE_KEYS.NOTIFIED_UPCOMING] = Array.from(em.state.notifiedUpcomingIds);
-    prunePayload[em.STORAGE_KEYS.READ_CONTENT_IDS] = Array.from(em.state.readContentIds);
-    await em.storageSet(prunePayload);
+    const prunedSets = [
+      [em.STORAGE_KEYS.ARCHIVED, "archivedIds", em.pruneArchivedIds],
+      [em.STORAGE_KEYS.PINNED, "pinnedIds", em.prunePinnedIds],
+      [em.STORAGE_KEYS.NOTIFIED_UPCOMING, "notifiedUpcomingIds", em.pruneNotifiedUpcomingIds],
+      [em.STORAGE_KEYS.READ_CONTENT_IDS, "readContentIds", em.pruneReadContentIds]
+    ];
+    prunedSets.forEach(([storageKey, stateKey, prune]) => {
+      const pruned = prune(em.state.pending, em.state[stateKey]);
+      if (!em.setsEqual(pruned, em.state[stateKey])) {
+        em.state[stateKey] = pruned;
+        prunePayload[storageKey] = Array.from(pruned);
+      }
+    });
+    if (Object.keys(prunePayload).length) {
+      await em.storageSet(prunePayload);
+    }
 
     em.sortPendingItems(em.state.pending);
 

@@ -617,7 +617,7 @@ em.sortPendingItems = function (items) {
     if (a.kind !== "content" && b.kind === "content") return -1;
     if (a.kind === "content" && b.kind === "content") {
       if (a.publishedRaw && b.publishedRaw) {
-        return new Date(b.publishedRaw).getTime() - new Date(a.publishedRaw).getTime();
+        return em.toEpoch(b.publishedRaw) - em.toEpoch(a.publishedRaw);
       }
       if (a.publishedRaw) return -1;
       if (b.publishedRaw) return 1;
@@ -626,7 +626,7 @@ em.sortPendingItems = function (items) {
     if (!a.deadlineRaw && !b.deadlineRaw) return 0;
     if (!a.deadlineRaw) return 1;
     if (!b.deadlineRaw) return -1;
-    return new Date(a.deadlineRaw).getTime() - new Date(b.deadlineRaw).getTime();
+    return em.toEpoch(a.deadlineRaw) - em.toEpoch(b.deadlineRaw);
   });
   return items;
 };
