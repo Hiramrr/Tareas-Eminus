@@ -33,6 +33,61 @@ Funciones:
 | `logo.png` | Icono |
 | `jazmin.png` | Fondo decorativo del tema Jazmín |
 
+## Cómo funciona
+
+### Componentes y datos
+
+El script de contenido lee la sesión de Eminus y solicita datos al service worker. Este valida el origen y el endpoint antes de consultar la API.
+
+```mermaid
+flowchart LR
+    Page["Página de Eminus<br/>sesión activa"] --> Content["Script de contenido<br/>escaneo y panel"]
+    Content -->|"FETCH_EMINUS_JSON"| Worker["Service worker<br/>valida origen y ruta"]
+    Worker -->|"GET"| API["API de Eminus"]
+    API -->|"JSON"| Worker
+    Worker --> Content
+    Content --> Local["chrome.storage.local<br/>lectura e historial"]
+    Settings["Preferencias"] --> Local
+    Settings --> Sync["chrome.storage.sync"]
+    Popup["Popup"] -->|"lee el resumen"| Local
+    Popup -->|"abrir vista o actualizar"| Content
+```
+
+### Recorrido de un escaneo
+
+Las actividades se consultan en cada escaneo. Los escaneos automáticos reutilizan el contenido publicado durante 15 minutos; `[ actualizar ]` y `R` vuelven a consultarlo.
+
+```mermaid
+flowchart TD
+    Start["Carga, actualización manual<br/>o auto-refresh"] --> Token["Leer accessToken de Eminus"]
+    Token --> Courses["Consultar cursos"]
+    Courses --> Each["Por cada curso activo"]
+    Each --> Activities["Consultar actividades"]
+    Each --> ContentCheck{"Escaneo automático<br/>y contenido de menos de 15 min?"}
+    ContentCheck -->|"Sí"| Reuse["Reutilizar contenido guardado"]
+    ContentCheck -->|"No"| FetchContent["Consultar módulos y contenido publicado"]
+    Activities --> Merge["Combinar y ordenar resultados"]
+    Reuse --> Merge
+    FetchContent --> Merge
+    Merge --> Compare["Comparar con la lectura anterior"]
+    Compare --> Save["Guardar lectura e historial"]
+    Save --> Update["Actualizar panel y contador"]
+    Update --> Notify["Avisar si hay cambios o recordatorios"]
+```
+
+### Dónde se guardan los datos
+
+La lectura e historial quedan en el navegador. Las preferencias se guardan localmente y se sincronizan con Chrome.
+
+```mermaid
+flowchart LR
+    Scan["Escaneo"] --> Local["Almacenamiento local<br/>lectura, historial y estados"]
+    Preferences["Preferencias"] --> Local
+    Preferences --> Sync["Almacenamiento sincronizado<br/>apariencia, idioma y avisos"]
+    Local --> Panel["Panel de Eminus"]
+    Local --> Popup["Popup"]
+```
+
 ## Instalación (modo desarrollador)
 
 1. Abre `chrome://extensions/`
@@ -69,3 +124,11 @@ Requiere Node 22. Instala las herramientas con `npm install` y corre todo con `n
 El auto-refresh usa `chrome.alarms` y funciona con el panel plegado si hay una pestaña de Eminus abierta.
 
 Los escaneos automáticos (al cargar la página, auto-refresh, al volver la conexión) reutilizan el contenido publicado del último escaneo si tiene menos de 15 minutos; las actividades se consultan siempre. `[ actualizar ]` y la tecla `R` fuerzan un escaneo completo.
+
+## Datos y privacidad
+
+Miyu lee el `accessToken` de Eminus desde el almacenamiento de la página para consultar cursos, actividades y contenido. No lo copia al almacenamiento de la extensión.
+
+La extensión guarda en el navegador el último resultado del escaneo, el historial de cambios, el identificador de cuenta y estados como archivados, fijados y contenido leído. Sincroniza preferencias de apariencia, idioma, recordatorios y cursos con `chrome.storage.sync`; conserva también una copia local.
+
+En la pestaña `Configuración`, abre `Datos y preferencias` para borrar los datos de lectura o borrar los datos y preferencias. La segunda opción también elimina las preferencias sincronizadas.

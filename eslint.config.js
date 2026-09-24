@@ -36,7 +36,7 @@ const browserGlobals = {
 
 module.exports = [
   {
-    ignores: ["node_modules/"]
+    ignores: ["node_modules/", ".delta/"]
   },
   js.configs.recommended,
   {
