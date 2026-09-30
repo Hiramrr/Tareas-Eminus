@@ -64,6 +64,7 @@ module.exports = [
         console: "readonly",
         global: "writable",
         Response: "readonly",
+        Buffer: "readonly",
         DOMException: "readonly",
         AbortSignal: "readonly",
         setTimeout: "readonly",

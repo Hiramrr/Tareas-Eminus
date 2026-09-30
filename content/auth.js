@@ -66,6 +66,10 @@ em.startTokenWatcher = function (onToken, options) {
   window.addEventListener("storage", em.tokenStorageListener);
 };
 
+// Identificador estable de la cuenta, o null si el token no trae ninguno.
+// No hay que caer al payload del JWT: cambia con cada token nuevo, y quien
+// compara cuentas (hydrateFromStorage, scanPending) lo tomaría por otra cuenta
+// y borraría archivados, fijados y log. null significa "no comparar".
 em.getAccountIdFromToken = function (token) {
   if (!token) return null;
   try {
@@ -81,8 +85,9 @@ em.getAccountIdFromToken = function (token) {
         .join("")
     );
     const parsed = JSON.parse(jsonPayload);
-    return parsed.nameid || parsed.unique_name || parsed.sub || parsed.email || parsed.idPersona || parsed.matricula || base64Url;
-  } catch (err) {
-    return token.split(".")[1] || token;
+    const id = parsed.nameid || parsed.unique_name || parsed.sub || parsed.email || parsed.idPersona || parsed.matricula;
+    return id ? String(id) : null;
+  } catch (_) {
+    return null;
   }
 };
