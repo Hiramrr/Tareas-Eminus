@@ -9,8 +9,11 @@
 //    (em.t("prefijo_" + x)) se validan exigiendo que exista al menos una
 //    clave es con ese prefijo.
 // 3. Claves de es que nada referencia (aviso, no falla).
+// 4. Marcado en las traducciones: algunas se insertan con innerHTML, así que
+//    solo se admiten <strong>, <kbd> y <br>, sin atributos y balanceadas.
+//    Cualquier otro "<" debe ir escapado como &lt;.
 //
-// Sale con código 1 si falla 1 o 2.
+// Sale con código 1 si falla 1, 2 o 4.
 
 const fs = require("fs");
 const path = require("path");
@@ -97,6 +100,29 @@ const unused = [...esKeys].filter(
 if (unused.length) {
   console.warn(`aviso: ${unused.length} claves de es sin referencias en el código:`);
   unused.forEach((key) => console.warn(`  - ${key}`));
+}
+
+// 4. Solo marcado permitido en las traducciones.
+const ALLOWED_TAG_RE = /<(\/?)(strong|kbd)>|<br>/g;
+for (const [lang, dict] of Object.entries(i18n)) {
+  for (const [key, value] of Object.entries(dict)) {
+    if (typeof value !== "string" || !value.includes("<")) continue;
+    const depth = { strong: 0, kbd: 0 };
+    let balanced = true;
+    for (const match of value.matchAll(ALLOWED_TAG_RE)) {
+      if (!match[2]) continue;
+      depth[match[2]] += match[1] ? -1 : 1;
+      if (depth[match[2]] < 0) balanced = false;
+    }
+    const rest = value.replace(ALLOWED_TAG_RE, "");
+    if (rest.includes("<")) {
+      failed = true;
+      console.error(`[${lang}] "${key}": marcado no permitido (solo <strong>, <kbd> y <br>; escapa "<" como &lt;)`);
+    } else if (!balanced || depth.strong || depth.kbd) {
+      failed = true;
+      console.error(`[${lang}] "${key}": etiquetas sin cerrar o mal anidadas`);
+    }
+  }
 }
 
 if (failed) {
