@@ -20,8 +20,19 @@ const path = require("path");
 
 const root = path.join(__dirname, "..");
 
-// Carga content/i18n.js con un stub de window.
+// Carga los diccionarios de content/i18n/ y content/i18n.js con un stub de
+// window. Todo archivo de content/i18n/ debe estar también en el manifest.
 global.window = {};
+const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf8"));
+const manifestScripts = new Set(manifest.content_scripts.flatMap((entry) => entry.js || []));
+for (const file of fs.readdirSync(path.join(root, "content", "i18n")).filter((f) => f.endsWith(".js"))) {
+  const rel = "content/i18n/" + file;
+  if (!manifestScripts.has(rel)) {
+    console.error(`[manifest] ${rel} no está en content_scripts`);
+    process.exitCode = 1;
+  }
+  require(path.join(root, rel));
+}
 require(path.join(root, "content", "i18n.js"));
 const i18n = global.window.eminus.i18n;
 
