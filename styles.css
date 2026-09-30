@@ -99,6 +99,30 @@
   gap: 0;
 }
 
+#eminus-pending-panel.ep-collapsed.ep-size-compact .ep-header {
+  padding: 6px;
+}
+
+#eminus-pending-panel.ep-collapsed.ep-size-compact .ep-seal-art {
+  font-size: 4px;
+}
+
+#eminus-pending-panel.ep-collapsed.ep-size-compact .ep-collapsed-summary {
+  font-size: 10px;
+}
+
+#eminus-pending-panel.ep-collapsed.ep-size-wide .ep-header {
+  padding: 10px;
+}
+
+#eminus-pending-panel.ep-collapsed.ep-size-wide .ep-seal-art {
+  font-size: 7px;
+}
+
+#eminus-pending-panel.ep-collapsed.ep-size-wide .ep-collapsed-summary {
+  font-size: 12px;
+}
+
 #eminus-pending-panel * {
   box-sizing: border-box;
 }
