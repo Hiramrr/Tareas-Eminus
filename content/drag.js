@@ -90,6 +90,7 @@ em.setupPanelDrag = function () {
     if (Math.abs(event.clientX - em.dragState.startX) > 3 || Math.abs(event.clientY - em.dragState.startY) > 3) {
       em.dragState.moved = true;
     }
+    if (!em.dragState.moved) return;
     const next = em.clampPanelPosition(event.clientX - em.dragState.offsetX, event.clientY - em.dragState.offsetY);
     em.applyPanelPosition(next);
   });
@@ -100,7 +101,7 @@ em.setupPanelDrag = function () {
     const originalTarget = em.dragState.target;
     em.dragState = null;
     em.panelEls.root.classList.remove("ep-dragging");
-    await em.persistPanelPosition();
+    if (wasMoved) await em.persistPanelPosition();
 
     if (!wasMoved) {
       const isCatClick = originalTarget instanceof HTMLElement && originalTarget.closest("#ep-seal-art");
