@@ -27,9 +27,22 @@ window.eminus = window.eminus || {};
     openPanelView(target.view, false);
   };
 
+  // Alt+E y el atajo de chrome://extensions/shortcuts pueden llegar por la
+  // misma pulsación si el usuario asigna Alt+E allí: se ignora el segundo.
+  let lastShortcutToggleAt = 0;
+  const toggleFromShortcut = () => {
+    const now = Date.now();
+    if (now - lastShortcutToggleAt < 400) return;
+    lastShortcutToggleAt = now;
+    em.toggleCollapse();
+  };
+
   if (em.hasRuntimeApi && chrome.runtime?.onMessage) {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      if (message?.type === "OPEN_AND_REFRESH_PANEL") {
+      if (message?.type === "TOGGLE_PANEL") {
+        toggleFromShortcut();
+        sendResponse({ ok: true });
+      } else if (message?.type === "OPEN_AND_REFRESH_PANEL") {
         if (em.state.isCollapsed) em.toggleCollapse();
         em.scanPendingWhenTokenReady();
         sendResponse({ ok: true });
@@ -65,7 +78,7 @@ window.eminus = window.eminus || {};
   document.addEventListener("keydown", (e) => {
     if (e.altKey && !e.ctrlKey && !e.metaKey && (e.key === "e" || e.code === "KeyE")) {
       e.preventDefault();
-      em.toggleCollapse();
+      toggleFromShortcut();
       return;
     }
 

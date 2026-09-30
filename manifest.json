@@ -52,6 +52,11 @@
   "background": {
     "service_worker": "service-worker.js"
   },
+  "commands": {
+    "toggle-panel": {
+      "description": "Abrir o cerrar el panel en Eminus"
+    }
+  },
   "action": {
     "default_title": "Miyu --pendientes",
     "default_popup": "popup.html"

@@ -104,7 +104,7 @@ flowchart LR
 4. Pulsa el icono para ver el resumen desde cualquier pestaña
 5. Usa `[ actualizar ]` para refrescar
 6. En `Historial` ves los cambios
-7. `Alt+E` pliega y despliega el panel
+7. `Alt+E` pliega y despliega el panel. Si choca con otro atajo, puedes asignar uno propio en `chrome://extensions/shortcuts` (comando «Abrir o cerrar el panel en Eminus»)
 8. `/` busca, `Esc` limpia la búsqueda, `R` actualiza, `T` abre Hoy y `1`-`7` cambian de pestaña
 
 ## Desarrollo

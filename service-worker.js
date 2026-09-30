@@ -295,6 +295,16 @@ function buildAllowedEminusUrl(path) {
   return buildEminusApi8Url(path) || buildEminusApiUrl(path);
 }
 
+// Atajo configurable en chrome://extensions/shortcuts. Va sin tecla sugerida:
+// Alt+E choca con el menú de Chrome en Windows/Linux y en Mac capturaría
+// Option+E (la tecla muerta de "é") en todas las pestañas. Alt+E sigue
+// funcionando dentro de Eminus con su propio listener (content.js).
+chrome.commands.onCommand.addListener((command, tab) => {
+  if (command !== "toggle-panel" || !tab?.id) return;
+  if (!String(tab.url || "").startsWith("https://eminus.uv.mx/eminus4/")) return;
+  chrome.tabs.sendMessage(tab.id, { type: "TOGGLE_PANEL" }).catch(() => {});
+});
+
 chrome.action.onClicked.addListener((tab) => {
   if (tab?.id) {
     chrome.tabs.sendMessage(tab.id, { type: "OPEN_AND_REFRESH_PANEL" }).catch(() => {});

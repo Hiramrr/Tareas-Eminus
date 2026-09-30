@@ -16,9 +16,9 @@ function chromeStub() {
   return proxy;
 }
 
-function loadServiceWorker(fetchImpl) {
+function loadServiceWorker(fetchImpl, chromeImpl) {
   const context = vm.createContext({
-    chrome: chromeStub(),
+    chrome: chromeImpl || chromeStub(),
     fetch: fetchImpl,
     AbortSignal,
     URL,
@@ -85,4 +85,25 @@ test("requestJsonWithRetry: reintenta errores de red pero no timeouts", async ()
   });
   await assert.rejects(timeout.requestJsonWithRetry({ url: "https://eminus.uv.mx/x" }, noWait), { name: "TimeoutError" });
   assert.equal(calls, 1);
+});
+
+test("toggle-panel: solo se reenvía a pestañas de Eminus", async () => {
+  let onCommand = null;
+  const sent = [];
+  const base = chromeStub();
+  const chrome = new Proxy({}, {
+    get: (_, key) => {
+      if (key === "commands") return { onCommand: { addListener: (fn) => { onCommand = fn; } } };
+      if (key === "tabs") return { sendMessage: async (tabId, message) => { sent.push([tabId, message.type]); }, query: async () => [], create: async () => ({}) };
+      return base[key];
+    }
+  });
+  loadServiceWorker(async () => jsonResponse(200, {}), chrome);
+
+  onCommand("toggle-panel", { id: 1, url: "https://eminus.uv.mx/eminus4/page/course" });
+  onCommand("toggle-panel", { id: 2, url: "https://example.com/" });
+  onCommand("toggle-panel", { id: 3 });
+  onCommand("otro-comando", { id: 4, url: "https://eminus.uv.mx/eminus4/" });
+
+  assert.deepEqual(sent, [[1, "TOGGLE_PANEL"]]);
 });
