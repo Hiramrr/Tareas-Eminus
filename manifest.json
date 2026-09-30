@@ -58,7 +58,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["jazmin.png", "assets/twemoji/*.svg"],
+      "resources": ["jazmin.webp", "assets/twemoji/*.svg"],
       "matches": ["https://eminus.uv.mx/*"]
     }
   ]

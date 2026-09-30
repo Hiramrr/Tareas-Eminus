@@ -32,7 +32,7 @@ Funciones:
 | `popup.html` / `popup.js` / `popup.css` | Resumen al pulsar el icono |
 | `detail-nav.js` / `detail-nav.css` | Botón volver en el detalle de actividad |
 | `logo.png` | Icono |
-| `jazmin.png` | Fondo decorativo del tema Jazmín |
+| `jazmin.webp` | Fondo decorativo del tema Jazmín |
 
 ## Cómo funciona
 

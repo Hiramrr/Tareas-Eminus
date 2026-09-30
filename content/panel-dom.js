@@ -330,7 +330,7 @@ em.createPanel = function () {
 
   const jazminBg = root.querySelector("#ep-jazmin-bg");
   if (jazminBg) {
-    jazminBg.src = chrome.runtime.getURL("jazmin.png");
+    jazminBg.src = chrome.runtime.getURL("jazmin.webp");
   }
 
   em.panelEls = {
