@@ -39,9 +39,13 @@ em.detectChanges = function (pending, previousPending) {
   return changes;
 };
 
-em.appendLog = async function (pending, knownIdsBefore, visiblePending, previousPending) {
+// options.incomplete: la lectura no trajo todos los cursos. Los IDs conocidos
+// se acumulan en vez de reemplazarse; si no, las tareas de un curso que falló
+// una vez volverían a contar como nuevas en la siguiente lectura completa.
+em.appendLog = async function (pending, knownIdsBefore, visiblePending, previousPending, options) {
   visiblePending = visiblePending || pending;
   previousPending = previousPending || [];
+  const incomplete = options?.incomplete === true;
   const nowIso = new Date().toISOString();
   const currentIds = pending.map((item) => item.id);
   const newCount = currentIds.filter((id) => !knownIdsBefore.has(id)).length;
@@ -82,9 +86,12 @@ em.appendLog = async function (pending, knownIdsBefore, visiblePending, previous
     newContentCount,
     overdueCount,
     contentScanAt: Number(em.state.lastContentScanAt) || 0,
+    incomplete,
     pending
   };
-  payload[em.STORAGE_KEYS.KNOWN_IDS] = currentIds;
+  payload[em.STORAGE_KEYS.KNOWN_IDS] = incomplete
+    ? Array.from(new Set([...knownIdsBefore, ...currentIds]))
+    : currentIds;
   await em.storageSet(payload);
 
   return { newCount, newTaskCount, newContentCount, overdueCount, updatedAt: nowIso, changes };

@@ -107,7 +107,9 @@ em.hydrateFromStorage = async function () {
     em.state.lastContentScanAt = Number(snapshot.contentScanAt) || 0;
 
     // Solo escribe las claves cuya poda cambió algo; en la mayoría de cargas
-    // no cambia nada y no hace falta tocar storage.
+    // no cambia nada y no hace falta tocar storage. Un snapshot incompleto
+    // (falló algún curso) no se usa para podar: borraría archivados y fijados
+    // de los cursos que no se pudieron leer.
     const prunePayload = {};
     const prunedSets = [
       [em.STORAGE_KEYS.ARCHIVED, "archivedIds", em.pruneArchivedIds],
@@ -115,13 +117,15 @@ em.hydrateFromStorage = async function () {
       [em.STORAGE_KEYS.NOTIFIED_UPCOMING, "notifiedUpcomingIds", em.pruneNotifiedUpcomingIds],
       [em.STORAGE_KEYS.READ_CONTENT_IDS, "readContentIds", em.pruneReadContentIds]
     ];
-    prunedSets.forEach(([storageKey, stateKey, prune]) => {
-      const pruned = prune(em.state.pending, em.state[stateKey]);
-      if (!em.setsEqual(pruned, em.state[stateKey])) {
-        em.state[stateKey] = pruned;
-        prunePayload[storageKey] = Array.from(pruned);
-      }
-    });
+    if (!snapshot.incomplete) {
+      prunedSets.forEach(([storageKey, stateKey, prune]) => {
+        const pruned = prune(em.state.pending, em.state[stateKey]);
+        if (!em.setsEqual(pruned, em.state[stateKey])) {
+          em.state[stateKey] = pruned;
+          prunePayload[storageKey] = Array.from(pruned);
+        }
+      });
+    }
     if (Object.keys(prunePayload).length) {
       await em.storageSet(prunePayload);
     }
@@ -371,7 +375,9 @@ em.scanPending = async function (options = {}) {
       (Date.now() - Number(em.state.lastContentScanAt)) < em.CONTENT_RESCAN_MS;
     const reuseContent = options.silent === true && contentIsFresh && previousContentItems.length > 0;
 
+    const fetchFailures = [];
     const pending = await em.buildPendingData(token, em.state.pinnedIds, {
+      failures: fetchFailures,
       reusedContentItems: reuseContent ? previousContentItems : null,
       onActivitiesReady: async (activityPending) => {
         em.applyArchivedState(activityPending, em.state.archivedIds);
@@ -394,25 +400,37 @@ em.scanPending = async function (options = {}) {
         await em.syncBadge(visibleActivities.length, 0, overdueCount);
       }
     });
+    // Si falló algún curso o unidad, el resultado está incompleto: no se poda
+    // nada ni se reemplazan los IDs conocidos, para que esas tareas no se
+    // pierdan (archivadas, fijadas, leídas) ni vuelvan a contar como nuevas.
+    const scanIncomplete = fetchFailures.length > 0;
+    if (scanIncomplete) {
+      console.warn("[Eminus Pending] Lectura incompleta: " + fetchFailures.length + " consultas fallaron.");
+    }
+    // Con contenido incompleto no se da por fresco: el siguiente escaneo
+    // automático lo vuelve a pedir en lugar de reutilizar lo parcial.
     if (!reuseContent) {
-      em.state.lastContentScanAt = Date.now();
+      em.state.lastContentScanAt = scanIncomplete ? 0 : Date.now();
     }
     em.applyArchivedState(pending, em.state.archivedIds);
     em.applyPinnedState(pending, em.state.pinnedIds);
-    em.state.readContentIds = em.pruneReadContentIds(pending, em.state.readContentIds);
 
     // Una sola escritura agrupada en lugar de varios storageSet secuenciales.
     const prunePayload = {};
-    const prunedArchived = em.pruneArchivedIds(pending, em.state.archivedIds);
-    if (!em.setsEqual(prunedArchived, em.state.archivedIds)) {
-      em.state.archivedIds = prunedArchived;
-      prunePayload[em.STORAGE_KEYS.ARCHIVED] = Array.from(prunedArchived);
-    }
+    if (!scanIncomplete) {
+      em.state.readContentIds = em.pruneReadContentIds(pending, em.state.readContentIds);
 
-    const prunedPinned = em.prunePinnedIds(pending, em.state.pinnedIds);
-    if (!em.setsEqual(prunedPinned, em.state.pinnedIds)) {
-      em.state.pinnedIds = prunedPinned;
-      prunePayload[em.STORAGE_KEYS.PINNED] = Array.from(prunedPinned);
+      const prunedArchived = em.pruneArchivedIds(pending, em.state.archivedIds);
+      if (!em.setsEqual(prunedArchived, em.state.archivedIds)) {
+        em.state.archivedIds = prunedArchived;
+        prunePayload[em.STORAGE_KEYS.ARCHIVED] = Array.from(prunedArchived);
+      }
+
+      const prunedPinned = em.prunePinnedIds(pending, em.state.pinnedIds);
+      if (!em.setsEqual(prunedPinned, em.state.pinnedIds)) {
+        em.state.pinnedIds = prunedPinned;
+        prunePayload[em.STORAGE_KEYS.PINNED] = Array.from(prunedPinned);
+      }
     }
 
     const visiblePending = em.getVisiblePending(pending);
@@ -451,7 +469,7 @@ em.scanPending = async function (options = {}) {
     em.state.isScanning = false;
     em.renderPending(pending);
 
-    const logMeta = await em.appendLog(pending, knownIds, visiblePending, previousPending);
+    const logMeta = await em.appendLog(pending, knownIds, visiblePending, previousPending, { incomplete: scanIncomplete });
 
     const postScanPayload = {};
     if (upcomingNotifications.length > 0) {

@@ -1,6 +1,11 @@
+// Sin límite, una petición colgada deja el escaneo en "leyendo..." hasta que
+// Chrome detiene el service worker.
+const REQUEST_TIMEOUT_MS = 15000;
+
 async function requestJson({ url, method = "GET", token = "", body = null }) {
   const response = await fetch(url, {
     method,
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     headers: {
       Authorization: token ? `Bearer ${token}` : "",
       Accept: "application/json",
@@ -12,11 +17,45 @@ async function requestJson({ url, method = "GET", token = "", body = null }) {
   let data = null;
   try {
     data = await response.json();
-  } catch (_) {
+  } catch (err) {
+    // Un timeout a mitad del cuerpo no es "respuesta vacía": se propaga.
+    if (err?.name === "TimeoutError") throw err;
     data = null;
   }
 
-  return { ok: response.ok, status: response.status, data };
+  return { ok: response.ok, status: response.status, data, retryAfter: response.headers.get("Retry-After") };
+}
+
+// Reintentos solo para lecturas (GET, idempotentes) y fallos transitorios:
+// saturación (429), puerta de enlace caída (502/503/504) o error de red. Un
+// 500 o un 4xx suelen repetirse igual, y un timeout ya consumió 15 s, así que
+// esos no se reintentan.
+const RETRY_DELAYS_MS = [600, 1800];
+const RETRY_AFTER_MAX_MS = 5000;
+const RETRYABLE_STATUS = new Set([429, 502, 503, 504]);
+
+function getRetryDelayMs(attempt, retryAfter) {
+  const seconds = Number(retryAfter);
+  if (Number.isFinite(seconds) && seconds >= 0) {
+    return Math.min(seconds * 1000, RETRY_AFTER_MAX_MS);
+  }
+  return RETRY_DELAYS_MS[attempt];
+}
+
+async function requestJsonWithRetry(options, wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))) {
+  for (let attempt = 0; ; attempt += 1) {
+    const canRetry = attempt < RETRY_DELAYS_MS.length;
+    let result;
+    try {
+      result = await requestJson(options);
+    } catch (err) {
+      if (!canRetry || err?.name === "TimeoutError") throw err;
+      await wait(getRetryDelayMs(attempt));
+      continue;
+    }
+    if (result.ok || !canRetry || !RETRYABLE_STATUS.has(result.status)) return result;
+    await wait(getRetryDelayMs(attempt, result.retryAfter));
+  }
 }
 
 const EMINUS_CONTENT_URLS = [
@@ -361,7 +400,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     (async () => {
       try {
-        const result = await requestJson({ url, method: "GET", token });
+        const result = await requestJsonWithRetry({ url, method: "GET", token });
         if (!result.ok) {
           sendResponse({ ok: false, status: result.status, path, error: `HTTP ${result.status} en ${path}` });
           return;
@@ -376,8 +415,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 ? [result.data]
                 : [];
         sendResponse({ ok: true, contenido });
-      } catch (_) {
-        sendResponse({ ok: false, error: `Error de red al consultar ${path}` });
+      } catch (err) {
+        const timedOut = err?.name === "TimeoutError";
+        sendResponse({
+          ok: false,
+          path,
+          error: timedOut ? `Tiempo de espera agotado al consultar ${path}` : `Error de red al consultar ${path}`
+        });
       }
     })();
 

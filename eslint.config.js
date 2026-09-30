@@ -9,6 +9,7 @@ const browserGlobals = {
   navigator: "readonly",
   location: "readonly",
   fetch: "readonly",
+  AbortSignal: "readonly",
   URL: "readonly",
   URLSearchParams: "readonly",
   Blob: "readonly",
@@ -62,6 +63,11 @@ module.exports = [
         process: "readonly",
         console: "readonly",
         global: "writable",
+        Response: "readonly",
+        DOMException: "readonly",
+        AbortSignal: "readonly",
+        setTimeout: "readonly",
+        URL: "readonly",
         __dirname: "readonly"
       }
     }

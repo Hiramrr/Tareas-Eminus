@@ -9,6 +9,29 @@ em.CONTENT_CACHE_MAX_ENTRIES = 120;
 // y la tecla R siempre fuerzan un escaneo completo.
 em.CONTENT_RESCAN_MS = 15 * 60 * 1000;
 em.FETCH_CONCURRENCY = 6;
+// Tope global de peticiones en vuelo hacia Eminus. Se aplica dentro de
+// fetchJson, así que los mapWithConcurrency anidados (cursos × unidades) ya no
+// multiplican la carga: sin él podían salir hasta 6 × 6 = 36 a la vez.
+em.MAX_INFLIGHT_REQUESTS = 6;
+em.inflightRequests = 0;
+em.inflightQueue = [];
+
+em.withRequestSlot = async function (task) {
+  if (em.inflightRequests < em.MAX_INFLIGHT_REQUESTS) {
+    em.inflightRequests += 1;
+  } else {
+    // El que libera el cupo lo cede directamente (ver finally), así nadie más
+    // puede colarse entre la liberación y la reanudación.
+    await new Promise((resolve) => em.inflightQueue.push(resolve));
+  }
+  try {
+    return await task();
+  } finally {
+    const next = em.inflightQueue.shift();
+    if (next) next();
+    else em.inflightRequests -= 1;
+  }
+};
 
 em.isContentCacheablePath = function (path) {
   return typeof path === "string" && path.indexOf("/Contenido/") === 0;
@@ -71,11 +94,11 @@ em.fetchJson = async function (path, token) {
 
   if (em.hasRuntimeApi) {
     try {
-      const bgResponse = await chrome.runtime.sendMessage({
+      const bgResponse = await em.withRequestSlot(() => chrome.runtime.sendMessage({
         type: "FETCH_EMINUS_JSON",
         path,
         token
-      });
+      }));
       if (!bgResponse?.ok) {
         const responseError = new Error(bgResponse?.error || em.t("error_network") + " " + path);
         responseError.status = Number(bgResponse?.status || 0);
@@ -558,8 +581,11 @@ em.mapWithConcurrency = async function (items, limit, mapper) {
   return results;
 };
 
-em.buildPublishedContentData = async function (token, courses, pinnedSet) {
+// `failures` (opcional) acumula las rutas que no se pudieron leer: el llamador
+// lo usa para saber que el resultado está incompleto.
+em.buildPublishedContentData = async function (token, courses, pinnedSet, failures) {
   pinnedSet = pinnedSet || new Set();
+  failures = Array.isArray(failures) ? failures : [];
   const itemsByCourse = await em.mapWithConcurrency(courses, em.FETCH_CONCURRENCY, async (cEntry) => {
     const course = cEntry?.curso || {};
     const courseId = em.normalizePositiveId(course.idCurso ?? cEntry?.idCurso ?? course.courseId ?? cEntry?.courseId);
@@ -567,9 +593,11 @@ em.buildPublishedContentData = async function (token, courses, pinnedSet) {
     if (!courseId || !courseName) return [];
 
     let units = [];
+    const unitsPath = "/Contenido/getUnidades/" + courseId + "/0";
     try {
-      units = await em.fetchJson("/Contenido/getUnidades/" + courseId + "/0", token);
+      units = await em.fetchJson(unitsPath, token);
     } catch (_) {
+      failures.push(unitsPath);
       console.warn("[Eminus Pending] No se pudo cargar contenido del curso " + courseId + " (" + courseName + ")");
       return [];
     }
@@ -584,9 +612,11 @@ em.buildPublishedContentData = async function (token, courses, pinnedSet) {
       if (!unitId) return unitItems;
 
       let elements = [];
+      const elementsPath = "/Contenido/getElementos/" + courseId + "/" + unitId;
       try {
-        elements = await em.fetchJson("/Contenido/getElementos/" + courseId + "/" + unitId, token);
+        elements = await em.fetchJson(elementsPath, token);
       } catch (_) {
+        failures.push(elementsPath);
         elements = [];
       }
 
@@ -631,9 +661,12 @@ em.sortPendingItems = function (items) {
   return items;
 };
 
+// options.failures (opcional): arreglo donde se anotan las rutas que fallaron.
+// Si queda con elementos, el resultado no incluye todos los cursos.
 em.buildPendingData = async function (token, pinnedSet, options) {
   pinnedSet = pinnedSet || new Set();
   options = options || {};
+  const failures = Array.isArray(options.failures) ? options.failures : [];
   const coursesRaw = await em.fetchJson("/Course/getAllCourses", token);
   const courses = em.filterActiveCourses(coursesRaw);
   const pending = [];
@@ -645,9 +678,11 @@ em.buildPendingData = async function (token, pinnedSet, options) {
     if (!courseId || !courseName) return [];
 
     let activities = [];
+    const activitiesPath = "/Activity/getActividadesEstudiante/" + courseId;
     try {
-      activities = await em.fetchJson("/Activity/getActividadesEstudiante/" + courseId, token);
+      activities = await em.fetchJson(activitiesPath, token);
     } catch (_) {
+      failures.push(activitiesPath);
       console.warn("[Eminus Pending] " + em.t("error_load_activities") + " " + courseId + " (" + courseName + ")");
       return [];
     }
@@ -694,7 +729,7 @@ em.buildPendingData = async function (token, pinnedSet, options) {
 
   const contentItems = Array.isArray(options.reusedContentItems)
     ? options.reusedContentItems
-    : await em.buildPublishedContentData(token, courses, pinnedSet);
+    : await em.buildPublishedContentData(token, courses, pinnedSet, failures);
   pending.push(...contentItems);
 
   return em.sortPendingItems(pending);

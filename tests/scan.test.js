@@ -93,3 +93,54 @@ test("renderCachedSnapshotFallback: restaura la última lectura y sus fijados", 
   assert.equal(em.state.pending[0].pinned, true);
   assert.equal(em.state.lastUpdatedAt, "2026-09-24T12:00:00.000Z");
 });
+
+test("buildPendingData: anota en failures los cursos que no se pudieron leer", async () => {
+  const deadline = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
+  em.fetchJson = async (path) => {
+    if (path === "/Course/getAllCourses") {
+      return [{ curso: { idCurso: 17, nombre: "Álgebra" } }, { curso: { idCurso: 18, nombre: "Física" } }];
+    }
+    if (path === "/Activity/getActividadesEstudiante/17") return [{ idActividad: 42, titulo: "Tarea", fechaTermino: deadline }];
+    if (path === "/Activity/getActividadesEstudiante/18") throw new Error("HTTP 500");
+    if (path === "/Contenido/getUnidades/17/0") return [];
+    if (path === "/Contenido/getUnidades/18/0") throw new Error("timeout");
+    throw new Error("Endpoint inesperado: " + path);
+  };
+
+  try {
+    const failures = [];
+    const pending = await em.buildPendingData("token", new Set(), { failures });
+
+    assert.deepEqual(pending.map((item) => item.id), ["17:42"]);
+    assert.deepEqual(failures.sort(), ["/Activity/getActividadesEstudiante/18", "/Contenido/getUnidades/18/0"]);
+  } finally {
+    em.fetchJson = fetchJson;
+  }
+});
+
+test("fetchJson: nunca hay más de MAX_INFLIGHT_REQUESTS peticiones en vuelo", async () => {
+  let active = 0;
+  let peak = 0;
+  em.hasRuntimeApi = true;
+  global.chrome = {
+    runtime: {
+      sendMessage: async () => {
+        active += 1;
+        peak = Math.max(peak, active);
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        active -= 1;
+        return { ok: true, contenido: [] };
+      }
+    }
+  };
+
+  // Fan-out anidado como el de buildPublishedContentData: 6 cursos × 6 unidades.
+  const ids = Array.from({ length: 6 }, (_, i) => i + 1);
+  await em.mapWithConcurrency(ids, 6, (course) =>
+    em.mapWithConcurrency(ids, 6, (unit) => em.fetchJson("/Activity/x/" + course + "/" + unit, "token"))
+  );
+
+  assert.equal(peak, em.MAX_INFLIGHT_REQUESTS);
+  assert.equal(em.inflightRequests, 0);
+  assert.equal(em.inflightQueue.length, 0);
+});
