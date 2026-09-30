@@ -24,6 +24,7 @@
         "content/state.js",
         "content/read-state.js",
         "content/qol.js",
+        "content/export.js",
         "content/toast.js",
         "content/drag.js",
         "content/render.js",

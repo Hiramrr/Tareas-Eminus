@@ -218,6 +218,11 @@ function buildEminusApi8Url(path) {
     return "https://eminus.uv.mx/eminusapi8/api/Activity/getActividadesEstudiante/" + encodeURIComponent(activityMatch[1]);
   }
 
+  const activityDetailMatch = normalizedPath.match(/^\/Activity\/getActividadEstudiante\/([1-9]\d{0,18})\/([1-9]\d{0,18})$/);
+  if (activityDetailMatch) {
+    return "https://eminus.uv.mx/eminusapi8/api/Activity/getActividadEstudiante/" + encodeURIComponent(activityDetailMatch[1]) + "/" + encodeURIComponent(activityDetailMatch[2]);
+  }
+
   return "";
 }
 

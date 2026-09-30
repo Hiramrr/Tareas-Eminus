@@ -17,6 +17,7 @@ Funciones:
 - Popup con resumen, estado de sincronización y próximas entregas
 - Portada con carga semanal y siguiente tarea
 - Marcar contenido como leído o no leído
+- Descargar una tarea en `.zip` con su descripción en PDF y los archivos adjuntos
 
 ## Archivos
 

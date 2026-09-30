@@ -12,6 +12,7 @@ const browserGlobals = {
   URL: "readonly",
   URLSearchParams: "readonly",
   Blob: "readonly",
+  TextEncoder: "readonly",
   atob: "readonly",
   btoa: "readonly",
   setTimeout: "readonly",

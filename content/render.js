@@ -64,6 +64,9 @@ em.ensureContainerDelegation = function (container) {
     } else if (action === "export-ics") {
       const item = findItemByIndex(index);
       if (item && em.exportItemCalendar) em.exportItemCalendar(item);
+    } else if (action === "download-task") {
+      const item = findItemByIndex(index);
+      if (item && em.downloadActivityBundle) await em.downloadActivityBundle(item);
     } else if (action === "pin") {
       await em.pinItemByIndex(index);
     } else if (action === "unpin") {
@@ -460,7 +463,10 @@ em.renderPending = function (items) {
         const icsHtml = showPin && item.kind !== "content" && item.deadlineRaw
           ? `<button class="ep-mini-btn ep-ics-btn" type="button" data-action="export-ics" data-item-index="${originalIndex}" title="${em.escapeHtml(em.t("action_export_task"))}">.ics</button>`
           : "";
-        const buttonsHtml = [pinHtml, icsHtml, actionHtml].filter(Boolean).join("");
+        const zipHtml = showPin && item.kind !== "content" && item.activityId
+          ? `<button class="ep-mini-btn ep-zip-btn" type="button" data-action="download-task" data-item-index="${originalIndex}" title="${em.escapeHtml(em.t("action_download_task"))}">.zip</button>`
+          : "";
+        const buttonsHtml = [pinHtml, icsHtml, zipHtml, actionHtml].filter(Boolean).join("");
         const contentParts = [];
         if (item.kind === "content") {
           contentParts.push(item.contentTypeLabel || em.t("content_label"));
