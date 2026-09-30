@@ -62,12 +62,7 @@ window.eminus = window.eminus || {};
 
   em.createPanel();
   em.restorePanelPosition();
-  window.addEventListener("resize", () => {
-    if (!em.panelEls?.root) return;
-    const left = parseFloat(em.panelEls.root.style.left);
-    const top = parseFloat(em.panelEls.root.style.top);
-    if (Number.isFinite(left) && Number.isFinite(top)) em.applyPanelPosition({ left, top });
-  });
+  window.addEventListener("resize", () => em.layoutPanel());
   em.startRouteObserver();
   em.hydrateFromStorage().then(async () => {
     await consumePopupTargetView();

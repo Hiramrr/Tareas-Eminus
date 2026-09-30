@@ -16,18 +16,35 @@ em.clampPanelPosition = function (left, top) {
   };
 };
 
+// El ancla es la posición elegida al arrastrar. La posición visible se
+// deriva de ella: si el panel abierto no cabe hacia abajo, se abre hacia
+// arriba, y al minimizarlo vuelve exactamente al ancla.
+em.layoutPanel = function () {
+  if (!em.panelEls || !em.panelEls.root || !em.panelAnchor) return;
+  const root = em.panelEls.root;
+  const { left, top } = em.panelAnchor;
+  const height = root.getBoundingClientRect().height;
+  let nextTop = top;
+  if (em.state.isCollapsed) {
+    em.collapsedPanelHeight = height;
+  } else if (top + height > window.innerHeight - 8) {
+    nextTop = top + (em.collapsedPanelHeight || 0) - height;
+  }
+  const next = em.clampPanelPosition(left, nextTop);
+  root.style.left = next.left + "px";
+  root.style.top = next.top + "px";
+  root.style.right = "auto";
+};
+
 em.applyPanelPosition = function (position) {
   if (!em.panelEls || !em.panelEls.root || !position) return;
-  const next = em.clampPanelPosition(Number(position.left || 16), Number(position.top || 96));
-  em.panelEls.root.style.left = next.left + "px";
-  em.panelEls.root.style.top = next.top + "px";
-  em.panelEls.root.style.right = "auto";
+  em.panelAnchor = { left: Number(position.left || 16), top: Number(position.top || 96) };
+  em.layoutPanel();
 };
 
 em.persistPanelPosition = async function () {
-  if (!em.panelEls || !em.panelEls.root) return;
-  const left = parseFloat(em.panelEls.root.style.left);
-  const top = parseFloat(em.panelEls.root.style.top);
+  if (!em.panelAnchor) return;
+  const { left, top } = em.panelAnchor;
   if (!Number.isFinite(left) || !Number.isFinite(top)) return;
   const payload = {};
   payload[em.STORAGE_KEYS.PANEL_POSITION] = { left, top };
@@ -44,6 +61,10 @@ em.restorePanelPosition = async function () {
 
 em.setupPanelDrag = function () {
   if (!em.panelEls || !em.panelEls.header || !em.panelEls.root) return;
+
+  if (typeof window.ResizeObserver === "function") {
+    new window.ResizeObserver(() => em.layoutPanel()).observe(em.panelEls.root);
+  }
 
   em.panelEls.header.addEventListener("pointerdown", (event) => {
     const target = event.target;

@@ -37,6 +37,7 @@ em.setPanelCollapsed = function (isCollapsed, shouldPersist = true) {
     em.panelEls.collapseBtn.title = em.state.isCollapsed ? em.t("expand_tooltip") : em.t("collapse_tooltip");
   }
   if (em.updateCollapsedSummary) em.updateCollapsedSummary();
+  if (em.layoutPanel) em.layoutPanel();
   if (shouldPersist) em.schedulePanelUiStatePersist();
 };
 
