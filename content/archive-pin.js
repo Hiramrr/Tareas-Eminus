@@ -17,6 +17,7 @@ em.persistArchiveState = async function () {
     updatedAt,
     pendingCount,
     contentScanAt: Number(em.state.lastContentScanAt) || 0,
+    incomplete: em.state.lastScanIncomplete === true,
     pending: em.state.pending
   };
   await em.storageSet(payload2);
@@ -73,7 +74,6 @@ em.hideContentItemWithUndo = async function (index) {
   const item = em.state.pending[index];
   if (!item || item.kind !== "content" || item.archived) return;
 
-  const previousIds = new Set(em.state.archivedIds);
   em.state.archivedIds.add(item.id);
   item.archived = true;
 
@@ -87,8 +87,10 @@ em.hideContentItemWithUndo = async function (index) {
       action: {
         label: em.t("undo"),
         onClick: async () => {
-          em.state.archivedIds = previousIds;
-          if (em.applyArchivedState) em.applyArchivedState(em.state.pending, em.state.archivedIds);
+          // Solo revierte lo que ocultó esta acción: restaurar una copia del
+          // set anterior desharía también lo archivado después.
+          em.state.archivedIds.delete(item.id);
+          em.applyArchivedState(em.state.pending, em.state.archivedIds);
           em.renderPending(em.state.pending);
           await em.persistArchiveState();
           em.setStatus(em.t("status_restored"));
@@ -119,7 +121,6 @@ em.archiveContentByCourse = async function (courseName) {
   const items = em.getContentItems(em.state.pending).filter((item) => !item.archived && item.course === target);
   if (!items.length) return;
 
-  const previousIds = new Set(em.state.archivedIds);
   items.forEach((item) => {
     em.state.archivedIds.add(item.id);
     item.archived = true;
@@ -134,8 +135,8 @@ em.archiveContentByCourse = async function (courseName) {
       action: {
         label: em.t("undo"),
         onClick: async () => {
-          em.state.archivedIds = previousIds;
-          if (em.applyArchivedState) em.applyArchivedState(em.state.pending, em.state.archivedIds);
+          items.forEach((archivedItem) => em.state.archivedIds.delete(archivedItem.id));
+          em.applyArchivedState(em.state.pending, em.state.archivedIds);
           em.renderPending(em.state.pending);
           await em.persistArchiveState();
           em.setStatus(em.t("status_restored"));
@@ -148,7 +149,6 @@ em.archiveContentByCourse = async function (courseName) {
 em.archiveAllOverdue = async function () {
   const items = em.getVisiblePending(em.state.pending).filter((item) => item.urgency === "overdue");
   if (!items.length) return;
-  const previousIds = new Set(em.state.archivedIds);
   items.forEach((item) => {
     em.state.archivedIds.add(item.id);
     item.archived = true;
@@ -162,8 +162,8 @@ em.archiveAllOverdue = async function () {
       action: {
         label: em.t("undo"),
         onClick: async () => {
-          em.state.archivedIds = previousIds;
-          if (em.applyArchivedState) em.applyArchivedState(em.state.pending, em.state.archivedIds);
+          items.forEach((archivedItem) => em.state.archivedIds.delete(archivedItem.id));
+          em.applyArchivedState(em.state.pending, em.state.archivedIds);
           em.renderPending(em.state.pending);
           await em.persistArchiveState();
           em.setStatus(em.t("status_restored"));
@@ -213,7 +213,6 @@ em.unpinItemByIndex = async function (index) {
 em.unpinAllItems = async function () {
   const items = em.state.pending.filter((item) => item.pinned);
   if (!items.length) return;
-  const previousIds = new Set(em.state.pinnedIds);
   items.forEach((item) => {
     em.state.pinnedIds.delete(item.id);
     item.pinned = false;
@@ -232,8 +231,8 @@ em.unpinAllItems = async function () {
       action: {
         label: em.t("undo"),
         onClick: async () => {
-          em.state.pinnedIds = previousIds;
-          if (em.applyPinnedState) em.applyPinnedState(em.state.pending, em.state.pinnedIds);
+          items.forEach((pinnedItem) => em.state.pinnedIds.add(pinnedItem.id));
+          em.applyPinnedState(em.state.pending, em.state.pinnedIds);
           if (em.sortPendingItems) {
             em.sortPendingItems(em.state.pending);
           } else {

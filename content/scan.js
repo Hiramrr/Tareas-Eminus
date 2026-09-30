@@ -105,6 +105,7 @@ em.hydrateFromStorage = async function () {
     em.applyPinnedState(em.state.pending, em.state.pinnedIds);
     em.state.lastUpdatedAt = snapshot.updatedAt || null;
     em.state.lastContentScanAt = Number(snapshot.contentScanAt) || 0;
+    em.state.lastScanIncomplete = snapshot.incomplete === true;
 
     // Solo escribe las claves cuya poda cambió algo; en la mayoría de cargas
     // no cambia nada y no hace falta tocar storage. Un snapshot incompleto
@@ -279,6 +280,7 @@ em.renderCachedSnapshotFallback = async function () {
   em.sortPendingItems(em.state.pending);
   em.state.lastUpdatedAt = cached.updatedAt;
   em.state.lastContentScanAt = Number(cached.contentScanAt) || 0;
+  em.state.lastScanIncomplete = cached.incomplete === true;
   em.renderPending(em.state.pending);
   em.renderLogs(em.state.logs);
   if (em.panelEls && em.panelEls.subtitle) {
@@ -404,6 +406,7 @@ em.scanPending = async function (options = {}) {
     // nada ni se reemplazan los IDs conocidos, para que esas tareas no se
     // pierdan (archivadas, fijadas, leídas) ni vuelvan a contar como nuevas.
     const scanIncomplete = fetchFailures.length > 0;
+    em.state.lastScanIncomplete = scanIncomplete;
     if (scanIncomplete) {
       console.warn("[Eminus Pending] Lectura incompleta: " + fetchFailures.length + " consultas fallaron.");
     }

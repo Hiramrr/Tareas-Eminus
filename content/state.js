@@ -15,6 +15,9 @@ em.state = {
   notifiedUpcomingIds: new Set(),
   lastUpdatedAt: null,
   lastContentScanAt: 0,
+  // La última lectura no trajo todos los cursos (ver appendLog). Se replica en
+  // el snapshot para que nadie lo use para podar.
+  lastScanIncomplete: false,
   isArchiveView: false,
   lastTabBeforeArchive: "pending",
   reminderMode: "staggered",
@@ -164,7 +167,6 @@ em.applyAdvancedFilters = function (items, options) {
 
   const now = new Date();
   const nowMs = now.getTime();
-  const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   const dayMs = 24 * 60 * 60 * 1000;
 
   const filtered = items.filter((item) => {
@@ -202,7 +204,9 @@ em.applyAdvancedFilters = function (items, options) {
       } else if (selectedDateRange === "30d") {
         if (deadlineMs < nowMs || deadlineMs > nowMs + 30 * dayMs) return false;
       } else if (selectedDateRange === "overdue") {
-        if (deadlineMs >= startToday) return false;
+        // Mismo criterio que classifyUrgency: vencida en cuanto pasa la hora,
+        // no a partir de mañana.
+        if (deadlineMs >= nowMs) return false;
       }
     }
 
