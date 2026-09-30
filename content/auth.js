@@ -2,7 +2,12 @@ window.eminus = window.eminus || {};
 
 var em = window.eminus;
 
+// Si inicias sesión en la misma pestaña no llega el evento "storage", así que
+// el sondeo es lo único que detecta el token nuevo y no se detiene. Tras unos
+// minutos sin sesión se espacia: nadie espera medio segundo de respuesta ahí.
 em.TOKEN_WATCH_INTERVAL_MS = 500;
+em.TOKEN_WATCH_SLOW_INTERVAL_MS = 5000;
+em.TOKEN_WATCH_FAST_WINDOW_MS = 2 * 60 * 1000;
 em.tokenWatchTimer = null;
 em.tokenStorageListener = null;
 em.pendingTokenCallback = null;
@@ -14,7 +19,7 @@ em.getToken = function () {
 
 em.stopTokenWatcher = function () {
   if (em.tokenWatchTimer) {
-    window.clearInterval(em.tokenWatchTimer);
+    window.clearTimeout(em.tokenWatchTimer);
     em.tokenWatchTimer = null;
   }
   if (em.tokenStorageListener) {
@@ -47,7 +52,14 @@ em.startTokenWatcher = function (onToken, options) {
 
   if (notifyIfReady() || em.tokenWatchTimer) return;
 
-  em.tokenWatchTimer = window.setInterval(notifyIfReady, em.TOKEN_WATCH_INTERVAL_MS);
+  const startedAt = Date.now();
+  const scheduleNext = () => {
+    const fast = Date.now() - startedAt < em.TOKEN_WATCH_FAST_WINDOW_MS;
+    em.tokenWatchTimer = window.setTimeout(() => {
+      if (!notifyIfReady()) scheduleNext();
+    }, fast ? em.TOKEN_WATCH_INTERVAL_MS : em.TOKEN_WATCH_SLOW_INTERVAL_MS);
+  };
+  scheduleNext();
   em.tokenStorageListener = (event) => {
     if (!event || event.key === "accessToken") notifyIfReady();
   };
